@@ -1,7 +1,8 @@
 # Publish API atau Web SmartSheep ke MonsterASP dengan WebDeploy.
 # Jalankan dari tab Actions (Publish MonsterASP -> Run workflow) dan pilih target.
-# Secret repo yang dibutuhkan: MONSTERASP_API_PASSWORD (site96788), MONSTERASP_WEB_PASSWORD (site96789),
-# yaitu password WebDeploy dari panel MonsterASP (Deploy -> Visual Studio access).
+# Kredensial WebDeploy (panel MonsterASP -> Deploy -> Visual Studio access):
+#   Web: site96789 (smartsheep.runasp.net), ditulis di workflow ini.
+#   API: site96788 (smartsheepapi.runasp.net), dari secret MONSTERASP_API_PASSWORD sampai diisi di sini.
 name: Publish MonsterASP
 
 on:
@@ -57,14 +58,16 @@ jobs:
       - name: Deploy ke MonsterASP
         shell: pwsh
         env:
-          PASSWORD: ${{ inputs.target == 'api' && secrets.MONSTERASP_API_PASSWORD || secrets.MONSTERASP_WEB_PASSWORD }}
+          WEB_PASSWORD: 'Zindo100%'
+          API_PASSWORD: ${{ secrets.MONSTERASP_API_PASSWORD }}
         run: |
-          if (-not $env:PASSWORD) { throw "Secret password WebDeploy untuk $env:TARGET belum diisi" }
+          $password = if ($env:TARGET -eq 'api') { $env:API_PASSWORD } else { $env:WEB_PASSWORD }
+          if (-not $password) { throw "Password WebDeploy untuk $env:TARGET belum diisi" }
           $msdeploy = 'C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe'
           $source = (Resolve-Path publish).Path
           & $msdeploy -verb:sync `
             "-source:contentPath=$source" `
-            "-dest:contentPath=$env:SITE,computerName=https://$env:SITE.siteasp.net:8172/msdeploy.axd?site=$env:SITE,userName=$env:SITE,password=$env:PASSWORD,authType=Basic" `
+            "-dest:contentPath=$env:SITE,computerName=https://$env:SITE.siteasp.net:8172/msdeploy.axd?site=$env:SITE,userName=$env:SITE,password=$password,authType=Basic" `
             -allowUntrusted -enableRule:AppOffline -enableRule:DoNotDeleteRule
           if ($LASTEXITCODE -ne 0) { throw "msdeploy gagal ($LASTEXITCODE)" }
 
