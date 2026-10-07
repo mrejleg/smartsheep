@@ -74,7 +74,7 @@ jobs:
       - name: Cek situs
         shell: pwsh
         run: |
-          $url = if ($env:TARGET -eq 'api') { 'http://smartsheepapi.runasp.net/' } else { 'http://smartsheep.runasp.net/' }
+          $url = if ($env:TARGET -eq 'api') { 'https://smartsheepapi.runasp.net/' } else { 'https://smartsheep.runasp.net/' }
           Start-Sleep -Seconds 10
           try { $r = Invoke-WebRequest $url -UseBasicParsing -MaximumRedirection 5; "HTTP $($r.StatusCode) $url" }
           catch { "Situs belum merespons normal: $($_.Exception.Message)" }
