@@ -8,10 +8,12 @@ namespace InferenceYolo.Services.Inferences
 {
     // Identifikasi indikasi aktivitas menyusu dari trajectory (proposal 3.3.1, Gambar 14).
     //
-    // Zona ambing : sumbu badan induk mendatar bila induk terakhir bergerak mendatar, tegak bila bergerak tegak.
-    //               Sebelum induk pernah bergerak, sumbu = sisi bbox yang terpotong tepi frame (badan berlanjut ke
-    //               luar frame), selain itu sisi panjang bbox. Induk yang berputar di tempat (sisi panjang bbox
-    //               jelas tegak lurus sumbu lama) dianggap belum pernah bergerak lagi.
+    // Zona ambing : sumbu badan induk dibaca dari bbox bila jelas: bbox terpotong tepi frame di satu sumbu saja
+    //               (badan berlanjut ke luar frame), atau sisi panjang bbox minimal TurnAspectRatio x sisi pendek.
+    //               Bila bbox tidak jelas (hampir persegi, mis. induk diagonal), sumbu = arah gerak terakhir, atau
+    //               sisi panjang bbox bila induk belum pernah bergerak. Gerak yang tegak lurus sumbu bbox yang jelas
+    //               (induk bergeser ke samping, bbox berubah karena tertutup anak) tidak dipakai sebagai arah gerak;
+    //               induk yang diam dengan sumbu bbox tegak lurus arah gerak lama dianggap sudah berputar di tempat.
     //               Kepala : induk bisa berjalan maju maupun mundur, tetapi mundur hanya langkah pendek. Arah gerak
     //               dirata-rata dengan memori Yolo:EweHeadMemorySeconds; bila rata-ratanya cukup kuat, itu arah kepala
     //               dan disimpan sampai rata-rata arah sebaliknya juga cukup kuat (langkah mundur pendek tidak
@@ -47,7 +49,7 @@ namespace InferenceYolo.Services.Inferences
         // dipakai untuk sumbu bila komponennya searah sumbu juga minimal sebesar ini (sudut <= 60 derajat)
         private const float HeadConfidence = 0.5f;
 
-        // Sisi panjang bbox minimal sekian kali sisi pendek agar perubahan sumbu karena berputar di tempat terbaca jelas
+        // Sisi panjang bbox minimal sekian kali sisi pendek agar sumbu badan terbaca jelas dari bbox
         private const float TurnAspectRatio = 1.5f;
 
         private readonly string sourceVideoCode;
@@ -316,7 +318,8 @@ namespace InferenceYolo.Services.Inferences
         // badan dan dibatasi frame
         private Rect GetUdderZone(Rect box, EweState state, Size frameSize)
         {
-            state.IsHorizontal = state.Direction is Point2f d ? Math.Abs(d.X) >= Math.Abs(d.Y) : IsHorizontalBody(box, frameSize);
+            state.IsHorizontal = GetBodyAxis(box, frameSize)
+                ?? (state.Direction is Point2f d ? Math.Abs(d.X) >= Math.Abs(d.Y) : box.Width >= box.Height);
             int rear = GetRearSide(state);
 
             Rect udder;
@@ -361,13 +364,17 @@ namespace InferenceYolo.Services.Inferences
             return udder;
         }
 
-        // Sumbu badan sebelum induk bergerak: badan yang terpotong tepi frame berlanjut ke arah tepi itu;
-        // selain itu mengikuti sisi panjang bbox
-        private static bool IsHorizontalBody(Rect box, Size frameSize)
+        // Sumbu badan dari bbox: true = mendatar, false = tegak, null = tidak jelas dari bbox saja
+        private static bool? GetBodyAxis(Rect box, Size frameSize)
         {
-            bool cutX = box.Left <= 0 || box.Right >= frameSize.Width;
-            bool cutY = box.Top <= 0 || box.Bottom >= frameSize.Height;
-            return cutX == cutY ? box.Width >= box.Height : cutX;
+            bool cutX = box.Left <= 0 || box.Right >= frameSize.Width - 1;
+            bool cutY = box.Top <= 0 || box.Bottom >= frameSize.Height - 1;
+            if (cutX != cutY)
+            {
+                return cutX;
+            }
+
+            return Math.Max(box.Width, box.Height) >= TurnAspectRatio * Math.Min(box.Width, box.Height) ? box.Width >= box.Height : null;
         }
 
         private static void ResetBaseline(LambState state)
@@ -388,8 +395,15 @@ namespace InferenceYolo.Services.Inferences
             float dx = newest.X - oldest.X, dy = newest.Y - oldest.Y;
             float move = MathF.Sqrt(dx * dx + dy * dy);
 
+            bool? bodyAxis = GetBodyAxis(box, frameSize);
             if (move >= eweMinimumMove * Math.Min(box.Width, box.Height))
             {
+                // Bergeser ke samping: bukan arah jalan
+                if (bodyAxis is bool horizontal && Math.Abs(dx) >= Math.Abs(dy) != horizontal)
+                {
+                    return;
+                }
+
                 var direction = new Point2f(dx / move, dy / move);
                 var head = state.Head ?? new Point2f(0, 0);
                 float weight = (float)Math.Min(1, elapsed / eweHeadMemorySeconds);
@@ -405,18 +419,11 @@ namespace InferenceYolo.Services.Inferences
                 return;
             }
 
-            // Berputar di tempat: sisi panjang bbox utuh jelas tegak lurus sumbu lama
-            if (state.Direction is Point2f d && !IsCutByFrame(box, frameSize) &&
-                Math.Max(box.Width, box.Height) >= TurnAspectRatio * Math.Min(box.Width, box.Height) &&
-                Math.Abs(d.X) >= Math.Abs(d.Y) != box.Width >= box.Height)
+            // Berputar di tempat: sumbu bbox yang jelas tegak lurus arah gerak lama
+            if (state.Direction is Point2f d && bodyAxis is bool axis && Math.Abs(d.X) >= Math.Abs(d.Y) != axis)
             {
                 ResetEwe(state);
             }
-        }
-
-        private static bool IsCutByFrame(Rect box, Size frameSize)
-        {
-            return box.Left <= 0 || box.Top <= 0 || box.Right >= frameSize.Width - 1 || box.Bottom >= frameSize.Height - 1;
         }
 
         private static void ResetEwe(EweState state)
