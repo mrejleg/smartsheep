@@ -17,7 +17,8 @@ namespace InferenceYolo.Services.Inferences
     //               Kepala : induk bisa berjalan maju maupun mundur, tetapi mundur hanya langkah pendek. Arah gerak
     //               dirata-rata dengan memori Yolo:EweHeadMemorySeconds; bila rata-ratanya cukup kuat, itu arah kepala
     //               dan disimpan sampai rata-rata arah sebaliknya juga cukup kuat (langkah mundur pendek tidak
-    //               membalik kepala). Zona ambing = Yolo:UdderZoneLength x panjang badan dari ujung belakang.
+    //               membalik kepala). Badan dibagi dua melintang sumbu: separuh depan = kepala, separuh belakang =
+    //               ambing; zona ambing = Yolo:UdderZoneLength (0.5 = separuh) x panjang badan dari ujung belakang.
     //               Bila arah kepala belum diketahui atau tidak searah sumbu, seluruh panjang badan (kedua ujung)
     //               dianggap kandidat zona ambing.
     //               Zona diperlebar ke kedua samping badan (tegak lurus sumbu) sebesar Yolo:UdderZoneMargin x lebar
