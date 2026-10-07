@@ -69,6 +69,8 @@ Action<AppSetting> appSettings = opt =>
     opt.YoloTrackConfirmFrames = builder.Configuration["Yolo:TrackConfirmFrames"];
     opt.YoloNmsIouThreshold = builder.Configuration["Yolo:NmsIouThreshold"];
     opt.YoloNmsContainmentThreshold = builder.Configuration["Yolo:NmsContainmentThreshold"];
+    opt.YoloLambMinimumAreaRatio = builder.Configuration["Yolo:LambMinimumAreaRatio"];
+    opt.YoloLambPartAreaRatio = builder.Configuration["Yolo:LambPartAreaRatio"];
     opt.YoloApiUrl = builder.Configuration["Yolo:ApiUrl"];
     opt.YoloClientId = builder.Configuration["Yolo:ClientId"];
     opt.YoloClientSecret = builder.Configuration["Yolo:ClientSecret"];

@@ -63,6 +63,8 @@ namespace InferenceYolo.Dis
                 YoloTrackConfirmFrames = configuration["Yolo:TrackConfirmFrames"],
                 YoloNmsIouThreshold = configuration["Yolo:NmsIouThreshold"],
                 YoloNmsContainmentThreshold = configuration["Yolo:NmsContainmentThreshold"],
+                YoloLambMinimumAreaRatio = configuration["Yolo:LambMinimumAreaRatio"],
+                YoloLambPartAreaRatio = configuration["Yolo:LambPartAreaRatio"],
                 YoloApiUrl = configuration["Yolo:ApiUrl"],
                 YoloClientId = configuration["Yolo:ClientId"],
                 YoloClientSecret = configuration["Yolo:ClientSecret"]
