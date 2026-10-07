@@ -42,9 +42,11 @@ jobs:
           "SITE=$site" >> $env:GITHUB_ENV
 
       # Self-contained agar tidak bergantung pada versi .NET yang terpasang di server.
+      # win-x86: application pool MonsterASP berjalan 32-bit (win-x64 -> HTTP 500.32 Failed to load .NET Core host).
+      # ONNX Runtime/OpenCV tidak punya native 32-bit, sehingga preview inferensi Web tidak jalan di server.
       # Web ikut membawa proyek InferenceYolo (exe) sehingga deps.json/runtimeconfig-nya bentrok; yang dipakai milik Web.
       - name: Publish
-        run: dotnet publish ${{ env.PROJECT }} -c Release -r win-x64 --self-contained -p:ErrorOnDuplicatePublishOutputFiles=false -o publish
+        run: dotnet publish ${{ env.PROJECT }} -c Release -r win-x86 --self-contained -p:ErrorOnDuplicatePublishOutputFiles=false -o publish
 
       - name: Pasang WebDeploy
         shell: pwsh
