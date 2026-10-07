@@ -54,6 +54,8 @@ namespace InferenceYolo.Dis
                 YoloUdderZoneMargin = configuration["Yolo:UdderZoneMargin"],
                 YoloEweDirectionWindowSeconds = configuration["Yolo:EweDirectionWindowSeconds"],
                 YoloEweMinimumMove = configuration["Yolo:EweMinimumMove"],
+                YoloEweHeadMemorySeconds = configuration["Yolo:EweHeadMemorySeconds"],
+                YoloUdderZoneLength = configuration["Yolo:UdderZoneLength"],
                 YoloLambMovingWindowSeconds = configuration["Yolo:LambMovingWindowSeconds"],
                 YoloLambMinimumSpeed = configuration["Yolo:LambMinimumSpeed"],
                 YoloBaselineWeight = configuration["Yolo:BaselineWeight"],

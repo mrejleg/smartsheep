@@ -17,6 +17,8 @@ namespace InferenceYolo.Models
         public string YoloUdderZoneMargin { get; set; }
         public string YoloEweDirectionWindowSeconds { get; set; }
         public string YoloEweMinimumMove { get; set; }
+        public string YoloEweHeadMemorySeconds { get; set; }
+        public string YoloUdderZoneLength { get; set; }
         public string YoloLambMovingWindowSeconds { get; set; }
         public string YoloLambMinimumSpeed { get; set; }
         public string YoloBaselineWeight { get; set; }

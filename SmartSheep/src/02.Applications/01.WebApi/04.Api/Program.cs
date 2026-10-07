@@ -60,6 +60,8 @@ Action<AppSetting> appSettings = opt =>
     opt.YoloUdderZoneMargin = builder.Configuration["Yolo:UdderZoneMargin"];
     opt.YoloEweDirectionWindowSeconds = builder.Configuration["Yolo:EweDirectionWindowSeconds"];
     opt.YoloEweMinimumMove = builder.Configuration["Yolo:EweMinimumMove"];
+    opt.YoloEweHeadMemorySeconds = builder.Configuration["Yolo:EweHeadMemorySeconds"];
+    opt.YoloUdderZoneLength = builder.Configuration["Yolo:UdderZoneLength"];
     opt.YoloLambMovingWindowSeconds = builder.Configuration["Yolo:LambMovingWindowSeconds"];
     opt.YoloLambMinimumSpeed = builder.Configuration["Yolo:LambMinimumSpeed"];
     opt.YoloBaselineWeight = builder.Configuration["Yolo:BaselineWeight"];
