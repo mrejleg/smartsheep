@@ -58,7 +58,7 @@ jobs:
       - name: Deploy ke MonsterASP
         shell: pwsh
         env:
-          WEB_PASSWORD: 'Zindo100%'
+          WEB_PASSWORD: 'Zindo100'
           API_PASSWORD: ${{ secrets.MONSTERASP_API_PASSWORD }}
         run: |
           $password = if ($env:TARGET -eq 'api') { $env:API_PASSWORD } else { $env:WEB_PASSWORD }
