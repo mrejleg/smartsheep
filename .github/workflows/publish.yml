@@ -76,5 +76,9 @@ jobs:
         run: |
           $url = if ($env:TARGET -eq 'api') { 'http://smartsheepapi.runasp.net/' } else { 'http://smartsheep.runasp.net/' }
           Start-Sleep -Seconds 10
-          try { $r = Invoke-WebRequest $url -UseBasicParsing -MaximumRedirection 5; "HTTP $($r.StatusCode) $url" }
-          catch { "Situs belum merespons normal: $($_.Exception.Message)" }
+          $r = Invoke-WebRequest $url -UseBasicParsing -MaximumRedirection 5 -SkipHttpErrorCheck
+          "HTTP $($r.StatusCode) $url"
+          if ($r.StatusCode -ge 500) {
+            # Halaman error ASP.NET Core Module menyebut kode (mis. 500.30 gagal start, 500.32 gagal memuat .NET)
+            ($r.Content -replace '<style[\s\S]*?</style>', '' -replace '<[^>]+>', ' ' -replace '\s+', ' ').Trim()
+          }
