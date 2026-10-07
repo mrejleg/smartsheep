@@ -1,0 +1,28 @@
+@model string
+@*
+    Badge status seragam. Dipakai di form dan disamakan dengan grid (custom-dxdatagrid.min.js).
+    Peta warna:
+      DRAFT=secondary, REQUEST=warning, REVISED=danger, CANCELED=dark,
+      APPROVED=info, COMPLETED=success.
+    ApprovalStatus di DB bisa berawalan mis. "[APPROVED] Level - CC" / "[REVISED] ...",
+    jadi pencocokan pakai Contains dan urutannya penting (COMPLETED sebelum APPROVED, dst).
+*@
+@{
+    var raw = Model ?? string.Empty;
+    var s = raw.ToUpperInvariant();
+    var cls = "badge-light-secondary";
+    if (s.Contains("COMPLET")) { cls = "badge-light-success"; }
+    else if (s.Contains("APPROV")) { cls = "badge-light-info"; }
+    else if (s.Contains("REVIS")) { cls = "badge-light-danger"; }
+    else if (s.Contains("CANCEL")) { cls = "badge-light-dark"; }
+    else if (s.Contains("REQUEST")) { cls = "badge-light-warning"; }
+    else if (s.Contains("DRAFT")) { cls = "badge-light-secondary"; }
+}
+@if (string.IsNullOrWhiteSpace(raw))
+{
+    @Html.Raw("-")
+}
+else
+{
+    <span class="badge rounded-pill @cls" text-capitalized=""> @raw.ToUpperInvariant()</span>
+}

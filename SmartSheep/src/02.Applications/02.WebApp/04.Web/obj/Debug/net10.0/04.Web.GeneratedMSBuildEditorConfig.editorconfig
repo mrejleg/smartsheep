@@ -1,0 +1,432 @@
+is_global = true
+build_property.TargetFramework = net10.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EntryPointFilePath = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Web
+build_property.RootNamespace = Web
+build_property.ProjectDir = /Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 10.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = true
+build_property.MSBuildProjectDirectory = /Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Account/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/AppClient/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvQXBwQ2xpZW50L0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/AppClient/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvQXBwQ2xpZW50L0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/AppClient/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvQXBwQ2xpZW50L0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/AppClient/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvQXBwQ2xpZW50L0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/AppScopeClient/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvQXBwU2NvcGVDbGllbnQvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/ScopeClient/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvU2NvcGVDbGllbnQvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/ScopeClient/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvU2NvcGVDbGllbnQvRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/ScopeClient/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvU2NvcGVDbGllbnQvRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/ApiManagements/ScopeClient/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBpTWFuYWdlbWVudHMvU2NvcGVDbGllbnQvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppMenu/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBNZW51L0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppMenu/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBNZW51L0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppMenu/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBNZW51L0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppMenu/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBNZW51L0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppMenuRole/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBNZW51Um9sZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppRole/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBSb2xlL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppRole/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBSb2xlL0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppRole/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBSb2xlL0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/AppRole/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9BcHBSb2xlL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/EmailTemplate/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9FbWFpbFRlbXBsYXRlL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/EmailTemplate/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9FbWFpbFRlbXBsYXRlL0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/EmailTemplate/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9FbWFpbFRlbXBsYXRlL0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/EmailTemplate/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9FbWFpbFRlbXBsYXRlL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/News/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9OZXdzL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/News/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9OZXdzL0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/News/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9OZXdzL0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/News/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9OZXdzL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/ReminderTemplate/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9SZW1pbmRlclRlbXBsYXRlL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/ReminderTemplate/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9SZW1pbmRlclRlbXBsYXRlL0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/ReminderTemplate/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9SZW1pbmRlclRlbXBsYXRlL0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/ReminderTemplate/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9SZW1pbmRlclRlbXBsYXRlL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/SystemConfig/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9TeXN0ZW1Db25maWcvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/SystemConfig/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9TeXN0ZW1Db25maWcvRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/SystemConfig/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9TeXN0ZW1Db25maWcvRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/SystemConfig/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9TeXN0ZW1Db25maWcvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/UserFarm/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9Vc2VyRmFybS9DcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/UserFarm/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9Vc2VyRmFybS9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/UserFarm/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9Vc2VyRmFybS9FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/UserFarm/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9Vc2VyRmFybS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Configs/UserFarm/_Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29uZmlncy9Vc2VyRmFybS9fRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Dashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGFzaGJvYXJkL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Barn/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9CYXJuL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Barn/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9CYXJuL0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Barn/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9CYXJuL0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Barn/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9CYXJuL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Farm/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9GYXJtL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Farm/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9GYXJtL0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Farm/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9GYXJtL0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Farm/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9GYXJtL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Livestock/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9MaXZlc3RvY2svQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Livestock/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9MaXZlc3RvY2svRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Livestock/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9MaXZlc3RvY2svRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/Livestock/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9MaXZlc3RvY2svSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/SourceVideo/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9Tb3VyY2VWaWRlby9DcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/SourceVideo/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9Tb3VyY2VWaWRlby9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/SourceVideo/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9Tb3VyY2VWaWRlby9FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/SourceVideo/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9Tb3VyY2VWaWRlby9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/MasterData/SourceVideo/Stream.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTWFzdGVyRGF0YS9Tb3VyY2VWaWRlby9TdHJlYW0uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Reports/ReminderReport/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVwb3J0cy9SZW1pbmRlclJlcG9ydC9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Reports/SucklingActivityReport/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVwb3J0cy9TdWNrbGluZ0FjdGl2aXR5UmVwb3J0L0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Reports/SucklingStatisticReport/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUmVwb3J0cy9TdWNrbGluZ1N0YXRpc3RpY1JlcG9ydC9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/Components/Notyf/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0NvbXBvbmVudHMvTm90eWYvRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_ActionHeaderButton.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19BY3Rpb25IZWFkZXJCdXR0b24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_CustomizerButton.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19DdXN0b21pemVyQnV0dG9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_EmptyState.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19FbXB0eVN0YXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_ExportButton.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19FeHBvcnRCdXR0b24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_Footer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19Gb290ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_Menu.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19NZW51LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_NotAuthorize.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19Ob3RBdXRob3JpemUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19Qcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_ReportFilters.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19SZXBvcnRGaWx0ZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_ReportNoData.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19SZXBvcnROb0RhdGEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_StatusBadge.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19TdGF0dXNCYWRnZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_ThemeCustomizer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19UaGVtZUN1c3RvbWl6ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_UserProfile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19Vc2VyUHJvZmlsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/JobExecutionLog/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9Kb2JFeGVjdXRpb25Mb2cvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/JobExecutionLog/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9Kb2JFeGVjdXRpb25Mb2cvRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/JobExecutionLog/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9Kb2JFeGVjdXRpb25Mb2cvRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/JobExecutionLog/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9Kb2JFeGVjdXRpb25Mb2cvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/ReminderLog/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9SZW1pbmRlckxvZy9DcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/ReminderLog/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9SZW1pbmRlckxvZy9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/ReminderLog/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9SZW1pbmRlckxvZy9FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/ReminderLog/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9SZW1pbmRlckxvZy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SheepBreeding/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TaGVlcEJyZWVkaW5nL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SourceVideoStatusLog/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9Tb3VyY2VWaWRlb1N0YXR1c0xvZy9DcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SourceVideoStatusLog/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9Tb3VyY2VWaWRlb1N0YXR1c0xvZy9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SourceVideoStatusLog/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9Tb3VyY2VWaWRlb1N0YXR1c0xvZy9FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SourceVideoStatusLog/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9Tb3VyY2VWaWRlb1N0YXR1c0xvZy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SucklingActivity/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TdWNrbGluZ0FjdGl2aXR5L0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SucklingActivity/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TdWNrbGluZ0FjdGl2aXR5L0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SucklingActivity/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TdWNrbGluZ0FjdGl2aXR5L0VkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SucklingActivity/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TdWNrbGluZ0FjdGl2aXR5L0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SucklingStatistic/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TdWNrbGluZ1N0YXRpc3RpYy9DcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SucklingStatistic/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TdWNrbGluZ1N0YXRpc3RpYy9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SucklingStatistic/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TdWNrbGluZ1N0YXRpc3RpYy9FZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/SmartSheep/SucklingStatistic/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU21hcnRTaGVlcC9TdWNrbGluZ1N0YXRpc3RpYy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/02.WebApp/04.Web/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

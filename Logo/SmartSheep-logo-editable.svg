@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="450" viewBox="0 0 1600 450">
+  <title>SmartSheep Logo — Editable Master</title>
+  <g id="smartsheep-logo">
+    <image id="sheep-mark" x="25" y="20" width="390" height="390" preserveAspectRatio="xMidYMid meet" xlink:href="SmartSheep-mark-color-source.png" />
+    <text id="wordmark" x="450" y="220" font-family="Segoe UI, Arial, sans-serif" font-size="145" font-weight="700">
+      <tspan id="smart" fill="#004B4D">Smart</tspan><tspan id="sheep" fill="#009F97">Sheep</tspan>
+    </text>
+    <text id="tagline" x="473" y="315" fill="#006A67" font-family="Segoe UI, Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="12.5">SMART LIVESTOCK</text>
+  </g>
+</svg>

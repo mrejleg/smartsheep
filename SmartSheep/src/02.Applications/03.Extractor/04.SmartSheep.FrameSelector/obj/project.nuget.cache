@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "aEl1MCiYOs4=",
+  "success": true,
+  "projectFilePath": "/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/02.Applications/03.Extractor/04.SmartSheep.FrameSelector/04.SmartSheep.FrameSelector.csproj",
+  "expectedPackageFiles": [
+    "/Users/swa/.nuget/packages/microsoft.extensions.dependencyinjection/10.0.5/microsoft.extensions.dependencyinjection.10.0.5.nupkg.sha512",
+    "/Users/swa/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.5/microsoft.extensions.dependencyinjection.abstractions.10.0.5.nupkg.sha512",
+    "/Users/swa/.nuget/packages/opencvsharp5/5.0.0.20260806/opencvsharp5.5.0.0.20260806.nupkg.sha512",
+    "/Users/swa/.nuget/packages/opencvsharp5.runtime.osx.arm64/5.0.0.20260806/opencvsharp5.runtime.osx.arm64.5.0.0.20260806.nupkg.sha512",
+    "/Users/swa/.nuget/packages/opencvsharp5.runtime.win/5.0.0.20260806/opencvsharp5.runtime.win.5.0.0.20260806.nupkg.sha512"
+  ],
+  "logs": []
+}

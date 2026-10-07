@@ -1,0 +1,205 @@
+@model Web.Domain.Models.ApiManagements.AppScopeClientDto
+
+<div class="content-header row">
+    <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h2 class="content-header-title float-start mb-0">App Scope Client</h2>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">API Management</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a asp-action="Index">App Scope Client</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Data App Scope Client </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="_CustomizerButton" />
+</div>
+<style>
+    .app-menu-role-page .amr-card{overflow:hidden;border:1px solid #e3ebf1!important;box-shadow:0 8px 24px rgba(30,54,76,.06)}
+    .app-menu-role-page .amr-filter-body{padding:18px 20px 20px}
+    .app-menu-role-page .amr-role-field{display:grid;grid-template-columns:minmax(280px,1fr) auto;align-items:end;gap:14px}
+    .app-menu-role-page .amr-role-field .form-label{margin-bottom:7px;color:#344054;font-weight:600}
+    .app-menu-role-page .amr-actions{display:flex;align-items:center;gap:8px}
+    .app-menu-role-page .amr-actions .btn{min-height:42px;margin:0!important}
+    .app-menu-role-page .amr-assignment{margin-top:18px}
+    .app-menu-role-page .amr-card-heading{display:flex;align-items:center;gap:11px;min-width:0}
+    .app-menu-role-page .amr-heading-icon{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border:0;border-radius:9px;color:#fff;background:linear-gradient(145deg,#00aaa0,#007d77);box-shadow:0 5px 12px rgba(0,139,132,.2)}
+    .app-menu-role-page .amr-heading-icon svg{width:18px;height:18px}
+    .app-menu-role-page .amr-heading-copy{min-width:0}
+    .app-menu-role-page .amr-heading-copy .card-title{margin:0;font-size:16px}
+    .app-menu-role-page .amr-heading-copy small{display:block;margin-top:3px;color:#8492a6;font-size:11px}
+    .app-menu-role-page .amr-save-tools{display:flex;align-items:center;gap:13px}
+    .app-menu-role-page .amr-selection-count{color:#64748b;font-size:12px;white-space:nowrap}
+    .app-menu-role-page .amr-selection-count strong{color:#008d86;font-size:14px}
+    .app-menu-role-page .amr-table-wrap{overflow-x:auto}
+    .app-menu-role-page .amr-table{margin:0;min-width:850px;table-layout:fixed}
+    .app-menu-role-page .amr-table thead th{position:sticky;top:0;z-index:1;padding:12px 18px;border-bottom:1px solid #dbe6ee;color:#526077;background:#f5f9fc;font-size:11px;font-weight:700;letter-spacing:.035em;text-transform:uppercase;white-space:nowrap}
+    .app-menu-role-page .amr-table thead th:nth-child(1){width:28%}.app-menu-role-page .amr-table thead th:nth-child(2){width:19%}.app-menu-role-page .amr-table thead th:nth-child(3){width:53%}
+    .app-menu-role-page .amr-table tbody td{padding:12px 18px;border-bottom:1px solid #edf2f6;color:#334155;vertical-align:middle}
+    .app-menu-role-page .amr-table tbody tr:last-child td{border-bottom:0}
+    .app-menu-role-page .amr-table tbody tr:hover{background:#f7fcfa}
+    .app-menu-role-page .amr-group-row:hover{background:transparent!important}
+    .app-menu-role-page .amr-group-row td{padding:17px 18px 8px!important;border-bottom:0!important;background:#fff}
+    .app-menu-role-page .amr-group-label{display:flex;align-items:center;gap:9px;color:#007c76;font-size:11px;font-weight:750;letter-spacing:.045em;text-transform:uppercase}
+    .app-menu-role-page .amr-group-label:before{content:"";width:7px;height:7px;border-radius:2px;background:#00a99f;box-shadow:0 0 0 4px rgba(0,169,159,.1)}
+    .app-menu-role-page .amr-group-label:after{content:"";height:1px;flex:1;margin-left:4px;background:linear-gradient(90deg,#d8e8f1,transparent)}
+    .app-menu-role-page .amr-menu-row td:first-child{padding-left:35px}
+    .app-menu-role-page .amr-menu-name{color:#182235;font-weight:650}
+    .app-menu-role-page .amr-controller{display:inline-flex;padding:5px 9px;border-radius:7px;color:#526077;background:#f1f5f8;font-family:monospace;font-size:12px}
+    .app-menu-role-page .amr-access-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(82px,1fr));gap:7px;max-width:560px}
+    .app-menu-role-page .amr-access-list .form-check{position:relative;margin:0;padding:0}
+    .app-menu-role-page .amr-access-list .form-check-input{position:absolute;opacity:0;pointer-events:none}
+    .app-menu-role-page .amr-access-list .form-check-label{position:relative;display:flex;align-items:center;min-height:35px;padding:6px 9px 6px 32px;border:1px solid #dce5ec;border-radius:8px;color:#64748b;background:#fff;font-size:10px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:.18s ease}
+    .app-menu-role-page .amr-access-list .form-check-label:before{content:"";position:absolute;left:10px;top:50%;width:16px;height:16px;border:1.5px solid #afbdc9;border-radius:4px;background:#fff;transform:translateY(-50%);transition:.18s ease}
+    .app-menu-role-page .amr-access-list .form-check-label:after{content:"";position:absolute;left:15px;top:50%;width:6px;height:9px;border:solid #fff;border-width:0 2px 2px 0;opacity:0;transform:translateY(-62%) rotate(45deg)}
+    .app-menu-role-page .amr-access-list .form-check-label:hover{border-color:#9bded3;color:#007c76;background:#f7fcfa}
+    .app-menu-role-page .amr-access-list .form-check-input:checked+.form-check-label{border-color:#a8e4da;color:#007c76;background:#edf9f6;box-shadow:inset 3px 0 0 #009f97}
+    .app-menu-role-page .amr-access-list .form-check-input:checked+.form-check-label:before{border-color:#009f97;background:#009f97}
+    .app-menu-role-page .amr-access-list .form-check-input:checked+.form-check-label:after{opacity:1}
+    .app-menu-role-page .amr-access-list .form-check-input:focus-visible+.form-check-label{outline:3px solid rgba(0,159,151,.18);outline-offset:2px}
+    @@media(max-width:767.98px){.app-menu-role-page .amr-role-field{grid-template-columns:1fr}.app-menu-role-page .amr-actions{width:100%}.app-menu-role-page .amr-actions .btn{flex:1}.app-menu-role-page .amr-filter-body{padding:15px}.app-menu-role-page .amr-selection-count{display:none}}
+</style>
+<div class="content-body app-menu-role-page">
+    <div class="row">
+        <div class="col-12">
+
+            <form asp-action="Search" method="post">
+                <div class="card card-icon amr-card">
+                    <div class="card-header border-bottom p-1">
+                        <div class="amr-card-heading">
+                            <span class="amr-heading-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10m-7 6h4"/></svg></span>
+                            <div class="amr-heading-copy"><h4 class="card-title">Select Client</h4><small>Choose an application client to manage its scopes</small></div>
+                        </div>
+                    </div>
+                    <div class="amr-filter-body">
+                        <div class="amr-role-field">
+                            <div>
+                                <label class="form-label">Application Client <span class="text-danger">*</span></label>
+                                    <div id="fk_app_client"></div>
+                                    <input type="hidden" id="t_fk_app_client_id" class="form-control" asp-for="FkAppClientId" name="fkAppClientId" />
+                            </div>
+                            <div class="amr-actions">
+                            <button type="submit" class="btn btn-round btn-primary waves-effect waves-float waves-light me-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search me-50">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                Search
+                            </button>
+                            <a asp-action="Index" class="btn btn-round btn-outline-secondary waves-effect waves-float waves-light">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw me-50">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                </svg>
+                                Reset
+                            </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            @if (Model.FkAppClientId.HasValue)
+            {
+                <form class="form form-horizontal" asp-action="Save" onsubmit="onSaveData(this); return false;" enctype="multipart/form-data">
+                    <div class="card card-icon amr-card amr-assignment">
+                        <div class="card-header border-bottom p-1">
+                            <div class="amr-card-heading">
+                                <span class="amr-heading-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                                <div class="amr-heading-copy"><h4 class="card-title">Scope Permissions</h4><small>Enable the permitted scopes for this client</small></div>
+                            </div>
+                            <div class="text-end d-none d-sm-block">
+                                <div class="amr-save-tools">
+                                    @if (Model.ScopeClients.Count != 0)
+                                    {
+                                        <span class="amr-selection-count"><strong id="selectedPermissionCount">0</strong> selected</span>
+                                        <button type="submit" class="btn btn-round btn-success waves-effect waves-float waves-light">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check me-50">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            Save
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <input type="hidden" name="fkAppClientId" value="@Model.FkAppClientId" />
+                                    <div class="amr-table-wrap"><table class="table amr-table" id="datatablesId">
+                                        <thead>
+                                            <tr>
+                                                <th class="ptk-col-wide">Scope Name</th>
+                                                <th class="ptk-col-medium">Controller</th>
+                                                <th class="ptk-col-medium">Access</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.ScopeClients.Count == 0)
+                                            {
+                                                <tr><td colspan="3"><partial name="_EmptyState" /></td></tr>
+                                            }
+                                            else
+                                            {
+                                                <tr class="amr-group-row"><td colspan="3"><div class="amr-group-label">API Management</div></td></tr>
+                                                foreach (var scopeGroup in Model.ScopeClients.GroupBy(x => (x.Name ?? string.Empty).Split('.', 2)[0]).OrderBy(x => x.Key))
+                                                {
+                                                    <tr class="amr-menu-row">
+                                                        <td><span class="amr-menu-name">@scopeGroup.Key</span></td>
+                                                        <td><span class="amr-controller">@scopeGroup.Key</span></td>
+                                                        <td>
+                                                            <div class="amr-access-list">
+                                                                @foreach (var scope in scopeGroup.OrderBy(x => x.Name))
+                                                                {
+                                                                    var parts = (scope.Name ?? string.Empty).Split('.', 2);
+                                                                    var accessName = parts.Length > 1 ? parts[1] : scope.Name;
+                                                                    var isAssigned = Model.AppScopeClients.Any(x => x.FkScopeClientId == scope.Id);
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input" type="checkbox" id="@Html.Raw("chk_" + scope.Id)" name="@Html.Raw("chk_" + scope.Id)" value="true" checked="@(isAssigned ? "checked" : null)">
+                                                                        <label class="form-check-label" for="@Html.Raw("chk_" + scope.Id)">@accessName?.ToUpperInvariant()</label>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var urlAppClient = "/AppClient/AppClients";
+        var appClientColumns = [
+            { 'name': 'Id', 'type': 'object' },
+            { 'name': 'Name', 'type': 'string' },
+            { 'name': 'ClientId', 'type': 'string' },
+            { 'name': 'Description', 'type': 'string' },
+        ];
+        var fkAppClientId = "@Model.FkAppClientId";
+        loadDxDropdownBoxColumn("fk_app_client", "t_fk_app_client_id", urlAppClient, fkAppClientId, appClientColumns, false);
+        function updateSelectedPermissionCount() {
+            $('#selectedPermissionCount').text($('.amr-access-list .form-check-input:checked').length);
+        }
+        updateSelectedPermissionCount();
+        $('.amr-access-list .form-check-input').on('change', updateSelectedPermissionCount);
+    });
+</script>
+

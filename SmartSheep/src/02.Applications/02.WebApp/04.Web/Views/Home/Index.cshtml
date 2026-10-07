@@ -1,0 +1,98 @@
+@inject Web.Domain.Models.AppSetting appSettings
+
+<div class="content-body home-page">
+    <div class="home-shell">
+        <div class="home-copy">
+            <span class="home-badge"><i class="home-badge-dot"></i>Smart Livestock Platform</span>
+            <h1 class="home-title">Welcome to <span>SmartSheep</span></h1>
+            <p class="home-sub">Monitor livestock health, barn security, and environmental conditions in real time from one intelligent farming platform.</p>
+
+            <div class="home-features">
+                <div class="home-feature">
+                    <span class="home-feature-icon home-feature-livestock" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12c0-3 2.4-5 5.5-5H14c2.8 0 5 2.2 5 5v4H7c-1.1 0-2-.9-2-2z"/><path d="M8 16v3M16 16v3M18 9l2-2M7 9 4 7"/><circle cx="15.5" cy="11" r=".8" fill="currentColor" stroke="none"/></svg></span>
+                    <div class="home-feature-text">
+                        <b>Livestock Tracking</b>
+                        <small>Track every sheep and monitor flock activity from one place.</small>
+                    </div>
+                </div>
+                <div class="home-feature">
+                    <span class="home-feature-icon home-feature-cctv" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 7 13-3 2 7-13 3z"/><path d="m15.5 12.2 1.5 3.3M13 17h7M6 14l-2 4"/><circle cx="15.5" cy="7.5" r="1.5"/></svg></span>
+                    <div class="home-feature-text">
+                        <b>Smart CCTV</b>
+                        <small>Keep farm areas secure with live, connected surveillance.</small>
+                    </div>
+                </div>
+                <div class="home-feature">
+                    <span class="home-feature-icon home-feature-sensor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/><path d="M12 14V4M8.5 7.5a5 5 0 0 0 0 7M15.5 7.5a5 5 0 0 1 0 7M5.5 5a9 9 0 0 0 0 12M18.5 5a9 9 0 0 1 0 12"/></svg></span>
+                    <div class="home-feature-text">
+                        <b>Sensor Monitoring</b>
+                        <small>Track temperature, humidity, and device status in real time.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="home-visual">
+            <div class="home-visual-stage">
+                <span class="home-blob" aria-hidden="true"></span>
+                <span class="home-ring" aria-hidden="true"></span>
+                <img src="~/images/home-smart-farm.svg" asp-append-version="true" alt="Smart sheep barn with CCTV and environmental sensors">
+                <span class="home-chip home-chip-1"><i></i>Livestock Tracking</span>
+                <span class="home-chip home-chip-2"><i></i>Smart CCTV</span>
+                <span class="home-chip home-chip-3"><i></i>Sensor Monitoring</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    html.home-one-page-root,
+    html.home-one-page-root body,
+    body.home-one-page { width: 100%; height: 100%; max-height: 100vh; overflow: hidden !important; overscroll-behavior: none; }
+    body.home-one-page .app-content.content.footer-fixed { height: 100vh !important; max-height: 100vh !important; min-height: 0 !important; padding-bottom: 0 !important; box-sizing: border-box !important; overflow: hidden !important; }
+    body.home-one-page .content-wrapper { flex: 1 1 auto !important; height: auto !important; min-height: 0 !important; overflow: hidden !important; }
+    body.home-one-page .footer { position: static !important; inset: auto !important; width: 100% !important; flex: 0 0 auto !important; margin: 0 !important; }
+
+    .home-page { height: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; padding: clamp(8px, 1.2vw, 16px); overflow: hidden; border: 0 !important; outline: 0 !important; box-shadow: none !important; background: transparent !important; }
+    .home-shell { position: relative; width: min(1180px, 100%); height: 100%; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: clamp(16px, 3vw, 42px); padding: clamp(18px, 2.6vw, 40px); border: 0; outline: 0; border-radius: 20px; overflow: hidden; background: radial-gradient(circle at 88% 12%, rgba(0,179,167,.16), transparent 42%), radial-gradient(circle at 8% 92%, rgba(0,106,103,.12), transparent 40%), linear-gradient(135deg,#fff 0%,#f1faf8 46%,#e5f5f1 100%); box-shadow: none; }
+    .home-shell::before { content: ""; position: absolute; top: -70px; left: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle,rgba(0,179,167,.18),transparent 70%); pointer-events: none; }
+    .home-copy { min-width: 0; position: relative; z-index: 2; }
+    .home-badge { display: inline-flex; align-items: center; gap: 8px; margin-bottom: clamp(10px,1.6vh,18px); padding: 6px 14px; border-radius: 999px; background: rgba(0,159,151,.1); color: #006a67; font-size: clamp(.66rem,.8vw,.76rem); font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .home-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #00b3a7; box-shadow: 0 0 0 4px rgba(0,179,167,.2); }
+    .home-title { margin: 0 0 clamp(8px,1.4vh,14px); color: #132238; font-size: clamp(1.6rem,3vw,2.65rem); font-weight: 900; line-height: 1.1; }
+    .home-title span { background: linear-gradient(120deg,#00675f,#00a99d 58%,#24c7b8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .home-sub { margin: 0 0 clamp(16px,2.4vh,26px); max-width: 49ch; color: #5b6b81; font-size: clamp(.86rem,1vw,1.02rem); font-weight: 500; line-height: 1.55; }
+    .home-features { display: grid; gap: clamp(8px,1.4vh,14px); }
+    .home-feature { display: flex; align-items: center; gap: 14px; padding: clamp(9px,1.3vh,14px) 16px; border-radius: 14px; background: rgba(255,255,255,.72); border: 1px solid rgba(193,221,230,.55); box-shadow: 0 8px 20px rgba(15,35,63,.05); transition: transform .18s ease,box-shadow .18s ease,border-color .18s ease; }
+    .home-feature:hover { transform: translateY(-2px); border-color: rgba(0,159,151,.35); box-shadow: 0 12px 26px rgba(0,75,77,.12); }
+    .home-feature-text { min-width: 0; display: flex; flex-direction: column; }
+    .home-feature-text b { color: #17365d; font-size: clamp(.9rem,1vw,1rem); font-weight: 850; line-height: 1.15; }
+    .home-feature-text small { color: #6b7a8f; font-size: clamp(.72rem,.82vw,.82rem); font-weight: 550; }
+    .home-feature-icon { position: relative; flex: 0 0 44px; width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; color:#008178; background:linear-gradient(160deg,#e9fcf9,#d6f6f1); }
+    .home-feature-icon svg { width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round; }
+    .home-feature-cctv { color:#008d83;background:linear-gradient(160deg,#ebfbf8,#d9f4ef) }
+    .home-feature-sensor { color:#18a879;background:linear-gradient(160deg,#edf9f6,#daf2ec) }
+    .home-visual { min-width: 0; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .home-visual-stage { position: relative; width: 100%; max-width: 540px; display: flex; align-items: center; justify-content: center; transform: translateY(2px); }
+    .home-blob { position: absolute; width: 82%; height: 82%; border-radius: 46% 54% 58% 42%/52% 44% 56% 48%; background: linear-gradient(135deg,rgba(0,179,167,.16),rgba(0,106,103,.13)); filter: blur(2px); animation: homeBlob 12s ease-in-out infinite; }
+    .home-ring { position: absolute; width: 70%; height: 70%; border-radius: 50%; border: 2px dashed rgba(0,106,103,.28); animation: homeSpin 40s linear infinite; }
+    .home-visual-stage img { position: relative; z-index: 2; width: min(94%,490px); max-height: min(53vh,420px); object-fit: contain; filter: drop-shadow(0 22px 34px rgba(15,35,63,.16)); }
+    .home-chip { position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px; background: rgba(255,255,255,.94); color: #17365d; font-size: clamp(.66rem,.78vw,.78rem); font-weight: 800; box-shadow: 0 12px 26px rgba(15,35,63,.14); animation: homeFloat 5.5s ease-in-out infinite; }
+    .home-chip i { width:8px;height:8px;border-radius:50% }
+    .home-chip-1{top:9%;left:0}.home-chip-1 i{background:#00b3a7;box-shadow:0 0 0 4px rgba(0,179,167,.18)}
+    .home-chip-2{top:18%;right:-1%;animation-delay:1.2s}.home-chip-2 i{background:#18a879;box-shadow:0 0 0 4px rgba(24,168,121,.17)}
+    .home-chip-3{bottom:8%;left:4%;animation-delay:2.4s}.home-chip-3 i{background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.17)}
+    @@keyframes homeBlob { 0%,100%{border-radius:46% 54% 58% 42%/52% 44% 56% 48%}50%{border-radius:56% 44% 42% 58%/44% 56% 46% 54%} }
+    @@keyframes homeSpin { to{transform:rotate(360deg)} }
+    @@keyframes homeFloat { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
+    @@media(max-width:1100px){.home-shell{grid-template-columns:1fr}.home-visual{display:none}.home-sub{max-width:none}}
+    @@media(max-height:760px){.home-shell{padding:16px 24px}.home-badge{margin-bottom:8px}.home-title{font-size:clamp(1.4rem,2.4vw,2rem);margin-bottom:7px}.home-sub{margin-bottom:11px;line-height:1.35}.home-features{gap:7px}.home-feature{padding:7px 12px}.home-feature-icon{width:38px;height:38px;flex-basis:38px}.home-visual-stage img{max-height:44vh}}
+    @@media(prefers-reduced-motion:reduce){.home-blob,.home-ring,.home-chip{animation:none}}
+</style>
+
+<script>
+    document.documentElement.classList.add('home-one-page-root');
+    document.body.classList.add('home-one-page');
+    document.documentElement.style.setProperty('overflow', 'hidden', 'important');
+    document.body.style.setProperty('overflow', 'hidden', 'important');
+</script>

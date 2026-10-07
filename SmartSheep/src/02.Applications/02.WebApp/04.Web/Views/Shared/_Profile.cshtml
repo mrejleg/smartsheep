@@ -1,0 +1,121 @@
+@inject Web.ApplicationCore.Interfaces.Auths.IUserService userService
+@{
+    var profileDetail = await userService.GetUserProfileAsync() ?? new Web.Domain.Models.Auths.AppUserResponseDto();
+    var profileName = profileDetail.FullName ?? profileDetail.Username ?? "User";
+    var profileParts = profileName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+    var profileInitials = profileParts.Length == 0
+        ? "?"
+        : (profileParts.Length == 1
+            ? profileParts[0].Substring(0, 1).ToUpperInvariant()
+            : (profileParts[0].Substring(0, 1) + profileParts[1].Substring(0, 1)).ToUpperInvariant());
+}
+
+<div class="modal modal-slide-in sidebar-todo-modal fade" id="profile">
+    <div class="modal-dialog sidebar-lg">
+        <div class="modal-content p-0 ptk-profile-content" id="content-profile">
+            <form class="todo-modal needs-validation">
+                <div class="modal-header align-items-center mb-1">
+                    <h3 class="modal-title">
+                        User Profile
+                    </h3>
+                    <div class="todo-item-action d-flex align-items-center justify-content-between ms-auto">
+                        <span class="todo-item-favorite cursor-pointer me-75"><i data-feather="star" class="font-medium-2"></i></span>
+                        <i class="cursor-pointer" data-bs-dismiss="modal" stroke-width="3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </i>
+                    </div>
+                </div>
+                <div class="modal-body flex-grow-1 pb-sm-0 pb-3">
+                    <div class="action-tags">
+                        <div class="info-container">
+                            <div class="user-avatar-section">
+                                <div class="d-flex align-items-center flex-grow-0 flex-column">
+                                    @if (!string.IsNullOrEmpty(profileDetail.Photo))
+                                    {
+                                        <img src="@Html.Raw(profileDetail.Photo)" class="img-fluid rounded mt-1 mb-1" height="80" width="80" alt="User avatar">
+                                    }
+                                    else
+                                    {
+                                        <span class="ptk-profile-initials" aria-hidden="true">@profileInitials</span>
+                                    }
+                                    <div class="user-info text-center">
+                                        <h4>@Html.Raw(profileName)</h4>
+                                        <span class="ptk-profile-badge">SmartSheep User</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled mt-1">
+                                <li class="mb-75">
+                                    <span class="fw-bolder me-25">Username:</span><br />
+                                    <span class="ptk-break-word">
+                                        @Html.Raw(profileDetail.Username)
+                                    </span>
+                                </li>
+                                <li class="mb-75">
+                                    <span class="fw-bolder me-25">Email:</span><br />
+                                    <span class="ptk-break-word">
+                                        @Html.Raw(profileDetail.Email)
+                                    </span>
+                                </li>
+                                <li class="mb-75">
+                                    <span class="fw-bolder me-25">Phone Number:</span><br />
+                                    <span class="ptk-break-word">
+                                        @if (string.IsNullOrEmpty(profileDetail.PhoneNumber))
+                                        {
+                                            @Html.Raw("-")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw(profileDetail.PhoneNumber)
+                                        }
+                                    </span>
+                                </li>
+                                <li class="mb-75">
+                                    <span class="fw-bolder me-25">WhatsApp Number:</span><br />
+                                    <span class="ptk-break-word">
+                                        @if (string.IsNullOrEmpty(profileDetail.WaNumber))
+                                        {
+                                            @Html.Raw("-")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw(profileDetail.WaNumber)
+                                        }
+                                    </span>
+                                </li>
+                                <li class="mb-75">
+                                    <span class="fw-bolder me-25">Roles:</span><br />
+                                    <span class="ptk-break-word">
+                                        @if (profileDetail.ListRoles != null)
+                                        {
+                                            @Html.Raw(string.Join(", ", profileDetail.ListRoles))
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("-")
+                                        }
+                                    </span>
+                                </li>
+                                <li class="mb-75">
+                                    <span class="fw-bolder me-25">FARMS:</span><br />
+                                    <span class="ptk-break-word">@(profileDetail.Farms.Count == 0 ? "-" : string.Join(", ", profileDetail.Farms.Select(farm => farm.Name)))</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-danger waves-effect w-100 logout-confirm" asp-action="Logout" asp-controller="Account">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power me-50">
+                            <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                            <line x1="12" y1="2" x2="12" y2="12"></line>
+                        </svg> Logout
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

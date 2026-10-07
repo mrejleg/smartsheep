@@ -1,0 +1,141 @@
+@using Web.Domain.Models.SmartSheep
+@model Project.Base.Models.RestApis.RestApiResult<SucklingStatistic>
+
+<div class="content-header row">
+    <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h2 class="content-header-title float-start mb-0">Suckling Statistic</h2>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">SmartSheep</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a asp-action="Index">Suckling Statistic</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Form Detail </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="_CustomizerButton" />
+</div>
+<div class="content-body smart-detail-page">
+    <div class="row">
+        <div class="col-12">
+            <form class="form form-horizontal">
+                <div class="card card-icon smart-detail-card">
+                    <div class="card-header border-bottom">
+                        <div class="d-flex align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor me-50 user-timeline-title-icon">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                                <h4 class="card-title">Suckling Statistic Details</h4>
+                        </div>
+                    </div>
+                    <div class="card-body py-2 my-25">
+                        <div class="row">
+                            <input type="hidden" asp-for="Data.Id" />
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Code <span class="text-danger">*</span></label>
+                                    <div class="form-control-plaintext">@Model.Data.Code</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Period Description <span class="text-danger">*</span></label>
+                                    <div class="form-control-plaintext">@Model.Data.PeriodDescription</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Total Frequency</label>
+                                    <div class="form-control-plaintext">@Model.Data.TotalFrequency</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Total Duration (Seconds)</label>
+                                    <div class="form-control-plaintext">@Model.Data.TotalDurationSeconds</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Requires Reminder</label>
+                                    <div class="form-control-plaintext">
+                                        @Html.Raw(Model.Data.RequiresReminder ? "Yes" : "No")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Activity From</label>
+                                    <div class="form-control-plaintext">@(Model.Data.ActivityFrom.HasValue ? Model.Data.ActivityFrom.Value.ToString("yyyy-MM-dd HH:mm") : "-")</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Activity To</label>
+                                    <div class="form-control-plaintext">@(Model.Data.ActivityTo.HasValue ? Model.Data.ActivityTo.Value.ToString("yyyy-MM-dd HH:mm") : "-")</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Hour Number</label>
+                                    <div class="form-control-plaintext">@Model.Data.HourNumber</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Created By</label>
+                                    <div class="form-control-plaintext">@Model.Data.CreatedBy</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Date Created</label>
+                                    <div class="form-control-plaintext">@Model.Data.DateCreated</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Modified By</label>
+                                    <div class="form-control-plaintext">@Model.Data.ModifiedBy</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Date Modified</label>
+                                    <div class="form-control-plaintext">@Model.Data.DateModified</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Is Active</label>
+                                    <div class="form-control-plaintext">
+                                        @Html.Raw(Model.Data.IsActive ? "Active" : "Inactive")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-end">
+                            <a asp-action="Index" class="btn btn-round btn btn-outline-secondary waves-effect waves-float waves-light me-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x me-50">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

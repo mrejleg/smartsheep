@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Api.ApplicationCore</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>annotations</Nullable>
+    <!-- YOLO berisi model + tooling terpisah (venv Python, console InferenceYolo), bukan bagian project ini -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);YOLO\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\02.Infrastructure\02.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

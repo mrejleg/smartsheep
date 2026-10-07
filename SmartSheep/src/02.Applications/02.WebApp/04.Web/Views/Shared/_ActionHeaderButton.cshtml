@@ -1,0 +1,39 @@
+@{
+    var controllerName = ViewContext.RouteData.Values["controller"]?.ToString();
+    var hideCrudActions = controllerName == "SucklingActivity"
+        || controllerName == "SucklingStatistic"
+        || controllerName == "SourceVideoStatusLog"
+        || controllerName == "JobExecutionLog"
+        || controllerName == "ReminderLog";
+}
+
+<div class="text-end d-none d-sm-block">
+    <div class="d-inline-flex">
+        <partial name="_ExportButton" />
+        @if (!hideCrudActions)
+        {
+            <a asp-action="Create" class="btn btn-light btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus me-50">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add New Record
+            </a>
+        }
+    </div>
+</div>
+<div class="text-end d-block d-sm-none pt-1">
+    <div class="d-inline-flex">
+        <partial name="_ExportButton" />
+        @if (!hideCrudActions)
+        {
+            <a asp-action="Create" class="btn btn-light btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus me-50">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add New Record
+            </a>
+        }
+    </div>
+</div>

@@ -1,0 +1,93 @@
+@using Web.Domain.Models.MasterDatas
+@model Project.Base.Models.RestApis.RestApiResult<Livestock>
+
+<div class="content-header row">
+    <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h2 class="content-header-title float-start mb-0">Livestock</h2>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">Master Data</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a asp-action="Index">Livestock</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Form Add </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="_CustomizerButton" />
+</div>
+<div class="content-body">
+    <div class="row">
+        <div class="col-12">
+            <form class="form form-horizontal" asp-action="Create" onsubmit="onSaveData(this); return false;">
+                <div class="card card-icon">
+                    <div class="card-header border-bottom">
+                        <div class="d-flex align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor me-50 user-timeline-title-icon">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>                            <h4 class="card-title">Form Data - Add Livestock</h4>
+                        </div>
+                    </div>
+                    <div class="card-body py-2 my-25">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Code <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" asp-for="Data.Code" placeholder="Code" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" asp-for="Data.Name" placeholder="Name" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Sex <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="Data.Sex" required="required">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Is Active</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" asp-for="Data.IsActive" id="isActiveCheckbox">
+                                        <label class="form-check-label" for="isActiveCheckbox">Active</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-end">
+                            <button type="submit" class="btn btn-round btn-success waves-effect waves-float waves-light me-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check me-50">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>                                Save
+                            </button>
+                            <a asp-action="Index" class="btn btn-round btn btn-outline-secondary waves-effect waves-float waves-light me-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x me-50">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

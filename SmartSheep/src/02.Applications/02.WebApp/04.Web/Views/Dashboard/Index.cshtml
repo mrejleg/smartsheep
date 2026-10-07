@@ -1,0 +1,1631 @@
+@using System.Text.Json
+@using System.Globalization
+@using Web.Domain.Models.MasterDatas
+@model Web.Domain.Models.Dashboards.DashboardDataModel
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var mapJson = JsonSerializer.Serialize(Model.FarmMaps, new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    });
+    var trendJson = JsonSerializer.Serialize(Model.HourlyTrend, new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    });
+    var barnJson = JsonSerializer.Serialize(Model.BarnComparison, new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    });
+    var farms = ViewBag.Farms as List<Farm> ?? new List<Farm>();
+    var barns = ViewBag.Barns as List<Barn> ?? new List<Barn>();
+    var selectedFarmId = ViewBag.FarmId as Guid?;
+    var selectedBarnId = ViewBag.BarnId as Guid?;
+}
+
+<link rel="stylesheet" href="~/lib/leaflet/leaflet.min.css" />
+
+<div class="content-body aims-dashboard-page">
+    <style>
+        :root {
+            --dash-bg: #f3f8fb;
+            --dash-surface: rgba(255, 255, 255, .94);
+            --dash-text: #172033;
+            --dash-muted: #667085;
+            --dash-teal: #009f97;
+            --dash-teal-dark: #006b66;
+            --dash-green: #36b467;
+            --dash-yellow: #e5b629;
+            --dash-red: #ef334b;
+            --dash-radius: 10px;
+            --dash-gap: 8px;
+        }
+
+        .aims-dashboard-page {
+            min-height: auto;
+            padding: 0 0 12px;
+            overflow-x: hidden;
+            background: transparent !important;
+        }
+
+        .aims-dashboard {
+            position: relative;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+        }
+
+        .aims-toolbar,
+        .aims-card {
+            border: 0;
+            border-radius: var(--dash-radius);
+            background: var(--dash-surface);
+            box-shadow: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .aims-toolbar {
+            position: relative;
+            z-index: 20;
+            min-height: 46px;
+            margin-bottom: var(--dash-gap);
+            padding: 7px 10px;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            flex-wrap: nowrap;
+            gap: 6px;
+            overflow: visible !important;
+        }
+
+        .aims-toolbar-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 230px;
+            color: var(--dash-text);
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .aims-toolbar-title svg {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            padding: 5px;
+            box-sizing: border-box;
+            border-radius: 6px;
+            color: #ffffff;
+            stroke: #ffffff;
+            stroke-width: 2.35;
+            background: linear-gradient(135deg, #00b3a7 0%, #008a82 100%);
+            box-shadow: 0 6px 14px rgba(0, 106, 103, .14);
+        }
+
+        .aims-toolbar-title em {
+            margin-left: 4px;
+            color: var(--dash-muted);
+            font-size: 11px;
+            font-weight: 650;
+            font-style: italic;
+        }
+
+        .aims-toolbar-fill {
+            flex: 1 1 auto;
+        }
+
+        .aims-filter {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            flex: 0 1 auto;
+            min-width: 0;
+            min-height: 32px;
+        }
+
+        .aims-filter:has(.aims-search-select.is-open) {
+            z-index: 100;
+        }
+
+        .aims-filter label {
+            margin: 0;
+            color: #4b5b70 !important;
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: .02em;
+        }
+
+        .aims-filter select {
+            height: 28px;
+            min-width: 104px;
+            max-width: 100%;
+            border: 1px solid rgba(190, 208, 221, .82);
+            border-radius: 7px;
+            color: var(--dash-text);
+            background-color: rgba(255, 255, 255, .86);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23009f97' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 7px center;
+            padding: 0 24px 0 8px;
+            font-size: 10.4px;
+            font-weight: 750;
+            outline: none;
+            box-shadow: 0 3px 8px rgba(15, 35, 63, .055);
+            appearance: none;
+        }
+
+        .aims-filter select:focus {
+            border-color: rgba(0, 159, 151, .42);
+            box-shadow: 0 4px 10px rgba(0, 159, 151, .10);
+        }
+
+        .aims-filter:has(select[name="farmId"]),
+        .aims-filter:has(select[name="barnId"]) {
+            flex: 1 1 180px;
+        }
+
+        .aims-filter select[name="farmId"],
+        .aims-filter select[name="barnId"] {
+            width: 100%;
+        }
+
+        .native-select-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        .aims-search-select {
+            position: relative;
+            flex: 1 1 auto;
+            min-width: 104px;
+            box-sizing: border-box;
+        }
+
+        .aims-search-select-input {
+            width: 100%;
+            height: 28px;
+            box-sizing: border-box;
+            border: 1px solid rgba(190, 208, 221, .82);
+            border-radius: 7px;
+            color: #172033;
+            background: rgba(255, 255, 255, .92);
+            padding: 0 24px 0 8px;
+            font-size: 10.4px;
+            font-weight: 750;
+            outline: none;
+            box-shadow: 0 3px 8px rgba(15, 35, 63, .055);
+        }
+
+        .aims-search-select::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 9px;
+            width: 6px;
+            height: 6px;
+            border-right: 1.5px solid #009f97;
+            border-bottom: 1.5px solid #009f97;
+            transform: translateY(-65%) rotate(45deg);
+            pointer-events: none;
+        }
+
+        .aims-search-select.is-open::after {
+            transform: translateY(-20%) rotate(225deg);
+        }
+
+        .aims-search-select.is-open .aims-search-select-input,
+        .aims-search-select-input:focus {
+            border-color: rgba(0, 159, 151, .42);
+            box-shadow: 0 4px 10px rgba(0, 159, 151, .10);
+        }
+
+        .aims-search-select-menu {
+            position: absolute;
+            z-index: 10050;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 5px;
+            border: 1px solid rgba(190, 208, 221, .78);
+            border-radius: 9px;
+            background: #ffffff;
+            box-shadow: 0 10px 24px rgba(15, 35, 63, .14);
+            display: none;
+        }
+
+        .aims-search-select.is-open .aims-search-select-menu {
+            display: block;
+        }
+
+        .aims-search-select-option {
+            min-height: 28px;
+            padding: 7px 8px;
+            border-radius: 6px;
+            color: #172033;
+            font-size: 11px;
+            font-weight: 750;
+            line-height: 1.2;
+            cursor: pointer;
+            white-space: normal;
+        }
+
+        .aims-search-select-option:hover,
+        .aims-search-select-option.is-active {
+            color: #006f69;
+            background: rgba(0, 159, 151, .10);
+        }
+
+        .aims-search-select-empty {
+            padding: 8px;
+            color: #667085;
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        .aims-date-input {
+            width: 104px;
+            height: 28px;
+            border: 1px solid rgba(190, 208, 221, .82) !important;
+            border-radius: 7px !important;
+            color: var(--dash-text) !important;
+            background-color: rgba(255, 255, 255, .86) !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23009f97' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 7px center !important;
+            padding: 0 25px 0 8px !important;
+            font-size: 10.4px !important;
+            font-weight: 750 !important;
+            outline: none;
+            box-shadow: 0 3px 8px rgba(15, 35, 63, .055) !important;
+        }
+
+        .aims-date-input:focus {
+            border-color: rgba(0, 159, 151, .42) !important;
+            box-shadow: 0 4px 10px rgba(0, 159, 151, .10) !important;
+        }
+
+        .flatpickr-calendar {
+            border: 1px solid rgba(190, 208, 221, .65) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 18px 42px rgba(15, 35, 63, .18) !important;
+            overflow: hidden;
+        }
+
+        .flatpickr-day.today {
+            border-color: #009f97 !important;
+            color: #007a73 !important;
+        }
+
+        .flatpickr-day.selected,
+        .flatpickr-day.selected:hover {
+            border-color: #009f97 !important;
+            background: #009f97 !important;
+            color: #ffffff !important;
+        }
+
+        .flatpickr-months .flatpickr-prev-month:hover svg,
+        .flatpickr-months .flatpickr-next-month:hover svg {
+            fill: #009f97 !important;
+        }
+
+        .aims-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            padding: 0;
+            border: 0 !important;
+            border-radius: 8px !important;
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #00b3a7 0%, #008a82 100%) !important;
+            box-shadow: 0 8px 18px rgba(0, 106, 103, .14) !important;
+        }
+
+        .aims-action-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2.4;
+        }
+
+        .aims-action-btn:hover {
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #00a89e 0%, #007a73 100%) !important;
+            transform: translateY(-1px);
+        }
+
+        .aims-refresh-btn {
+            color: #42526a !important;
+            border: 1px solid rgba(190, 208, 221, .55) !important;
+            background: rgba(255, 255, 255, .94) !important;
+            box-shadow: 0 7px 16px rgba(15, 35, 63, .08) !important;
+        }
+
+        .aims-refresh-btn:hover {
+            color: #007a73 !important;
+            border-color: rgba(0, 159, 151, .24) !important;
+            background: #eefaf8 !important;
+        }
+
+        .aims-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: var(--dash-gap);
+            width: 100%;
+            align-items: stretch;
+        }
+
+        .span-3 { grid-column: span 3; }
+        .span-4 { grid-column: span 4; }
+        .span-6 { grid-column: span 6; }
+        .span-9 { grid-column: span 9; }
+        .span-12 { grid-column: span 12; }
+        .row-2 { grid-row: span 2; }
+
+        .aims-card {
+            position: relative;
+            min-width: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .top-card { height: 318px; }
+        .asset-card { height: 282px; }
+        .bottom-card { height: 292px; }
+        .tall-card { height: calc(282px + 292px + var(--dash-gap)); }
+
+        .aims-card-header {
+            min-height: 42px;
+            padding: 8px 10px 7px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 1px solid rgba(216, 228, 236, .86);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(248, 252, 253, .88));
+        }
+
+        .aims-card-title {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--dash-text);
+        }
+
+        .aims-card-title h4 {
+            margin: 0;
+            color: var(--dash-text) !important;
+            font-size: 14px;
+            font-weight: 850;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .aims-card-title svg {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+            color: #0d5961;
+            stroke-width: 2.4;
+        }
+
+        .card-badge {
+            padding: 4px 7px;
+            border-radius: 7px;
+            color: #006f68;
+            background: rgba(0, 159, 151, .09);
+            font-size: 9px;
+            font-weight: 850;
+        }
+
+        .aims-card-body {
+            position: relative;
+            height: calc(100% - 42px);
+            padding: 8px 10px 10px;
+            min-width: 0;
+        }
+
+        .barn-pager {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 6px;
+            border: 1px solid #e4ebf1;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .94);
+            box-shadow: 0 4px 12px rgba(15, 35, 63, .10);
+        }
+
+        .barn-pager[hidden] { display: none; }
+
+        .barn-pager-info {
+            min-width: 34px;
+            color: #344054;
+            font-size: 11px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .barn-pager-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            color: #1f2937;
+            background: #f1f5f9;
+            cursor: pointer;
+            transition: background .15s ease, opacity .15s ease;
+        }
+
+        .barn-pager-btn:hover:not(:disabled) { background: #e2e8f0; }
+        .barn-pager-btn:disabled { opacity: .4; cursor: default; }
+        .barn-pager-btn svg { width: 14px; height: 14px; }
+
+        .chart-header-actions {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .map-card-body {
+            height: 100%;
+            padding: 0;
+        }
+
+        .top-map-wrap {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: var(--dash-radius);
+            background: linear-gradient(135deg, rgba(0, 159, 151, .14), rgba(37, 99, 235, .08)), #dbeaf0 !important;
+        }
+
+        .top-map-wrap::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: radial-gradient(circle at 18% 20%, rgba(24, 182, 167, .10), transparent 30%), linear-gradient(90deg, rgba(0, 95, 95, .035), transparent 45%, rgba(255, 255, 255, .10));
+        }
+
+        .top-map-wrap::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            border-radius: inherit;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .48), inset 0 -24px 48px rgba(0, 95, 95, .07);
+        }
+
+        #smartSheepMap,
+        .chart-box {
+            width: 100%;
+            height: 100%;
+            min-height: 120px;
+        }
+
+        #smartSheepMap {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: #dcecf0 !important;
+        }
+
+        .metric-body {
+            height: 100%;
+            padding: 13px;
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr);
+            align-items: center;
+            gap: 10px;
+        }
+
+        .overview-body {
+            height: calc(100% - 42px);
+            padding: 9px 10px 10px;
+            display: grid;
+            grid-template-rows: repeat(3, minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .overview-metric {
+            min-height: 0;
+            padding: 8px 10px;
+            display: grid;
+            grid-template-columns: 38px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 9px;
+            border: 1px solid rgba(0, 106, 103, .08);
+            border-radius: 9px;
+            background: linear-gradient(135deg, rgba(244, 251, 250, .96), rgba(255, 255, 255, .96));
+        }
+
+        .overview-metric .metric-icon {
+            width: 38px;
+            height: 38px;
+        }
+
+        .overview-metric .metric-label {
+            line-height: 1.3;
+        }
+
+        .overview-metric .metric-value {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .metric-icon {
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: #008a82;
+            background: rgba(0, 159, 151, .12);
+        }
+
+        .metric-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2.3;
+        }
+
+        .metric-copy {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            color: var(--dash-muted);
+            font-size: 10px;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .metric-value {
+            margin-top: 2px;
+            color: var(--dash-text);
+            font-size: 20px;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .status-list,
+        .device-list {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .status-row,
+        .device-row {
+            min-height: 49px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 2px;
+            border-bottom: 1px solid rgba(216, 228, 236, .72);
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            flex: 0 0 9px;
+            border-radius: 50%;
+            background: var(--dash-yellow);
+        }
+
+        .status-dot.sent { background: var(--dash-green); }
+        .status-dot.failed { background: var(--dash-red); }
+
+        .status-row span,
+        .device-copy {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .status-row span,
+        .device-copy strong {
+            color: var(--dash-text);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .status-row strong {
+            color: #0d5961;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .device-icon {
+            width: 31px;
+            height: 31px;
+            flex: 0 0 31px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #d92d45;
+            background: rgba(239, 51, 75, .09);
+        }
+
+        .device-icon svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .device-copy {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .device-copy small,
+        .empty-state {
+            color: var(--dash-muted);
+            font-size: 10px;
+            font-weight: 650;
+        }
+
+        .empty-state {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .leaflet-container {
+            font-family: inherit;
+            background: #d7e5e8;
+            cursor: grab;
+        }
+
+        .leaflet-container:active { cursor: grabbing; }
+        .leaflet-control-container { z-index: 20; }
+
+        #smartSheepMap .leaflet-tile {
+            filter: saturate(1.10) contrast(1.035) brightness(1.02);
+        }
+
+        #smartSheepMap .leaflet-marker-icon {
+            filter: drop-shadow(0 12px 18px rgba(0, 95, 95, .34)) drop-shadow(0 4px 8px rgba(15, 35, 63, .20));
+            transition: transform .18s ease, filter .18s ease;
+        }
+
+        #smartSheepMap .leaflet-marker-icon:hover {
+            z-index: 10000 !important;
+            filter: drop-shadow(0 15px 22px rgba(0, 95, 95, .42)) drop-shadow(0 5px 10px rgba(15, 35, 63, .24));
+            transform: translateY(-2px) scale(1.08);
+        }
+
+        .pin-marker svg {
+            overflow: visible;
+        }
+
+        .pin-marker::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -3px;
+            width: 18px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(0, 95, 95, .20);
+            filter: blur(3px);
+            transform: translateX(-50%);
+        }
+
+        .pin-marker svg path,
+        .pin-marker svg circle,
+        .pin-marker svg rect {
+            stroke: none !important;
+            outline: 0 !important;
+        }
+
+        .pin-marker svg path,
+        .pin-marker svg circle {
+            filter: drop-shadow(0 5px 8px rgba(0, 95, 95, .30));
+        }
+
+        #smartSheepMap .leaflet-control-zoom {
+            border: 0 !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(15, 35, 63, .18) !important;
+        }
+
+        #smartSheepMap .leaflet-control-zoom a {
+            width: 32px !important;
+            height: 32px !important;
+            line-height: 32px !important;
+            color: #101828 !important;
+            border: 0 !important;
+            background: rgba(255, 255, 255, .94) !important;
+            font-weight: 900 !important;
+            transition: color .16s ease, background-color .16s ease;
+        }
+
+        #smartSheepMap .leaflet-control-zoom a:hover {
+            color: #005f5f !important;
+            background: #e8f7f5 !important;
+        }
+
+        #smartSheepMap .leaflet-popup-content-wrapper {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 159, 151, .16) !important;
+            border-radius: 18px !important;
+            background: linear-gradient(155deg, #ffffff 0%, #fbfefd 58%, #f2fbf9 100%) !important;
+            box-shadow: 0 20px 48px rgba(15, 35, 63, .20), 0 4px 12px rgba(0, 111, 104, .10) !important;
+            backdrop-filter: blur(14px);
+        }
+
+        #smartSheepMap .leaflet-popup-content-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #006f68, #00b8aa, #58d989);
+        }
+
+        #smartSheepMap .leaflet-popup-tip {
+            background: rgba(255, 255, 255, .96) !important;
+            border-right: 1px solid rgba(0, 159, 151, .12);
+            border-bottom: 1px solid rgba(0, 159, 151, .12);
+            box-shadow: 6px 7px 14px rgba(15, 35, 63, .10) !important;
+        }
+
+        #smartSheepMap .leaflet-popup {
+            animation: farmPopupIn .2s ease-out;
+        }
+
+        @@keyframes farmPopupIn {
+            from { opacity: 0; transform: translateY(7px) scale(.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        #smartSheepMap .leaflet-popup-content {
+            margin: 13px 14px 14px !important;
+            min-width: 215px !important;
+            color: #101828 !important;
+        }
+
+        #smartSheepMap .leaflet-popup-close-button {
+            top: 7px !important;
+            right: 8px !important;
+            width: 24px !important;
+            height: 24px !important;
+            padding: 0 !important;
+            border-radius: 7px;
+            color: #00a79d !important;
+            font-size: 23px !important;
+            font-weight: 500 !important;
+            line-height: 22px !important;
+        }
+
+        #smartSheepMap .leaflet-popup-close-button:hover {
+            color: #006f68 !important;
+            background: #e8f7f5;
+        }
+
+        .farm-popup {
+            min-width: 215px;
+            color: var(--dash-text);
+        }
+
+        .farm-popup-header {
+            display: grid;
+            grid-template-columns: 31px minmax(0, 1fr);
+            align-items: center;
+            gap: 8px;
+            padding-right: 16px;
+        }
+
+        .farm-popup-icon {
+            width: 31px;
+            height: 31px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            color: #ffffff;
+            background: linear-gradient(145deg, #00b7aa, #007a73);
+            box-shadow: 0 8px 16px rgba(0, 122, 115, .20);
+        }
+
+        .farm-popup-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .farm-popup-copy {
+            min-width: 0;
+        }
+
+        .farm-popup strong {
+            display: block;
+            max-width: 175px;
+            margin-bottom: 3px;
+            overflow: hidden;
+            font-size: 14px;
+            font-weight: 850;
+            line-height: 1.25;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .farm-popup small {
+            display: block;
+            margin-bottom: 9px;
+            overflow: hidden;
+            color: #8290a5;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.3;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .farm-popup-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+
+        .farm-popup-grid span {
+            min-height: 42px;
+            padding: 6px 4px 5px;
+            box-sizing: border-box;
+            border: 1px solid rgba(0, 159, 151, .035);
+            border-radius: 8px;
+            background: linear-gradient(145deg, #f2fbfa, #e8f7f5);
+            color: #315273;
+            font-size: 9px;
+            font-weight: 750;
+            line-height: 1.2;
+            text-align: center;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92), 0 4px 10px rgba(0, 111, 104, .06);
+            transition: transform .16s ease, box-shadow .16s ease;
+        }
+
+        .farm-popup-grid span:hover {
+            transform: translateY(-1px);
+            box-shadow: inset 0 1px 0 #ffffff, 0 7px 14px rgba(0, 111, 104, .10);
+        }
+
+        .farm-popup-grid b {
+            display: block;
+            color: #006f68;
+            margin-bottom: 2px;
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+        @@media (max-width: 1199px) {
+            .span-3,
+            .span-4,
+            .span-6,
+            .span-9 {
+                grid-column: span 6;
+            }
+
+            .top-card { height: 318px; }
+            .tall-card { height: 582px; }
+        }
+
+        @@media (max-width: 767px) {
+            .aims-toolbar {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .aims-toolbar-title,
+            .aims-toolbar-fill {
+                width: 100%;
+            }
+
+            .aims-toolbar-fill { display: none; }
+
+            .aims-filter { flex: 1 1 auto; }
+
+            .span-3,
+            .span-4,
+            .span-6,
+            .span-9 {
+                grid-column: span 12;
+            }
+
+            .top-card,
+            .asset-card,
+            .bottom-card,
+            .tall-card { height: auto; min-height: 310px; }
+        }
+    </style>
+
+    <div class="aims-dashboard" id="smartSheepDashboard">
+        <form class="aims-toolbar" method="get">
+            <div class="aims-toolbar-title">
+                <i data-feather="bar-chart-2"></i>
+                <span>SmartSheep Dashboard</span>
+            </div>
+            <div class="aims-toolbar-fill"></div>
+            <div class="aims-filter">
+                <label for="farmId">Farm</label>
+                <select id="farmId" name="farmId" data-aims-searchable="true">
+                    <option value="">All</option>
+                    @foreach (var farm in farms)
+                    {
+                        <option value="@farm.Id" selected="@(selectedFarmId == farm.Id)">@farm.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="aims-filter">
+                <label for="barnId">Barn</label>
+                <select id="barnId" name="barnId" data-aims-searchable="true">
+                    <option value="">All</option>
+                    @foreach (var barn in barns)
+                    {
+                        <option value="@barn.Id" data-farm-id="@barn.FkFarmId" selected="@(selectedBarnId == barn.Id)">@barn.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="aims-filter">
+                <label for="startDate">Start Date</label>
+                <input id="startDate" class="aims-date-input" type="text" name="startDate" value="@ViewBag.StartDate" placeholder="yyyy-MM-dd" autocomplete="off" />
+            </div>
+            <div class="aims-filter">
+                <label for="endDate">End Date</label>
+                <input id="endDate" class="aims-date-input" type="text" name="endDate" value="@ViewBag.EndDate" placeholder="yyyy-MM-dd" autocomplete="off" />
+            </div>
+            <button class="aims-action-btn" type="submit" title="Search">
+                <i data-feather="search"></i>
+            </button>
+            <a class="aims-action-btn aims-refresh-btn" href="@Url.Action("Index", "Dashboard")" title="Refresh">
+                <i data-feather="refresh-cw"></i>
+            </a>
+        </form>
+
+        <div class="aims-grid">
+            <section class="aims-card top-card span-6">
+                <div class="map-card-body">
+                    <div class="top-map-wrap">
+                        <div id="smartSheepMap"></div>
+                    </div>
+                </div>
+            </section>
+            <section class="aims-card top-card span-3">
+                <header class="aims-card-header">
+                    <div class="aims-card-title"><i data-feather="home"></i><h4>Livestock Overview</h4></div>
+                </header>
+                <div class="overview-body">
+                    <div class="overview-metric"><span class="metric-icon"><i data-feather="map-pin"></i></span><span class="metric-label">Total Farms</span><strong class="metric-value">@Model.TotalFarms.ToString("N0", CultureInfo.GetCultureInfo("en-US"))</strong></div>
+                    <div class="overview-metric"><span class="metric-icon"><i data-feather="archive"></i></span><span class="metric-label">Total Barns</span><strong class="metric-value">@Model.TotalBarns.ToString("N0", CultureInfo.GetCultureInfo("en-US"))</strong></div>
+                    <div class="overview-metric"><span class="metric-icon"><i data-feather="heart"></i></span><span class="metric-label">Total Sheep</span><strong class="metric-value">@Model.TotalSheep.ToString("N0", CultureInfo.GetCultureInfo("en-US"))</strong></div>
+                </div>
+            </section>
+            <section class="aims-card top-card span-3">
+                <header class="aims-card-header">
+                    <div class="aims-card-title"><i data-feather="activity"></i><h4>Today's Activity</h4></div>
+                </header>
+                <div class="overview-body">
+                    <div class="overview-metric"><span class="metric-icon"><i data-feather="activity"></i></span><span class="metric-label">Activities</span><strong class="metric-value">@Model.TodayActivities.ToString("N0", CultureInfo.GetCultureInfo("en-US"))</strong></div>
+                    <div class="overview-metric"><span class="metric-icon"><i data-feather="repeat"></i></span><span class="metric-label">Frequency</span><strong class="metric-value">@Model.TodayFrequency.ToString("N0", CultureInfo.GetCultureInfo("en-US"))</strong></div>
+                    <div class="overview-metric"><span class="metric-icon"><i data-feather="clock"></i></span><span class="metric-label">Duration</span><strong class="metric-value">@TimeSpan.FromSeconds(Model.TodayDurationSeconds).ToString(@"hh\:mm\:ss")</strong></div>
+                </div>
+            </section>
+
+            <section class="aims-card bottom-card span-6">
+                <header class="aims-card-header">
+                    <div class="aims-card-title"><i data-feather="trending-up"></i><h4>Suckling Activity Trend (Hourly)</h4></div>
+                </header>
+                <div class="aims-card-body"><div id="hourlyChart" class="chart-box"></div></div>
+            </section>
+            <section class="aims-card bottom-card span-6">
+                <header class="aims-card-header">
+                    <div class="aims-card-title"><i data-feather="bar-chart"></i><h4>Activity by Barn (Comparison)</h4></div>
+                    <div class="chart-header-actions">
+                        <div id="barnPager" class="barn-pager" hidden aria-label="Activity by Barn pages">
+                            <button id="barnPrevPage" type="button" class="barn-pager-btn" aria-label="Previous page">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                            <span id="barnPageInfo" class="barn-pager-info"></span>
+                            <button id="barnNextPage" type="button" class="barn-pager-btn" aria-label="Next page">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+                <div class="aims-card-body"><div id="barnChart" class="chart-box"></div></div>
+            </section>
+
+            <section class="aims-card bottom-card span-12">
+                <header class="aims-card-header">
+                    <div class="aims-card-title"><i data-feather="video-off"></i><h4>Inactive Source Videos</h4></div>
+                    <span class="card-badge">@Model.InactiveSourceVideos.Count.ToString("N0", CultureInfo.GetCultureInfo("en-US")) Sources</span>
+                </header>
+                <div class="aims-card-body">
+                    <div class="device-list">
+                        @if (!Model.InactiveSourceVideos.Any())
+                        {
+                            <p class="empty-state">All source videos are online.</p>
+                        }
+                        @foreach (var item in Model.InactiveSourceVideos)
+                        {
+                            <div class="device-row">
+                                <span class="device-icon"><i data-feather="video-off"></i></span>
+                                <span class="device-copy"><strong>@item.Code</strong><small>@item.BarnName · @item.LastStatus</small></span>
+                                <span class="card-badge">@(item.LastCheckedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never Checked")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/leaflet/leaflet.min.js"></script>
+<script src="~/lib/echarts/echarts.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const initDashboardSearchableSelects = function () {
+            const selects = Array.from(document.querySelectorAll('select[data-aims-searchable="true"]'));
+            const closeAll = function (except) {
+                document.querySelectorAll('.aims-search-select.is-open').forEach(item => {
+                    if (item !== except) item.classList.remove('is-open');
+                });
+            };
+
+            selects.forEach(select => {
+                if (select.dataset.aimsSearchReady === 'true') return;
+                select.dataset.aimsSearchReady = 'true';
+                select.classList.add('native-select-hidden');
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'aims-search-select';
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'aims-search-select-input';
+                input.autocomplete = 'off';
+                input.spellcheck = false;
+                input.setAttribute('aria-label', select.closest('.aims-filter')?.querySelector('label')?.textContent || 'Filter');
+
+                const menu = document.createElement('div');
+                menu.className = 'aims-search-select-menu';
+
+                const getSelectedText = function () {
+                    const selected = select.options[select.selectedIndex];
+                    return selected ? selected.text : '';
+                };
+
+                const renderOptions = function (filter) {
+                    const term = (filter || '').trim().toLowerCase();
+                    menu.innerHTML = '';
+                    const options = Array.from(select.options).filter(option => !option.hidden && option.text.toLowerCase().includes(term));
+
+                    if (!options.length) {
+                        const empty = document.createElement('div');
+                        empty.className = 'aims-search-select-empty';
+                        empty.textContent = 'No data found';
+                        menu.appendChild(empty);
+                        return;
+                    }
+
+                    options.forEach(option => {
+                        const item = document.createElement('div');
+                        item.className = 'aims-search-select-option';
+                        if (option.value === select.value) item.classList.add('is-active');
+                        item.textContent = option.text;
+                        item.addEventListener('mousedown', event => {
+                            event.preventDefault();
+                            select.value = option.value;
+                            input.value = option.text;
+                            wrapper.classList.remove('is-open');
+                            select.dispatchEvent(new Event('change', { bubbles: true }));
+                        });
+                        menu.appendChild(item);
+                    });
+                };
+
+                const openMenu = function () {
+                    closeAll(wrapper);
+                    wrapper.classList.add('is-open');
+                    input.select();
+                    renderOptions(input.value === getSelectedText() ? '' : input.value);
+                };
+
+                input.value = getSelectedText();
+                input.addEventListener('focus', openMenu);
+                input.addEventListener('click', openMenu);
+                input.addEventListener('input', () => {
+                    wrapper.classList.add('is-open');
+                    renderOptions(input.value);
+                });
+                input.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') {
+                        input.value = getSelectedText();
+                        wrapper.classList.remove('is-open');
+                        input.blur();
+                    }
+                });
+                input.addEventListener('blur', () => {
+                    window.setTimeout(() => {
+                        if (!wrapper.classList.contains('is-open')) return;
+                        input.value = getSelectedText();
+                        wrapper.classList.remove('is-open');
+                    }, 120);
+                });
+                select.addEventListener('change', () => {
+                    input.value = getSelectedText();
+                    renderOptions('');
+                });
+
+                wrapper.appendChild(input);
+                wrapper.appendChild(menu);
+                select.insertAdjacentElement('afterend', wrapper);
+                renderOptions('');
+            });
+
+            document.addEventListener('mousedown', event => {
+                if (!event.target.closest('.aims-search-select')) closeAll(null);
+            });
+        };
+
+        initDashboardSearchableSelects();
+
+        const farmFilter = document.getElementById('farmId');
+        const barnFilter = document.getElementById('barnId');
+        const barnOptions = Array.from(barnFilter.options).slice(1);
+
+        const filterBarns = function () {
+            const farmId = farmFilter.value.toLowerCase();
+            barnOptions.forEach(option => {
+                option.hidden = farmId !== '' && option.dataset.farmId.toLowerCase() !== farmId;
+            });
+
+            if (barnFilter.selectedOptions.length && barnFilter.selectedOptions[0].hidden) {
+                barnFilter.value = '';
+                barnFilter.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        };
+
+        farmFilter.addEventListener('change', filterBarns);
+        filterBarns();
+
+        const endDatePicker = flatpickr('#endDate', {
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            disableMobile: true
+        });
+        const startDatePicker = flatpickr('#startDate', {
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            disableMobile: true,
+            onChange: function (selectedDates) {
+                endDatePicker.set('minDate', selectedDates.length ? selectedDates[0] : null);
+            }
+        });
+        endDatePicker.set('minDate', startDatePicker.selectedDates.length ? startDatePicker.selectedDates[0] : null);
+
+        const farms = @Html.Raw(mapJson);
+        const trend = @Html.Raw(trendJson);
+        const barns = @Html.Raw(barnJson);
+        const palette = {
+            teal: '#009f97',
+            tealDark: '#006b66',
+            green: '#36b467',
+            yellow: '#e5b629',
+            text: '#172033',
+            muted: '#667085',
+            grid: 'rgba(16, 24, 40, .08)'
+        };
+        const formatNumber = value => Number(value || 0).toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        const validFarms = farms.filter(item =>
+            Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude)));
+        const defaultCenter = [-2.5489, 117.0940];
+        const defaultZoom = 5;
+        const indonesiaBounds = L.latLngBounds([[-11.2, 94.5], [6.3, 141.5]]);
+        const map = L.map('smartSheepMap', {
+            zoomControl: true,
+            attributionControl: false,
+            scrollWheelZoom: true,
+            doubleClickZoom: true,
+            boxZoom: true,
+            dragging: true,
+            touchZoom: true
+        }).setView(defaultCenter, defaultZoom);
+        const farmIcon = (fill, width, height) => L.divIcon({
+            className: 'pin-marker',
+            html: `<svg width="${width}" height="${height}" viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg"><path d="M14 35s12-13.1 12-22A12 12 0 0 0 2 13c0 8.9 12 22 12 22z" fill="${fill}" stroke="#fff" stroke-width="3"/><circle cx="14" cy="13" r="4" fill="#fff"/></svg>`,
+            iconSize: [width, height],
+            iconAnchor: [width / 2, height - 1],
+            popupAnchor: [0, -(height - 3)]
+        });
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            minZoom: 4
+        }).addTo(map);
+
+        validFarms.forEach(item => {
+            const location = item.location || item.address || '-';
+            const popup = `<div class="farm-popup">
+                <div class="farm-popup-header">
+                    <span class="farm-popup-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg>
+                    </span>
+                    <span class="farm-popup-copy">
+                        <strong>${item.name || item.code || '-'}</strong>
+                        <small>${location}</small>
+                    </span>
+                </div>
+                <div class="farm-popup-grid">
+                    <span><b>${formatNumber(item.totalBarns)}</b>Barns</span>
+                    <span><b>${formatNumber(item.totalSheep)}</b>Sheep</span>
+                    <span><b>${formatNumber(item.onlineSourceVideos)}/${formatNumber(item.totalSourceVideos)}</b>Online</span>
+                </div>
+            </div>`;
+            const isOnline = item.totalSourceVideos > 0 && item.onlineSourceVideos === item.totalSourceVideos;
+            L.marker([Number(item.latitude), Number(item.longitude)], {
+                icon: isOnline ? farmIcon('#078b20', 20, 28) : farmIcon('#2563eb', 16, 22),
+                zIndexOffset: isOnline ? 1000 : 0
+            }).addTo(map).bindPopup(popup, {
+                closeButton: true,
+                autoPan: true,
+                minWidth: 243,
+                maxWidth: 243,
+                className: 'smartsheep-map-popup'
+            });
+        });
+
+        map.fitBounds(indonesiaBounds, { padding: [18, 18], maxZoom: defaultZoom });
+        window.setTimeout(() => map.invalidateSize(), 200);
+
+        const baseChart = {
+            animationDuration: 650,
+            textStyle: { fontFamily: 'inherit', color: palette.text },
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(255,255,255,.96)',
+                borderColor: 'rgba(13,92,95,.12)',
+                borderWidth: 1,
+                textStyle: { color: palette.text, fontSize: 11 },
+                extraCssText: 'box-shadow:0 12px 28px rgba(15,35,63,.14);border-radius:10px;'
+            },
+            grid: { left: 14, right: 14, top: 35, bottom: 8, containLabel: true }
+        };
+
+        function noDataOption(message) {
+            return {
+                __isNoData: true,
+                animation: false,
+                tooltip: { show: false },
+                legend: { show: false },
+                xAxis: { show: false },
+                yAxis: { show: false },
+                graphic: [
+                    {
+                        type: 'group',
+                        left: 'center',
+                        top: 'middle',
+                        children: [
+                            {
+                                type: 'circle',
+                                shape: { cx: 0, cy: -18, r: 18 },
+                                style: {
+                                    fill: 'rgba(232, 247, 245, .92)',
+                                    stroke: 'rgba(0, 159, 151, .16)',
+                                    lineWidth: 1
+                                }
+                            },
+                            {
+                                type: 'rect',
+                                shape: { x: -12, y: -28, width: 24, height: 18, r: 4 },
+                                style: {
+                                    fill: 'rgba(255, 255, 255, .72)',
+                                    stroke: '#008f87',
+                                    lineWidth: 1.8
+                                }
+                            },
+                            {
+                                type: 'line',
+                                shape: { x1: -7, y1: -19, x2: 7, y2: -19 },
+                                style: {
+                                    stroke: '#008f87',
+                                    lineWidth: 1.8,
+                                    lineCap: 'round'
+                                }
+                            },
+                            {
+                                type: 'line',
+                                shape: { x1: -4, y1: -15, x2: 4, y2: -15 },
+                                style: {
+                                    stroke: 'rgba(0, 143, 135, .62)',
+                                    lineWidth: 1.6,
+                                    lineCap: 'round'
+                                }
+                            },
+                            {
+                                type: 'text',
+                                left: 'center',
+                                top: 8,
+                                style: {
+                                    text: 'No data',
+                                    fill: '#172033',
+                                    fontSize: 13,
+                                    fontWeight: 850,
+                                    textAlign: 'center'
+                                }
+                            },
+                            {
+                                type: 'text',
+                                left: 'center',
+                                top: 28,
+                                style: {
+                                    text: message || 'Data is not available',
+                                    fill: '#667085',
+                                    fontSize: 10.5,
+                                    fontWeight: 650,
+                                    textAlign: 'center'
+                                }
+                            }
+                        ]
+                    }
+                ],
+                series: []
+            };
+        }
+
+        const hourlyChart = echarts.init(document.getElementById('hourlyChart'));
+        const hasHourlyData = trend.some(item =>
+            Number(item.frequency || 0) > 0 || Number(item.durationSeconds || 0) > 0);
+        hourlyChart.setOption(hasHourlyData ? {
+            ...baseChart,
+            grid: { left: 14, right: 18, top: 35, bottom: 30, containLabel: true },
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+                backgroundColor: 'rgba(255,255,255,.98)',
+                borderColor: 'rgba(0,159,151,.18)',
+                borderWidth: 1,
+                padding: 0,
+                extraCssText: 'box-shadow:0 14px 32px rgba(15,35,63,.16);border-radius:12px;overflow:hidden;',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: { color: 'rgba(13,92,95,.28)', width: 1, type: 'dashed' }
+                },
+                formatter: function (params) {
+                    const time = params.length ? params[0].axisValue : '-';
+                    const rows = params.map(function (item) {
+                        const value = formatNumber(item.value);
+                        return `<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:5px 12px;">
+                            <span style="display:flex;align-items:center;gap:8px;color:#667085;font-size:11px;font-weight:650;">
+                                <i style="display:block;width:8px;height:8px;border-radius:50%;background:${item.color};box-shadow:0 0 0 3px ${item.seriesName === 'Frequency' ? 'rgba(0,159,151,.11)' : 'rgba(229,182,41,.13)'};"></i>
+                                ${item.seriesName}
+                            </span>
+                            <strong style="color:#172033;font-size:12px;font-weight:850;letter-spacing:-.1px;">${value}</strong>
+                        </div>`;
+                    }).join('');
+                    return `<div style="min-width:190px;padding:9px 0 10px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin:0 12px 5px;padding-bottom:8px;border-bottom:1px solid #edf2f4;">
+                            <span style="color:#98a2b3;font-size:9px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;">Activity time</span>
+                            <strong style="padding:3px 8px;border-radius:7px;color:#006f68;background:rgba(0,159,151,.09);font-size:11px;font-weight:850;">${time}</strong>
+                        </div>
+                        ${rows}
+                    </div>`;
+                }
+            },
+            legend: { top: 0, right: 0, textStyle: { color: palette.muted, fontSize: 10 } },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: trend.map(item => String(item.hour).padStart(2, '0') + ':00'),
+                axisLine: { lineStyle: { color: palette.grid } },
+                axisTick: { show: false },
+                axisLabel: { color: palette.muted, fontSize: 9, margin: 10, hideOverlap: true }
+            },
+            yAxis: {
+                type: 'value',
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: { color: palette.muted, fontSize: 9, formatter: formatNumber },
+                splitLine: { lineStyle: { color: palette.grid } }
+            },
+            series: [
+                {
+                    name: 'Frequency',
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    data: trend.map(item => item.frequency),
+                    lineStyle: { width: 3, color: palette.teal },
+                    itemStyle: { color: '#ffffff', borderColor: palette.teal, borderWidth: 2 },
+                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(0,159,151,.24)' }, { offset: 1, color: 'rgba(0,159,151,0)' }]) }
+                },
+                {
+                    name: 'Duration (min)',
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    data: trend.map(item => Math.round(item.durationSeconds / 60)),
+                    lineStyle: { width: 3, color: palette.yellow },
+                    itemStyle: { color: '#ffffff', borderColor: palette.yellow, borderWidth: 2 }
+                }
+            ]
+        } : noDataOption('Hourly activity data is not available'));
+
+        const barnChart = echarts.init(document.getElementById('barnChart'));
+        const barnPageSize = 5;
+        const barnPageCount = Math.max(1, Math.ceil(barns.length / barnPageSize));
+        let barnPage = 0;
+        const barnPager = document.getElementById('barnPager');
+        const barnPrevPage = document.getElementById('barnPrevPage');
+        const barnNextPage = document.getElementById('barnNextPage');
+        const barnPageInfo = document.getElementById('barnPageInfo');
+
+        function wrapBarnName(value) {
+            const words = String(value || '-').trim().split(/\s+/);
+            const lines = [];
+            let line = '';
+            words.forEach(function (word) {
+                if (!line || `${line} ${word}`.length <= 20) {
+                    line = line ? `${line} ${word}` : word;
+                } else {
+                    lines.push(line);
+                    line = word;
+                }
+            });
+            if (line) lines.push(line);
+            return lines.slice(0, 2).join('\n');
+        }
+
+        function renderBarnChart() {
+            barnPage = Math.min(Math.max(0, barnPage), barnPageCount - 1);
+            const pageBarns = barns.slice(barnPage * barnPageSize, (barnPage + 1) * barnPageSize);
+
+            if (!barns.some(item => Number(item.frequency || 0) > 0)) {
+                barnChart.setOption(noDataOption('Barn activity data is not available'), true);
+                barnPager.hidden = true;
+                return;
+            }
+
+            barnChart.setOption({
+                ...baseChart,
+                grid: { left: 12, right: 22, top: 20, bottom: 42, containLabel: true },
+                tooltip: {
+                    trigger: 'axis',
+                    confine: true,
+                    backgroundColor: 'rgba(255,255,255,.98)',
+                    borderColor: 'rgba(0,159,151,.18)',
+                    borderWidth: 1,
+                    padding: 0,
+                    extraCssText: 'box-shadow:0 14px 32px rgba(15,35,63,.16);border-radius:12px;overflow:hidden;',
+                    axisPointer: {
+                        type: 'shadow',
+                        shadowStyle: { color: 'rgba(0,159,151,.06)' }
+                    },
+                    formatter: function (params) {
+                        const item = params.length ? params[0] : null;
+                        const barnName = item ? item.axisValue : '-';
+                        const value = formatNumber(item ? item.value : 0);
+                        return `<div style="min-width:190px;padding:9px 0 10px;">
+                            <div style="margin:0 12px 5px;padding-bottom:8px;border-bottom:1px solid #edf2f4;">
+                                <span style="display:block;margin-bottom:3px;color:#98a2b3;font-size:9px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;">Barn</span>
+                                <strong style="display:block;max-width:230px;color:#172033;font-size:11px;font-weight:850;line-height:1.35;white-space:normal;">${barnName}</strong>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:5px 12px;">
+                                <span style="display:flex;align-items:center;gap:8px;color:#667085;font-size:11px;font-weight:650;">
+                                    <i style="display:block;width:8px;height:8px;border-radius:50%;background:${palette.teal};box-shadow:0 0 0 3px rgba(0,159,151,.11);"></i>
+                                    Frequency
+                                </span>
+                                <strong style="color:#172033;font-size:12px;font-weight:850;letter-spacing:-.1px;">${value}</strong>
+                            </div>
+                        </div>`;
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: pageBarns.map(item => item.barnName || item.barnCode || '-'),
+                    axisLine: { lineStyle: { color: palette.grid } },
+                    axisTick: { show: false },
+                    axisLabel: {
+                        interval: 0,
+                        color: palette.muted,
+                        fontSize: 9,
+                        lineHeight: 11,
+                        margin: 10,
+                        formatter: wrapBarnName
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: { color: palette.muted, fontSize: 9, formatter: formatNumber },
+                    splitLine: { lineStyle: { color: palette.grid } }
+                },
+                series: [{
+                    name: 'Frequency',
+                    type: 'bar',
+                    barMaxWidth: 34,
+                    data: pageBarns.map(item => item.frequency),
+                    itemStyle: {
+                        borderRadius: [7, 7, 0, 0],
+                        color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [{ offset: 0, color: palette.tealDark }, { offset: 1, color: palette.teal }])
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        color: palette.text,
+                        fontSize: 9,
+                        fontWeight: 800,
+                        formatter: params => formatNumber(params.value)
+                    }
+                }]
+            }, true);
+
+            barnPager.hidden = barnPageCount <= 1;
+            barnPageInfo.textContent = `${barnPage + 1}/${barnPageCount}`;
+            barnPrevPage.disabled = barnPage === 0;
+            barnNextPage.disabled = barnPage === barnPageCount - 1;
+        }
+
+        barnPrevPage.addEventListener('click', function () {
+            barnPage--;
+            renderBarnChart();
+        });
+        barnNextPage.addEventListener('click', function () {
+            barnPage++;
+            renderBarnChart();
+        });
+        renderBarnChart();
+
+        window.addEventListener('resize', function () {
+            map.invalidateSize();
+            hourlyChart.resize();
+            barnChart.resize();
+        });
+
+        if (window.feather) {
+            feather.replace();
+        }
+    });
+</script>

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Web.ApplicationCore</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\02.Infrastructure\02.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\01.WebApi\03.ApplicationCore\YOLO\InferenceYolo\InferenceYolo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenCvSharp5" Version="5.0.0.20260806" />
+    <PackageReference Include="OpenCvSharp5.runtime.osx.arm64" Version="5.0.0.20260806" />
+    <PackageReference Include="OpenCvSharp5.runtime.win" Version="5.0.0.20260806" />
+  </ItemGroup>
+
+</Project>

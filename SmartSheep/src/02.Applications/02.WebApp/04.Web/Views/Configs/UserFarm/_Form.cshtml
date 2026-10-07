@@ -1,0 +1,40 @@
+@using Web.Domain.Models.Configs
+@model Project.Base.Models.RestApis.RestApiResult<UserFarm>
+@{
+    var options = ViewBag.Options as UserFarmOptions ?? new UserFarmOptions();
+}
+<input type="hidden" asp-for="Data.Id" />
+<div asp-validation-summary="All" class="text-danger mb-2" role="alert"></div>
+<div class="alert alert-primary mb-2">
+    Assign a user to a farm. A user can have multiple farms, with one record for each assignment.
+</div>
+<div class="row">
+    <div class="col-md-6 col-12 mb-2">
+        <label class="form-label" asp-for="Data.FkUserId">User <span class="text-danger">*</span></label>
+        <select class="form-select" asp-for="Data.FkUserId" required>
+            <option value="">Select a user</option>
+            @foreach (var option in options.Users)
+            {
+                <option value="@option.Id">@option.Name</option>
+            }
+        </select>
+        <span asp-validation-for="Data.FkUserId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 col-12 mb-2">
+        <label class="form-label" asp-for="Data.FkFarmId">Farm <span class="text-danger">*</span></label>
+        <select class="form-select" asp-for="Data.FkFarmId" required>
+            <option value="">Select a farm</option>
+            @foreach (var option in options.Farms)
+            {
+                <option value="@option.Id">@option.Name</option>
+            }
+        </select>
+        <span asp-validation-for="Data.FkFarmId" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" asp-for="Data.IsActive" />
+            <label class="form-check-label" asp-for="Data.IsActive">Active</label>
+        </div>
+    </div>
+</div>

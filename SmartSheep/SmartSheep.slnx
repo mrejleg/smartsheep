@@ -1,0 +1,32 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="BudgetTransferPtk.sql" />
+    <File Path="Credential.txt" />
+    <File Path="DatabaseMigrations.txt" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/01.Libraries/">
+    <Project Path="src/01.Libraries/01.Base/01.Base.csproj" />
+    <Project Path="src/01.Libraries/02.Core/02.Core.csproj" />
+  </Folder>
+  <Folder Name="/src/02.Applications/" />
+  <Folder Name="/src/02.Applications/01.WebApi/">
+    <Project Path="src/02.Applications/01.WebApi/01.Domain/01.Domain.csproj" />
+    <Project Path="src/02.Applications/01.WebApi/02.Infrastructure/02.Infrastructure.csproj" />
+    <Project Path="src/02.Applications/01.WebApi/03.ApplicationCore/03.ApplicationCore.csproj" />
+    <Project Path="src/02.Applications/01.WebApi/04.Api/04.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/02.Applications/02.WebApp/">
+    <Project Path="src/02.Applications/02.WebApp/01.Domain/01.Domain.csproj" />
+    <Project Path="src/02.Applications/02.WebApp/02.Infrastructure/02.Infrastructure.csproj" />
+    <Project Path="src/02.Applications/02.WebApp/03.ApplicationCore/03.ApplicationCore.csproj" />
+    <Project Path="src/02.Applications/02.WebApp/04.Web/04.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/02.Applications/03.Extractor/">
+    <Project Path="src/02.Applications/03.Extractor/01.Domain/01.Domain.csproj" />
+    <Project Path="src/02.Applications/03.Extractor/02.Infrastructure/02.Infrastructure.csproj" />
+    <Project Path="src/02.Applications/03.Extractor/03.ApplicationCore/03.ApplicationCore.csproj" />
+    <Project Path="src/02.Applications/03.Extractor/04.SmartSheep.FrameSelector/04.SmartSheep.FrameSelector.csproj" />
+  </Folder>
+</Solution>

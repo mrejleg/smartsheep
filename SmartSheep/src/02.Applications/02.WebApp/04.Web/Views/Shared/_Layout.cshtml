@@ -1,0 +1,528 @@
+@using System.Security.Claims
+@using Project.Core.Extentions
+@using System.Net
+@using Web.Domain.Models.Notifications
+@inject Web.Domain.Models.AppSetting appSettings
+@inject Web.ApplicationCore.Interfaces.Auths.IAuthService authService
+@inject Web.ApplicationCore.Interfaces.Auths.IUserService userService
+@{
+    var userName = User?.Claims?.FirstOrDefault(x => x.Type == "name")?.Value;
+    var resultNotifications = new List<SystemNotification>();
+    var notifications = await authService.SystemNotificationsAsync();
+    var totalUnread = 0;
+    if (notifications.StatusCode == (int)HttpStatusCode.OK && notifications.Data != null)
+    {
+        totalUnread = notifications.Data.Where(x => x.IsRead == false).ToList().Count;
+        resultNotifications = notifications.Data;
+    }
+    var profileDetail = await userService.GetUserProfileAsync() ?? new Web.Domain.Models.Auths.AppUserResponseDto();
+    var nameParts = (profileDetail.FullName ?? string.Empty).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+    var userInitials = nameParts.Length == 0
+        ? "?"
+        : (nameParts.Length == 1
+            ? nameParts[0].Substring(0, 1).ToUpperInvariant()
+            : (nameParts[0].Substring(0, 1) + nameParts[1].Substring(0, 1)).ToUpperInvariant());
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var isDashboardController = string.Equals(currentController, "Dashboard", StringComparison.OrdinalIgnoreCase);
+    var bodyMenuClass = "menu-expanded";
+    var bodyPageClass = isDashboardController ? "dashboard-layout" : string.Empty;
+}
+
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
+    <meta name="description" content="Vuexy admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
+    <meta name="keywords" content="admin template, Vuexy admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="PIXINVENT">
+    <title>SmartSheep</title>
+    <link rel="apple-touch-icon" type="image/png" href="~/images/smartsheep-favicon.png" />
+    <link rel="icon" type="image/png" href="~/images/smartsheep-favicon.png" />
+
+    <link rel="stylesheet" type="text/css" href="~/lib/fonts/font-googleapis.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/waves/waves.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/bootstrap-extended.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/css/core/component/colors.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/core/component/components.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/core/menu/menu-types/vertical-menu.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/css/themes/bordered-layout.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/lib/toastr/toastr.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/toastr/ext-component-toastr.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/toast/notyf.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/lib/overlayscrollbars/css/OverlayScrollbars.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/perfectscrollbar/perfect-scrollbar.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/lib/sweetalert/sweetalert2.min.css">
+    <link rel="stylesheet" type="text/css" id="dxtheme" href="~/lib/devexpress/css/dx.light.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/lib/fonts/feather-icon/feather-icons.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/fonts/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/fonts/font-awesome/css/solid.min.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/lib/leaflet/leaflet.min.css">
+    <link rel="stylesheet" type="text/css" href="~/lib/leaflet/map-leaflet.min.css">
+
+    <link rel="stylesheet" type="text/css" href="~/lib/apexcharts/apexcharts.min.css">
+    <link rel="stylesheet" type="text/css" href="~/lib/apexcharts/chart-apex.css">
+
+    <link rel="stylesheet" type="text/css" href="~/lib/pickers/flatpickr/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="~/lib/pickers/flatpickr/form-flat-pickr.css">
+    <link rel="stylesheet" type="text/css" href="~/lib/pickers/flatpickr/monthSelect.css">
+
+    <link rel="stylesheet" type="text/css" href="~/lib/quilljs/quill.snow.css">
+    <link rel="stylesheet" type="text/css" href="~/lib/quilljs/quill.core.css">
+    <link rel="stylesheet" type="text/css" href="~/lib/tableexport/tableexport.min.css">
+
+    <link rel="stylesheet" type="text/css" href="~/css/style.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/timeline.css">
+    <link rel="stylesheet" type="text/css" href="~/css/modern-style-2026.css" asp-append-version="true">
+    <!-- Js -->
+    <script type="text/javascript">
+        var baseUrl = '@appSettings.ApplicationUrl';
+    </script>
+    <script type="text/javascript" src="~/lib/jquery/jquery.min.js"></script>
+
+    <script type="text/javascript" src="~/js/lodash.min.js"></script>
+    <script type="text/javascript" src="~/js/moment.min.js"></script>
+    <script type="text/javascript" src="~/js/core/vuexy.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/overlayscrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <script type="text/javascript" src="~/lib/overlayscrollbars/js/OverlayScrollbars.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/perfectscrollbar/perfect-scrollbar.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/i18next/i18next.min.js"></script>
+    <script type="text/javascript" src="~/lib/i18next/i18nextXHRBackend.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/jquery/jquery-i18next.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/unisonjs/unison-js.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/fonts/feather-icon/feather-icons.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/waves/waves.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/toastr/toastr.min.js"></script>
+    <script type="text/javascript" src="~/lib/toast/notyf.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/devexpress/js/dx.all.min.js"></script>
+    <script type="text/javascript" src="~/lib/devexpress/js/dx.aspnet.data.min.js"></script>
+    <script type="text/javascript" src="~/lib/devexpress/js/exceljs.min.js"></script>
+    <script type="text/javascript" src="~/lib/devexpress/js/jspdf.umd.min.js"></script>
+    <script type="text/javascript" src="~/lib/devexpress/js/jspdf.plugin.autotable.min.js"></script>
+    <script type="text/javascript" src="~/lib/devexpress/js/FileSaver.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/chartjs/chart.min.js"></script>
+    <script type="text/javascript" src="~/lib/chartjs/chartjs-plugin-datalabels.js"></script>
+
+    <script type="text/javascript" src="~/lib/leaflet/leaflet.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/apexcharts/apexcharts.min.js"></script>
+    <script type="text/javascript" src="~/lib/apexcharts/chart-apex.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/pickers/flatpickr/flatpickr.min.js"></script>
+    <script type="text/javascript" src="~/lib/pickers/flatpickr/monthSelect.js"></script>
+
+    <script type="text/javascript" src="~/lib/sweetalert/sweetalert2.all.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/cleave/cleave.min.js"></script>
+    <script type="text/javascript" src="~/lib/cleave/addons/cleave-phone.us.js"></script>
+
+    <script type="text/javascript" src="~/lib/easy-number-separator/easy-number-separator.js"></script>
+
+    <script type="text/javascript" src="~/lib/tableexport/xlsx.core.min.js"></script>
+    <script type="text/javascript" src="~/lib/tableexport/tableexport.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/quilljs/quill.min.js"></script>
+    <script type="text/javascript" src="~/lib/quilljs/image-resize.min.js"></script>
+
+    <script type="text/javascript" src="~/js/custom-dxdropdownbox.min.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/custom-dxdatagrid.min.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/ptk-native-select.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/custom-sweetalert2.min.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/custom-easynumberseparator.min.js"></script>
+    <script type="text/javascript" src="~/js/custom-quilljs.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.inputmask.js"></script>
+
+</head>
+<body class="vertical-layout vertical-menu-modern @bodyMenuClass @bodyPageClass navbar-sticky aims-loader-lock" data-open="click" data-menu="vertical-menu-modern" data-col="">
+    <div class="loader" id="loader" role="status" aria-live="polite" aria-label="Loading page">
+        <div class="aims-page-loader__panel">
+            <div class="aims-page-loader__mark" aria-hidden="true">
+                <img src="~/images/smartsheep-logo-white-mark-v3.png" asp-append-version="true" alt="" />
+            </div>
+            <div class="aims-page-loader__text">
+                <p class="aims-page-loader__title">Loading SmartSheep</p>
+                <p class="aims-page-loader__subtitle">Preparing your workspace</p>
+            </div>
+            <div class="aims-page-loader__bar" aria-hidden="true"></div>
+        </div>
+    </div>
+    <div class="loader-modal is-hidden" id="loader-modal"></div>
+    <nav class="header-navbar navbar navbar-expand-lg align-items-center navbar-light navbar-shadow fixed-top">
+        <div class="navbar-container d-flex content">
+            <div class="bookmark-wrapper d-flex align-items-center">
+                <ul class="nav navbar-nav d-xl-none">
+                    <li class="nav-item nav-toggle">
+                        <a class="nav-link menu-toggle" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu ficon">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-toggle is-active" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-disc d-none d-xl-block collapse-toggle-icon primary font-medium-4">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+                <h2 class="brand-text d-xl-none">Smart Livestock Platform</h2>
+                <h4 class="brand-text d-none d-xl-block">Smart Livestock Platform</h4>
+            </div>
+            <ul class="nav navbar-nav align-items-center ms-auto">
+                <li class="nav-item dropdown dropdown-notification me-25">
+                    <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell ficon">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="badge rounded-pill bg-danger badge-up @((totalUnread > 0) ? "" : "d-none")" id="notification-unread-badge">
+                            @Html.Raw(totalUnread > 0 ? totalUnread.ToString("N0") : string.Empty)
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-media dropdown-menu-end">
+                        <li class="dropdown-menu-header">
+                            <div class="dropdown-header d-flex">
+                                <h4 class="notification-title mb-0 me-auto">Notifications</h4>
+                                <div class="badge rounded-pill badge-light-primary" id="notification-unread-summary">@($"{totalUnread} Unread")</div>
+                            </div>
+                        </li>
+                        <li class="scrollable-container media-list ps">
+                            @if (resultNotifications.Count == 0)
+                            {
+                                <div class="list-item notification-empty-state">
+                                    <span class="notification-empty-icon" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                        </svg>
+                                    </span>
+                                    <div class="list-item-body">
+                                        <strong>No notifications yet</strong>
+                                        <span>You're all caught up.</span>
+                                    </div>
+                                </div>
+                                <div class="ps__rail-x ptk-scroll-rail-x">
+                                    <div class="ps__thumb-x ptk-scroll-thumb-x" tabindex="0"></div>
+                                </div>
+                                <div class="ps__rail-y ptk-scroll-rail-y">
+                                    <div class="ps__thumb-y ptk-scroll-thumb-y" tabindex="0"></div>
+                                </div>
+                            }
+                            else
+                            {
+                                foreach (var item in resultNotifications.OrderByDescending(x => x.DateCreated ?? x.DateModified))
+                                {
+                                    var notificationDate = item.DateCreated ?? item.DateModified;
+                                    <a class="d-flex notification-item @(item.IsRead ? "is-read" : "is-unread")" href="#" data-read-url="@Url.Action("ReadNotification", "Notification", new { id = item.Id })" data-return-url="@item.ReturnLink" data-is-read="@item.IsRead.ToString().ToLowerInvariant()">
+                                        <div class="list-item d-flex align-items-start">
+                                            <div class="me-1">
+                                                @if (item.IsRead)
+                                                {
+                                                    <div class="avatar bg-light-success">
+                                                        <div class="avatar-content">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check avatar-icon">
+                                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="avatar bg-light-warning">
+                                                        <div class="avatar-content">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock avatar-icon">
+                                                                <circle cx="12" cy="12" r="10"></circle>
+                                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="list-item-body flex-grow-1">
+                                                <p class="media-heading">
+                                                    <span class="fw-bolder">@item.Title</span>&nbsp;
+                                                </p>
+                                                <small class="notification-text"> @Html.Raw(item.Content)</small><br />
+                                                <div class="notification-metadata">
+                                                    <time class="notification-date" datetime="@notificationDate?.ToString("s")">@(notificationDate?.ToString("dd MMM yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture) ?? "Date unavailable")</time>
+                                                    <span class="notification-read-status">@(item.IsRead ? "Read" : "Unread")</span>
+                                                </div>
+                                                <small class="notification-read-error d-none" role="alert"></small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <div class="ps__rail-x ptk-scroll-rail-x">
+                                        <div class="ps__thumb-x ptk-scroll-thumb-x" tabindex="0"></div>
+                                    </div>
+                                    <div class="ps__rail-y ptk-scroll-rail-y">
+                                        <div class="ps__thumb-y ptk-scroll-thumb-y" tabindex="0"></div>
+                                    </div>
+                                }
+                            }
+                        </li>
+                        <li class="dropdown-menu-footer">
+                            &nbsp;
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul class="nav navbar-nav align-items-center ms-auto">
+                        <li class="nav-item dropdown dropdown-user">
+                            <a class="nav-link dropdown-toggle dropdown-user-link" id="dropdown-user" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div class="user-nav d-sm-flex d-none">
+                                    <span class="user-status">Welcome, </span>
+                                    <span class="user-name fw-bolder">
+                                        @if (profileDetail.Username == "mk.dariwan")
+                                        {
+                                            @Html.Raw("Suwanda")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw(profileDetail.FullName)
+                                        }
+                                    </span>
+                                </div>
+                                <span class="avatar">
+                                    @if (!string.IsNullOrEmpty(profileDetail.Photo))
+                                    {
+                                        <img src="@Html.Raw(profileDetail.Photo)" class="round" height="40" width="40" alt="User avatar">
+                                    }
+                                    else
+                                    {
+                                        <span class="avatar-initials" aria-hidden="true">@userInitials</span>
+                                    }
+                                    <span class="avatar-status-online"></span>
+                                </span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user">
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#profile">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user me-50">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg> Profile
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item logout-confirm" asp-action="Logout" asp-controller="Account">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power me-50">
+                                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                                        <line x1="12" y1="2" x2="12" y2="12"></line>
+                                    </svg> Logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow expanded" data-scroll-to-active="true">
+        <div class="navbar-header expanded">
+            <ul class="nav navbar-nav flex-row">
+                <li class="smartsheep-sidebar-brand">
+                    <img id="company-logo" src="~/images/smartsheep-logo-white-lockup-v9.png" asp-append-version="true" alt="SmartSheep" />
+                </li>
+                <li class="nav-item nav-toggle">
+                    <a class="nav-link modern-nav-toggle pe-0 text-white" data-bs-toggle="collapse">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="aims-hamburger-icon">
+                            <line x1="4" y1="6" x2="20" y2="6"></line>
+                            <line x1="4" y1="12" x2="20" y2="12"></line>
+                            <line x1="4" y1="18" x2="20" y2="18"></line>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="shadow-bottom"></div>
+        <partial name="_Menu" />
+    </div>
+    <div class="app-content content footer-fixed">
+        <div class="content-overlay"></div>
+        <div class="header-navbar-shadow"></div>
+        <div class="content-wrapper container-xxl p-0">
+            @RenderBody()
+            @await Component.InvokeAsync("Notyf")
+        </div>
+        <partial name="_Footer" />
+    </div>
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+
+    <partial name="_ThemeCustomizer" />
+    <partial name="_Profile" />
+
+    <script type="text/javascript" src="~/js/core/app-menu.min.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/core/app.min.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/core/customizer.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('body, #content-profile, #table-scroll-horizontal, #scroll-container').overlayScrollbars({
+                scrollbars: {
+                    visibility: 'auto',
+                    autoHide: 'leave',
+                    autoHideDelay: 800,
+                    dragScrolling: true,
+                    clickScrolling: false,
+                    touchSupport: true,
+                    snapHandle: true
+                }
+            });
+            function enhanceFlatpickrMonthPicker(instance) {
+                var currentMonth = instance.calendarContainer.querySelector('.flatpickr-current-month');
+                var nativeSelect = currentMonth && currentMonth.querySelector('.flatpickr-monthDropdown-months');
+
+                if (!currentMonth || !nativeSelect || currentMonth.querySelector('.ptk-month-picker')) return;
+
+                nativeSelect.classList.add('ptk-native-month-select');
+
+                var picker = document.createElement('div');
+                picker.className = 'ptk-month-picker';
+
+                var trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'ptk-month-picker__trigger';
+                trigger.setAttribute('aria-haspopup', 'listbox');
+                trigger.setAttribute('aria-expanded', 'false');
+
+                var menu = document.createElement('div');
+                menu.className = 'ptk-month-picker__menu';
+                menu.setAttribute('role', 'listbox');
+
+                instance.l10n.months.longhand.forEach(function (monthName, monthIndex) {
+                    var option = document.createElement('button');
+                    option.type = 'button';
+                    option.className = 'ptk-month-picker__option';
+                    option.textContent = monthName;
+                    option.dataset.month = monthIndex;
+                    option.setAttribute('role', 'option');
+                    option.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        instance.changeMonth(monthIndex, false);
+                        syncPicker();
+                        picker.classList.remove('is-open');
+                        trigger.setAttribute('aria-expanded', 'false');
+                    });
+                    menu.appendChild(option);
+                });
+
+                function syncPicker() {
+                    var monthName = instance.l10n.months.longhand[instance.currentMonth];
+                    trigger.textContent = monthName;
+                    menu.querySelectorAll('.ptk-month-picker__option').forEach(function (option) {
+                        var isSelected = Number(option.dataset.month) === instance.currentMonth;
+                        option.classList.toggle('is-selected', isSelected);
+                        option.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                    });
+                }
+
+                trigger.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    document.querySelectorAll('.ptk-month-picker.is-open').forEach(function (openPicker) {
+                        if (openPicker !== picker) openPicker.classList.remove('is-open');
+                    });
+                    var isOpen = picker.classList.toggle('is-open');
+                    trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                });
+
+                picker.appendChild(trigger);
+                picker.appendChild(menu);
+                currentMonth.insertBefore(picker, nativeSelect);
+                instance._ptkSyncMonthPicker = syncPicker;
+                syncPicker();
+            }
+
+        if (!window._ptkMonthPickerOutsideClick) {
+                window._ptkMonthPickerOutsideClick = true;
+                document.addEventListener('click', function () {
+                    document.querySelectorAll('.ptk-month-picker.is-open').forEach(function (picker) {
+                        picker.classList.remove('is-open');
+                        picker.querySelector('.ptk-month-picker__trigger').setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+
+            function initializeMonthPicker(dateObj, dateStr, instance) {
+                enhanceFlatpickrMonthPicker(instance);
+            }
+
+            function syncMonthPicker(dateObj, dateStr, instance) {
+                if (instance._ptkSyncMonthPicker) {
+                    instance._ptkSyncMonthPicker();
+                }
+            }
+
+            $(".flatpickr").flatpickr({
+                dateFormat: "Y-m-d",
+                monthSelectorType: "dropdown",
+                onReady: initializeMonthPicker,
+                onMonthChange: syncMonthPicker,
+                onYearChange: syncMonthPicker
+            });
+
+            $(".flatpickr-datetime").flatpickr({
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+                allowInput: true,
+                monthSelectorType: "dropdown",
+                onReady: function (dateObj, dateStr, instance) {
+                    initializeMonthPicker(dateObj, dateStr, instance);
+                    var $cal = $(instance.calendarContainer);
+                    if ($cal.find('.flatpickr-clear').length < 1) {
+                        $cal.append('<div class="btn btn-secondary btn-sm mb-2 mt-2 flatpickr-clear">Clear</div>');
+                        $cal.find('.flatpickr-clear').on('click', function () {
+                            instance.clear();
+                            instance.close();
+                        });
+                    }
+                },
+                onMonthChange: syncMonthPicker,
+                onYearChange: syncMonthPicker
+            });
+
+            $(".flatpickr-month-year").flatpickr({
+                plugins: [
+                    new monthSelectPlugin({
+                        shorthand: true, //defaults to false
+                        dateFormat: "m-Y", //defaults to "F Y"
+                        altFormat: "F Y", //defaults to "F Y"
+                    })
+                ]
+            });
+
+        });
+
+    </script>
+    <script type="text/javascript" src="~/js/page-loader-2026.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/notification-menu.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/button-icons-2026.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/sidebar-menu-2026.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/report-filter-2026.js" asp-append-version="true"></script>
+</body>
+</html>

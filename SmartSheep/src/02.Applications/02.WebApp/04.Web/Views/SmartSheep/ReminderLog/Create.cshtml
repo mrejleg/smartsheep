@@ -1,0 +1,139 @@
+@using Web.Domain.Models.SmartSheep
+@model Project.Base.Models.RestApis.RestApiResult<ReminderLog>
+
+<div class="content-header row">
+    <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h2 class="content-header-title float-start mb-0">Reminder Log</h2>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">SmartSheep</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a asp-action="Index">Reminder Log</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Form Add </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="_CustomizerButton" />
+</div>
+<div class="content-body">
+    <div class="row">
+        <div class="col-12">
+            <form class="form form-horizontal" asp-action="Create" onsubmit="onSaveData(this); return false;">
+                <div class="card card-icon">
+                    <div class="card-header border-bottom">
+                        <div class="d-flex align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor me-50 user-timeline-title-icon">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>                            <h4 class="card-title">Form Data - Add Reminder Log</h4>
+                        </div>
+                    </div>
+                    <div class="card-body py-2 my-25">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Reminder Template</label>
+                                    <div id="fk_template"></div>
+                                    <input type="hidden" id="t_fk_template_id" class="form-control" asp-for="Data.FkReminderTemplateId" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Suckling Statistic</label>
+                                    <div id="fk_statistic"></div>
+                                    <input type="hidden" id="t_fk_statistic_id" class="form-control" asp-for="Data.FkSucklingStatisticId" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Username <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" asp-for="Data.Username" placeholder="Username" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Status <span class="text-danger">*</span></label>
+                                    <select class="form-select" asp-for="Data.Status" required="required">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Sent">Sent</option>
+                                        <option value="Failed">Failed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Scheduled At</label>
+                                    <input type="text" class="form-control flatpickr-datetime" asp-for="Data.ScheduledAt" asp-format="{0:yyyy-MM-dd HH:mm}" autocomplete="off" placeholder="Scheduled At" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Sent At</label>
+                                    <input type="text" class="form-control flatpickr-datetime" asp-for="Data.SentAt" asp-format="{0:yyyy-MM-dd HH:mm}" autocomplete="off" placeholder="Sent At" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Error Message</label>
+                                    <textarea class="form-control" asp-for="Data.ErrorMessage" placeholder="Error Message"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">Is Active</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" asp-for="Data.IsActive" id="isActiveCheckbox">
+                                        <label class="form-check-label" for="isActiveCheckbox">Active</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-end">
+                            <button type="submit" class="btn btn-round btn-success waves-effect waves-float waves-light me-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check me-50">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>                                Save
+                            </button>
+                            <a asp-action="Index" class="btn btn-round btn btn-outline-secondary waves-effect waves-float waves-light me-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x me-50">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>                                Close
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var fk_templateColumns = [
+            { 'name': 'Id', 'type': 'object' },
+            { 'name': 'Name', 'type': 'string' }
+        ];
+
+        var fk_templateId = "@Model.Data.FkReminderTemplateId";
+        loadDxDropdownBoxColumn("fk_template", "t_fk_template_id", "/ReminderTemplate/ReminderTemplates", fk_templateId, fk_templateColumns, false);
+
+        var fk_statisticColumns = [
+            { 'name': 'Id', 'type': 'object' },
+            { 'name': 'Code', 'type': 'string' }
+        ];
+
+        var fk_statisticId = "@Model.Data.FkSucklingStatisticId";
+        loadDxDropdownBoxColumn("fk_statistic", "t_fk_statistic_id", "/SucklingStatistic/SucklingStatistics", fk_statisticId, fk_statisticColumns, false);
+    });
+</script>
+

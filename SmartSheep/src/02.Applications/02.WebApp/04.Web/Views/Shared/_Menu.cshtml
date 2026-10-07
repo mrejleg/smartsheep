@@ -1,0 +1,12 @@
+﻿@inject Web.ApplicationCore.Interfaces.Auths.IAuthService _authService
+@inject Web.Domain.Models.AppSetting appSetting
+
+@{
+    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="main-menu-content">
+    <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+        @Html.Raw(await _authService.LoadMenuAsync(controllerName, appSetting))
+    </ul>
+</div>

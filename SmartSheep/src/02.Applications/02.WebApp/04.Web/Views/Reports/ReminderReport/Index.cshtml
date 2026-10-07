@@ -1,0 +1,78 @@
+@using Web.Domain.Models.SmartSheep
+@using Web.Domain.Models.MasterDatas
+@model List<ReminderLog>
+@{ var farms = ViewBag.Farms as List<Farm> ?? new(); var barns = ViewBag.Barns as List<Barn> ?? new(); var selectedFarmId = ViewBag.FarmId as Guid?; var selectedBarnId = ViewBag.BarnId as Guid?; }
+
+<div class="content-header row">
+    <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h2 class="content-header-title float-start mb-0">Reminder Report</h2>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">Report</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Reminder Report </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="_CustomizerButton" />
+</div>
+<div class="content-body report-dashboard-page">
+    <partial name="_ReportFilters" />
+    <div class="card card-icon">
+        <div class="card-header border-bottom">
+                            <div class="d-flex align-items-center">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bookmark me-50 user-timeline-title-icon">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                                <h4 class="card-title">Report Data</h4>
+                            </div>
+                        </div>
+        @if (Model.Count == 0)
+        {
+            <partial name="_ReportNoData" />
+        }
+        else
+        {
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Reminder Template</th>
+                        <th>Statistic</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                        <th>Scheduled At</th>
+                        <th>Sent At</th>
+                        <th>Error Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.ReminderTemplate.Name</td>
+                            <td>@item.SucklingStatistic.Code</td>
+                            <td>@item.Username</td>
+                            <td>@item.Status</td>
+                            <td>@item.ScheduledAt</td>
+                            <td>@item.SentAt?.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@item.ErrorMessage</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+        @if (Model.Count > 0 || ViewBag.Page > 1)
+        {
+        <div class="report-pager"><a class="report-page-btn @(ViewBag.Page <= 1 ? "disabled" : "")" asp-action="Index" asp-route-from="@ViewBag.From" asp-route-to="@ViewBag.To" asp-route-farmId="@ViewBag.FarmId" asp-route-barnId="@ViewBag.BarnId" asp-route-page="@(ViewBag.Page - 1)">Previous</a><span>Page @ViewBag.Page</span><a class="report-page-btn @(!(bool)ViewBag.HasNext ? "disabled" : "")" asp-action="Index" asp-route-from="@ViewBag.From" asp-route-to="@ViewBag.To" asp-route-farmId="@ViewBag.FarmId" asp-route-barnId="@ViewBag.BarnId" asp-route-page="@(ViewBag.Page + 1)">Next</a></div>
+        }
+    </div>
+</div>
+
+

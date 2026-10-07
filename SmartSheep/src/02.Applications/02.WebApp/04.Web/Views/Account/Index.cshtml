@@ -1,0 +1,81 @@
+@model Web.Domain.Models.Auths.LoginParameter
+@{ Layout = null; ViewData["Title"] = "Login - SmartSheep"; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+    <link rel="icon" type="image/png" href="~/images/smartsheep-favicon.png" />
+    <link rel="stylesheet" href="~/lib/fonts/font-googleapis.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/bootstrap-extended.min.css" />
+    <link rel="stylesheet" href="~/css/core/component/colors.min.css" />
+    <link rel="stylesheet" href="~/css/core/component/components.min.css" />
+    <link rel="stylesheet" href="~/lib/fonts/feather-icon/feather-icons.min.css" />
+    <link rel="stylesheet" href="~/css/style.min.css" />
+    <link rel="stylesheet" href="~/css/modern-style-2026.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/smartsheep-login.css" asp-append-version="true" />
+</head>
+<body class="smart-login-page">
+    <main class="smart-login-shell">
+        <section class="smart-login-visual">
+            <div class="visual-grid"></div>
+            <div class="visual-top">
+                <div class="brand-lockup">
+                    <img src="~/images/smartsheep-logo-white-lockup-v9.png" alt="SmartSheep" />
+                </div>
+                <span class="live-badge"><i></i> Smart farming experience</span>
+            </div>
+            <div class="visual-copy">
+                <span class="visual-kicker">CONNECTED FARM MANAGEMENT</span>
+                <h1>Know your sheep.<br /><span>Grow with confidence.</span></h1>
+                <p>Health, security, and environmental insight—all connected in one intelligent livestock platform.</p>
+                <div class="visual-features">
+                    <span><i data-feather="activity"></i> Livestock tracking</span>
+                    <span><i data-feather="video"></i> Smart CCTV</span>
+                    <span><i data-feather="radio"></i> Sensor monitoring</span>
+                </div>
+            </div>
+            <div class="visual-bottom"><span>Smart farming starts with better visibility.</span><strong>IPB University</strong></div>
+        </section>
+
+        <section class="smart-login-form-panel">
+            <div class="smart-login-form">
+                <div class="mobile-logo"><img src="~/images/smartsheep-logo-white-lockup-v9.png" alt="SmartSheep" /></div>
+                <span class="form-kicker">WELCOME BACK</span>
+                <h2>Sign in to your account</h2>
+                <p class="form-subtitle">Use your SmartSheep credentials to continue.</p>
+
+                <form asp-action="Index" method="post">
+                    <input asp-for="UrlAction" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-1 px-2 mb-2"></div>
+
+                    <div class="mb-2">
+                        <label asp-for="Username" class="form-label">Username</label>
+                        <input asp-for="Username" class="form-control" autocomplete="username" placeholder="Enter your username" autofocus />
+                    </div>
+
+                    <div class="mb-1">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <div class="input-group input-group-merge">
+                            <input asp-for="Password" class="form-control" type="password" autocomplete="current-password" placeholder="Enter your password" id="password" />
+                            <button class="input-group-text cursor-pointer" type="button" id="togglePassword" aria-label="Show password"><i data-feather="eye"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-check login-remember">
+                        <input class="form-check-input" type="checkbox" name="RememberMe" value="true" id="rememberMe" />
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+
+                    <button class="btn btn-primary w-100 login-submit" type="submit"><i data-feather="log-in" aria-hidden="true"></i><span>Sign in</span></button>
+                </form>
+                <p class="login-footer">© @DateTime.Now.Year SmartSheep · IPB University</p>
+            </div>
+        </section>
+    </main>
+    <script src="~/lib/fonts/feather-icon/feather-icons.min.js"></script>
+    <script>feather.replace();document.getElementById('togglePassword').addEventListener('click',function(){const p=document.getElementById('password');p.type=p.type==='password'?'text':'password';this.innerHTML=p.type==='password'?'<i data-feather="eye"></i>':'<i data-feather="eye-off"></i>';feather.replace();});</script>
+</body>
+</html>

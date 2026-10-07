@@ -1,0 +1,13 @@
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/bin/Debug/net10.0/01.Base.deps.json
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/bin/Debug/net10.0/01.Base.dll
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/bin/Debug/net10.0/01.Base.pdb
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/01.Base.csproj.AssemblyReference.cache
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/01.Base.GeneratedMSBuildEditorConfig.editorconfig
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/01.Base.AssemblyInfoInputs.cache
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/01.Base.AssemblyInfo.cs
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/01.Base.csproj.CoreCompileInputs.cache
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/01.Base.sourcelink.json
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/01.Base.dll
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/refint/01.Base.dll
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/01.Base.pdb
+/Users/swa/Documents/SOURCE CODES/smartsheep/SmartSheep/src/01.Libraries/01.Base/obj/Debug/net10.0/ref/01.Base.dll

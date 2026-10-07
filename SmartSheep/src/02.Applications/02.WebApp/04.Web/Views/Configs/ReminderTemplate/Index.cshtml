@@ -1,0 +1,116 @@
+<div class="content-header row">
+    <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h2 class="content-header-title float-start mb-0">Reminder Template</h2>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">Configs</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a asp-action="Index">Reminder Template</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Data Reminder Template </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="_CustomizerButton" />
+</div>
+<div class="content-body">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-icon">
+                <div class="card-header border-bottom p-1">
+                    <div class="d-flex align-items-center">                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bookmark me-50 user-timeline-title-icon">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                            <h4 class="card-title">List Data - Reminder Template</h4>
+                    </div>
+                    <partial name="_ActionHeaderButton" />
+                </div>
+                <div class="d-flex justify-content-between align-items-center mx-0 row">
+                    <div class="col-sm-12 pb-1">
+                        <div id="gridContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.AntiForgeryToken()
+<script>
+    $(document).ready(function () {
+        var componentId = 'gridContainer';
+        var controllerName = 'ReminderTemplate';
+        var actionName = 'GetDataDxGrid';
+        var actions = ["Edit", "Details", "Delete", "TestReminder"];
+
+        var columns = [
+            { 'name': 'Id', 'type': 'object' },
+            { 'name': 'Code', 'type': 'string', 'caption': 'Code' },
+            { 'name': 'Name', 'type': 'string', 'caption': 'Name' },
+            { 'name': 'ReminderText', 'type': 'string', 'caption': 'Reminder Text' },
+            { 'name': 'DateModified', 'type': 'datetime' },
+            { 'name': 'IsActive', 'type': 'boolean', 'caption': 'Is Active' }
+        ];
+
+        loadDxDataGrid(componentId, controllerName, actionName, columns, actions);
+    });
+
+    function testReminder(url, button) {
+        var $button = $(button);
+        if ($button.prop('disabled')) return;
+
+        Swal.fire({
+            title: 'Test Reminder',
+            text: "Send this template's reminder text to your registered mobile device?",
+            icon: 'warning',
+            buttonsStyling: false,
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: feather.icons['send'].toSvg({ class: 'font-medium-1 me-50' }) + 'Send Test',
+            cancelButtonText: feather.icons['x'].toSvg({ class: 'font-medium-1 me-50' }) + 'Cancel',
+            customClass: {
+                confirmButton: 'btn btn-round btn-warning waves-effect waves-float waves-light',
+                cancelButton: 'btn btn-round btn-outline-secondary waves-effect waves-float waves-light ms-1'
+            }
+        }).then(function (result) {
+            if (result.isConfirmed) sendTestReminder(url, $button);
+        });
+    }
+
+    function sendTestReminder(url, $button) {
+        var originalContent = $button.html();
+        var verificationToken = $('input[name="__RequestVerificationToken"]').first().val();
+        $button
+            .prop('disabled', true)
+            .attr('aria-busy', 'true')
+            .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { __RequestVerificationToken: verificationToken }
+        })
+        .done(function (response) {
+            toastNotifySuccess(response.Message || 'Test reminder sent successfully.');
+        })
+        .fail(function (xhr) {
+            var response = xhr.responseJSON || {};
+            toastNotifyError(response.Message || 'Test reminder could not be sent.');
+        })
+        .always(function () {
+            $button
+                .prop('disabled', false)
+                .removeAttr('aria-busy')
+                .html(originalContent);
+        });
+    }
+</script>
+
+
+
+

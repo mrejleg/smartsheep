@@ -1,0 +1,4 @@
+ultralytics==8.4.174
+onnx==1.19.1
+onnxslim==0.1.97
+onnxruntime==1.19.2

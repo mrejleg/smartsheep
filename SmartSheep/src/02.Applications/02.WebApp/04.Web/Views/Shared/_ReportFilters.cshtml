@@ -1,0 +1,52 @@
+@using Web.Domain.Models.MasterDatas
+@{
+    var farms = ViewBag.Farms as List<Farm> ?? new();
+    var barns = ViewBag.Barns as List<Barn> ?? new();
+    var selectedFarmId = ViewBag.FarmId as Guid?;
+    var selectedBarnId = ViewBag.BarnId as Guid?;
+}
+<link rel="stylesheet" href="~/css/report-dashboard-2026.css" asp-append-version="true" />
+<div class="aims-dashboard">
+        <form class="aims-toolbar report-filter-toolbar" method="get">
+            <div class="aims-toolbar-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10M12 20V4M6 20v-6" /></svg>
+                <span>Filter</span>
+            </div>
+            <div class="aims-toolbar-fill"></div>
+            <div class="aims-filter">
+                <label for="farmId">Farm</label>
+                <select id="farmId" class="report-farm" name="farmId" data-aims-searchable="true">
+                    <option value="">All</option>
+                    @foreach (var farm in farms)
+                    {
+                        <option value="@farm.Id" selected="@(selectedFarmId == farm.Id)">@farm.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="aims-filter">
+                <label for="barnId">Barn</label>
+                <select id="barnId" class="report-barn" name="barnId" data-aims-searchable="true">
+                    <option value="">All</option>
+                    @foreach (var barn in barns)
+                    {
+                        <option value="@barn.Id" data-farm-id="@barn.FkFarmId" selected="@(selectedBarnId == barn.Id)">@barn.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="aims-filter">
+                <label for="startDate">Start Date</label>
+                <input id="startDate" class="aims-date-input" type="text" name="from" value="@ViewBag.From" placeholder="yyyy-MM-dd" autocomplete="off" />
+            </div>
+            <div class="aims-filter">
+                <label for="endDate">End Date</label>
+                <input id="endDate" class="aims-date-input" type="text" name="to" value="@ViewBag.To" placeholder="yyyy-MM-dd" autocomplete="off" />
+            </div>
+            <button class="aims-action-btn" type="submit" title="Search" aria-label="Search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
+            </button>
+            <a class="aims-action-btn aims-refresh-btn" href="@Url.Action("Index")" title="Refresh" aria-label="Refresh">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>
+            </a>
+        </form>
+
+</div>

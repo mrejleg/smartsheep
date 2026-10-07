@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" role="img" aria-labelledby="title desc">
+  <title id="title">SmartSheep smart farm</title>
+  <desc id="desc">A connected smart barn with a flock of sheep, CCTV, environmental sensors, and livestock monitoring.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e9f9f6"/><stop offset="1" stop-color="#d8f1eb"/></linearGradient>
+    <linearGradient id="barn" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#00a99d"/><stop offset="1" stop-color="#007b72"/></linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#008178"/><stop offset="1" stop-color="#00675f"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#173f47"/><stop offset="1" stop-color="#071f27"/></linearGradient>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="170%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#00675f" flood-opacity=".14"/></filter>
+    <clipPath id="farmPanelClip"><rect x="38" y="45" width="644" height="455" rx="58"/></clipPath>
+  </defs>
+  <g clip-path="url(#farmPanelClip)">
+    <rect x="38" y="45" width="644" height="455" rx="58" fill="url(#sky)"/>
+    <circle cx="590" cy="120" r="38" fill="#fff5bd" opacity=".9"/>
+    <path d="M38 411c130-72 226-28 324-45 101-20 176-65 320 7v150H38Z" fill="#8bcf83" opacity=".72"/>
+    <path d="M38 444c128-53 236-16 340-28 98-12 194-47 304-2v109H38Z" fill="#5eb66e" opacity=".5"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M176 256 344 135l168 121v199H176Z" fill="url(#barn)"/>
+    <path d="m143 269 201-153 201 153-23 29-178-131-178 131Z" fill="url(#roof)"/>
+    <rect x="282" y="298" width="124" height="157" rx="8" fill="#f5faf7"/>
+    <path d="M344 298v157M282 354h124" stroke="#bfded7" stroke-width="6"/>
+    <rect x="205" y="291" width="52" height="58" rx="8" fill="#bce9e2" stroke="#fff" stroke-width="5"/>
+    <path d="M231 294v52M208 320h46" stroke="#fff" stroke-width="4"/>
+    <rect x="431" y="291" width="52" height="58" rx="8" fill="#bce9e2" stroke="#fff" stroke-width="5"/>
+    <path d="M457 294v52M434 320h46" stroke="#fff" stroke-width="4"/>
+  </g>
+
+  <!-- Clearly recognizable sheep flock: woolly bodies, long faces, side ears and cloven legs. -->
+  <g transform="translate(288 351)" filter="url(#shadow)">
+    <g>
+      <circle cx="27" cy="34" r="22" fill="#fff"/><circle cx="50" cy="25" r="25" fill="#fff"/><circle cx="75" cy="32" r="23" fill="#fff"/>
+      <circle cx="38" cy="49" r="24" fill="#fff"/><circle cx="65" cy="51" r="25" fill="#fff"/>
+      <path d="M28 64v31M67 65v30" stroke="#d4dfda" stroke-width="8" stroke-linecap="round"/>
+      <path d="M23 95h10M62 95h10" stroke="#6f817a" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="91" cy="49" rx="20" ry="25" fill="#d9e3de"/>
+      <path d="M80 40 65 31c-5-3-8 5-4 9l17 11M101 40l15-9c5-3 8 5 4 9l-17 11" fill="#b8c9c1"/>
+      <circle cx="85" cy="47" r="2.8" fill="#183c43"/><circle cx="97" cy="47" r="2.8" fill="#183c43"/>
+      <path d="M88 58c2 2 5 2 7 0" fill="none" stroke="#6f817a" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(85 38) scale(.72)">
+      <circle cx="27" cy="34" r="22" fill="#f8fbf9"/><circle cx="50" cy="25" r="25" fill="#fff"/><circle cx="73" cy="34" r="22" fill="#f8fbf9"/>
+      <circle cx="40" cy="51" r="24" fill="#fff"/><circle cx="65" cy="51" r="23" fill="#fff"/>
+      <path d="M31 66v29M66 66v29" stroke="#cbd9d3" stroke-width="8" stroke-linecap="round"/>
+      <ellipse cx="88" cy="50" rx="19" ry="24" fill="#becdc6"/>
+      <path d="M78 41 63 33M98 41l15-8" stroke="#9fb3aa" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="82" cy="48" r="3" fill="#183c43"/><circle cx="94" cy="48" r="3" fill="#183c43"/>
+      <path d="M85 59h6" stroke="#667a71" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g transform="translate(488 167)" filter="url(#shadow)">
+    <rect width="143" height="106" rx="18" fill="#fff" stroke="#cbe5df" stroke-width="2"/>
+    <rect x="15" y="15" width="113" height="64" rx="11" fill="url(#screen)"/>
+    <path d="M32 52c19-24 43-24 62 0M40 58c13-15 31-15 45 0" fill="none" stroke="#00b3a7" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="63" cy="63" r="5" fill="#7de1d8"/>
+    <circle cx="113" cy="29" r="5" fill="#36c770"/>
+    <path d="M58 90h27" stroke="#9bbdb5" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(80 179)" filter="url(#shadow)">
+    <rect width="126" height="92" rx="18" fill="#fff" stroke="#cbe5df" stroke-width="2"/>
+    <path d="m25 38 62-17 8 29-62 17Z" fill="#e4faf6" stroke="#008178" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="73" cy="38" r="10" fill="#008178"/><circle cx="73" cy="38" r="4" fill="#acece4"/>
+    <path d="m83 57 8 16M75 76h28" stroke="#008178" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(72 342)" filter="url(#shadow)">
+    <rect width="145" height="93" rx="18" fill="#fff" stroke="#cbe5df" stroke-width="2"/>
+    <circle cx="37" cy="45" r="22" fill="#e3f7f3"/>
+    <path d="M37 55a10 10 0 1 0 0-20v20M37 25V14" fill="none" stroke="#00a99d" stroke-width="5" stroke-linecap="round"/>
+    <text x="70" y="40" fill="#667085" font-family="Arial,sans-serif" font-size="12" font-weight="700">BARN TEMP</text>
+    <text x="70" y="63" fill="#00675f" font-family="Arial,sans-serif" font-size="20" font-weight="800">24°C</text>
+  </g>
+
+  <path d="M207 225c45-58 79-78 126-90M488 216c-48-54-81-73-129-81M210 387c47 26 75 31 104 27" fill="none" stroke="#24c7b8" stroke-width="3" stroke-dasharray="7 9" opacity=".8"/>
+  <circle cx="343" cy="134" r="9" fill="#24c7b8" stroke="#fff" stroke-width="4"/>
+  <circle cx="528" cy="123" r="7" fill="#16a34a" opacity=".65"/><circle cx="120" cy="115" r="11" fill="#24c7b8" opacity=".35"/>
+</svg>

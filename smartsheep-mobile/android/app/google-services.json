@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "977390546151",
+    "project_id": "smartsheep-45a28",
+    "storage_bucket": "smartsheep-45a28.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977390546151:android:510be98ea1693cf462c642",
+        "android_client_info": {
+          "package_name": "com.pertamina.smartsheep_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuw98-7_lDmA_SX88Jm-oRwK-XTuqthU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

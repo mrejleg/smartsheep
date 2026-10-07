@@ -1,0 +1,119 @@
+/*================================================================================
+	Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
+	Version: 2.0
+	Author: PIXINVENT
+	Author URL: http://www.themeforest.net/user/pixinvent
+================================================================================
+
+NOTE:
+------
+PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
+WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+.form-label {
+    margin-bottom: 0.2857rem;
+    font-size: 1rem !important;
+    color: #5e5873;
+    font-weight: 500 !important;
+}
+
+.card-header {
+    padding-top: 1rem;
+    padding-right: 1.25rem;
+    padding-bottom: 1rem;
+    padding-left: 1.25rem;
+}
+
+.card-footer {
+    padding-top: 0.75rem;
+    padding-right: 1.25rem;
+    padding-bottom: 0.75rem;
+    padding-left: 1.25rem;
+}
+
+.card .card-footer {
+    /*background-color: rgba(0, 0, 0, 0.03);*/
+    background-color: rgba(186,191,199,.12);
+    border: 0;
+}
+
+.feather,
+[data-feather] {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+}
+
+.bootstrap-touchspin .input-group-btn-vertical {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    z-index: 11;
+}
+
+    .bootstrap-touchspin .input-group-btn-vertical > .btn {
+        position: absolute;
+        right: 0;
+        height: 50%;
+        padding: 0;
+        width: 2em;
+        text-align: center;
+        line-height: 1;
+    }
+
+    .bootstrap-touchspin .input-group-btn-vertical .bootstrap-touchspin-up {
+        border-radius: 0 4px 0 0;
+        top: 0;
+    }
+
+    .bootstrap-touchspin .input-group-btn-vertical .bootstrap-touchspin-down {
+        border-radius: 0 0 4px;
+        bottom: 0;
+    }
+
+#leaflet {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    #leaflet td, #leaflet th {
+        border: 1px solid #ddd;
+        padding: 4px;
+    }
+
+    #leaflet tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    #leaflet tr:hover {
+        background-color: #ddd;
+    }
+
+.ratings {
+    margin-right: 10px;
+}
+
+    .ratings i {
+        color: #cecece;
+        font-size: 32px;
+    }
+
+.rating-color {
+    color: #fbc634 !important;
+}
+
+.review-count {
+    font-weight: 400;
+    margin-bottom: 2px;
+    font-size: 24px !important;
+}
+
+.small-ratings i {
+    color: #cecece;
+}
+
+.review-stat {
+    font-weight: 300;
+    font-size: 18px;
+    margin-bottom: 2px;
+}

@@ -1,0 +1,405 @@
+@{
+    var controllerName = this.ViewContext.RouteData.Values["controller"]?.ToString();
+    if (!string.IsNullOrEmpty(controllerName))
+    {
+        controllerName = Project.Core.Extentions.TextExtentions.SplitPascalCase(controllerName);
+    }
+    var actionName = this.ViewContext.RouteData.Values["action"]?.ToString();
+    if (!string.IsNullOrEmpty(actionName))
+    {
+        actionName = Project.Core.Extentions.TextExtentions.SplitPascalCase(actionName);
+    }
+
+    Layout = "_Layout";
+}
+
+<div class="content-wrapper access-page">
+    <div class="content-body">
+        <section class="access-card">
+            <div class="access-copy">
+                <span class="access-label"><i data-feather="shield"></i> Access Restricted</span>
+                <h1>This area is outside your pasture.</h1>
+                <p>Your account does not have permission to open this page. Return to the previous page or continue to the SmartSheep dashboard.</p>
+
+                <div class="access-context">
+                    <span>Requested page</span>
+                    <strong>@Html.Raw(controllerName) / @Html.Raw(actionName)</strong>
+                </div>
+
+                <div class="access-actions">
+                    <button type="button" class="btn access-btn access-btn-secondary" onclick="history.back()">
+                        <i data-feather="arrow-left"></i>
+                        Back
+                    </button>
+                    <a class="btn access-btn access-btn-primary" href="@Url.Action("Index", "Dashboard")">
+                        <i data-feather="grid"></i>
+                        Go to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="access-visual" aria-hidden="true">
+                <span class="access-orbit access-orbit-large"></span>
+                <span class="access-orbit access-orbit-small"></span>
+                <div class="access-badge">
+                    <i data-feather="lock"></i>
+                </div>
+                <div class="access-logo">
+                    <img src="~/images/smartsheep-favicon.png" alt="" />
+                </div>
+                <div class="access-ground">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="access-status"><i></i> Protected farm area</div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+    .access-page {
+        min-height: calc(100vh - 174px);
+        padding: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+            radial-gradient(circle at 12% 14%, rgba(57, 203, 178, .12), transparent 25%),
+            radial-gradient(circle at 88% 82%, rgba(0, 107, 102, .09), transparent 28%);
+    }
+
+    .access-page .content-body {
+        width: 100%;
+        max-width: 1050px;
+    }
+
+    .access-card {
+        min-height: 520px;
+        display: grid;
+        grid-template-columns: 1.04fr .96fr;
+        overflow: hidden;
+        border: 1px solid rgba(0, 106, 103, .10);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, .96);
+        box-shadow: 0 24px 70px rgba(15, 62, 59, .10);
+    }
+
+    .access-copy {
+        padding: 64px 58px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .access-label {
+        width: fit-content;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        color: #007c74;
+        background: rgba(0, 159, 151, .10);
+        font-size: 11px;
+        font-weight: 850;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .access-label svg {
+        width: 15px;
+        height: 15px;
+        stroke-width: 2.4;
+    }
+
+    .access-copy h1 {
+        max-width: 480px;
+        margin: 20px 0 13px;
+        color: #122c2a;
+        font-size: clamp(32px, 3.2vw, 48px);
+        font-weight: 900;
+        line-height: 1.08;
+        letter-spacing: -.035em;
+    }
+
+    .access-copy > p {
+        max-width: 500px;
+        margin: 0;
+        color: #657b79;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.75;
+    }
+
+    .access-context {
+        max-width: 500px;
+        margin-top: 26px;
+        padding: 13px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        border: 1px solid rgba(0, 106, 103, .10);
+        border-radius: 12px;
+        background: #f5faf9;
+    }
+
+    .access-context span {
+        color: #78908e;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+
+    .access-context strong {
+        min-width: 0;
+        overflow: hidden;
+        color: #174b47;
+        font-size: 12px;
+        font-weight: 850;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .access-actions {
+        margin-top: 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .access-btn {
+        min-height: 43px;
+        padding: 0 17px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 850;
+    }
+
+    .access-btn svg {
+        width: 16px;
+        height: 16px;
+        stroke-width: 2.5;
+    }
+
+    .access-btn-primary,
+    .access-btn-primary:hover,
+    .access-btn-primary:focus {
+        border: 0;
+        color: #ffffff;
+        background: linear-gradient(135deg, #00aaa0, #007a73);
+        box-shadow: 0 10px 22px rgba(0, 122, 115, .20);
+    }
+
+    .access-btn-secondary,
+    .access-btn-secondary:hover,
+    .access-btn-secondary:focus {
+        border: 1px solid rgba(0, 106, 103, .18);
+        color: #225b57;
+        background: #ffffff;
+        box-shadow: none;
+    }
+
+    .access-visual {
+        position: relative;
+        min-height: 520px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+            linear-gradient(145deg, rgba(222, 248, 243, .95), rgba(239, 249, 247, .92)),
+            #e7f6f3;
+    }
+
+    .access-visual::before {
+        content: "";
+        position: absolute;
+        inset: 25px;
+        border: 1px dashed rgba(0, 159, 151, .19);
+        border-radius: 50%;
+    }
+
+    .access-orbit {
+        position: absolute;
+        border: 22px solid rgba(255, 255, 255, .68);
+        border-radius: 50%;
+    }
+
+    .access-orbit-large {
+        width: 290px;
+        height: 290px;
+    }
+
+    .access-orbit-small {
+        right: -38px;
+        bottom: 44px;
+        width: 150px;
+        height: 150px;
+        border-width: 17px;
+        border-color: rgba(0, 159, 151, .08);
+    }
+
+    .access-logo {
+        position: relative;
+        z-index: 2;
+        width: 176px;
+        height: 176px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 12px solid rgba(255, 255, 255, .82);
+        border-radius: 46px;
+        background: linear-gradient(145deg, #008a82, #005854);
+        box-shadow: 0 26px 44px rgba(0, 90, 85, .22);
+        transform: rotate(-3deg);
+    }
+
+    .access-logo img {
+        width: 126px;
+        height: 126px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+        transform: rotate(3deg);
+    }
+
+    .access-badge {
+        position: absolute;
+        z-index: 3;
+        top: 104px;
+        right: calc(50% - 118px);
+        width: 61px;
+        height: 61px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 7px solid #ffffff;
+        border-radius: 19px;
+        color: #ffffff;
+        background: #37b96b;
+        box-shadow: 0 12px 25px rgba(28, 133, 76, .24);
+        transform: rotate(7deg);
+    }
+
+    .access-badge svg {
+        width: 23px;
+        height: 23px;
+        stroke-width: 2.3;
+    }
+
+    .access-ground {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 105px;
+        overflow: hidden;
+    }
+
+    .access-ground span {
+        position: absolute;
+        bottom: -78px;
+        width: 270px;
+        height: 155px;
+        border-radius: 50%;
+        background: rgba(88, 194, 119, .19);
+    }
+
+    .access-ground span:nth-child(1) { left: -60px; }
+    .access-ground span:nth-child(2) { left: 100px; background: rgba(0, 159, 151, .12); }
+    .access-ground span:nth-child(3) { right: -55px; background: rgba(54, 180, 103, .16); }
+
+    .access-status {
+        position: absolute;
+        z-index: 3;
+        right: 24px;
+        bottom: 24px;
+        padding: 8px 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid rgba(0, 106, 103, .09);
+        border-radius: 999px;
+        color: #174b47;
+        background: rgba(255, 255, 255, .88);
+        box-shadow: 0 8px 20px rgba(15, 62, 59, .09);
+        font-size: 10px;
+        font-weight: 850;
+    }
+
+    .access-status i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #37b96b;
+        box-shadow: 0 0 0 4px rgba(55, 185, 107, .13);
+    }
+
+    @@media (max-width: 991px) {
+        .access-card {
+            grid-template-columns: 1fr;
+        }
+
+        .access-copy {
+            padding: 45px 38px;
+        }
+
+        .access-visual {
+            min-height: 330px;
+        }
+
+        .access-badge {
+            top: 48px;
+        }
+    }
+
+    @@media (max-width: 575px) {
+        .access-page {
+            padding: 14px;
+        }
+
+        .access-card {
+            border-radius: 18px;
+        }
+
+        .access-copy {
+            padding: 32px 22px;
+        }
+
+        .access-copy h1 {
+            font-size: 32px;
+        }
+
+        .access-context {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .access-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .access-visual {
+            min-height: 290px;
+        }
+
+        .access-logo {
+            width: 142px;
+            height: 142px;
+        }
+
+        .access-logo img {
+            width: 100px;
+            height: 100px;
+        }
+    }
+</style>

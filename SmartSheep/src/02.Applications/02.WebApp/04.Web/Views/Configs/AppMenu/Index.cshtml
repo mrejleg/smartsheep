@@ -1,0 +1,68 @@
+<div class="content-header row">
+    <div class="content-header-left col-md-9 col-12 mb-2">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h2 class="content-header-title float-start mb-0">App Menu</h2>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="#">Configs</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a asp-action="Index">App Menu</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Data App Menu </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <partial name="_CustomizerButton" />
+</div>
+<div class="content-body">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-icon">
+                <div class="card-header border-bottom p-1">
+                    <div class="d-flex align-items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bookmark me-50 user-timeline-title-icon">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                        <h4 class="card-title">List Data - App Menu</h4>
+                    </div>
+                    <partial name="_ActionHeaderButton" />
+                </div>
+                <div class="d-flex justify-content-between align-items-center mx-0 row">
+                    <div class="col-sm-12 pb-1">
+                        <div id="gridContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var componentId = 'gridContainer';
+        var controllerName = 'AppMenu';
+        var actionName = 'GetDataDxGrid';
+        var actions = ["Edit", "Details", "Delete"];
+
+        var columns = [
+            { 'name': 'Id', 'type': 'object' },
+            { 'name': 'AppMenuParent.Name', 'type': 'string', 'caption': 'Parent Name' },
+            { 'name': 'Name', 'type': 'string' },
+            { 'name': 'Controller', 'type': 'string' },
+            { 'name': 'IconActive', 'type': 'string', 'caption': 'Icon Active' },
+            { 'name': 'SequenceNumber', 'type': 'string', 'sortOrder': 'asc' },
+            { 'name': 'IsSection', 'type': 'boolean', 'caption': 'Is Section' },
+            { 'name': 'IsMobile', 'type': 'boolean', 'caption': 'Is Mobile' },
+            { 'name': 'DateModified', 'type': 'datetime', 'caption': 'Date Modified' },
+            { 'name': 'IsActive', 'type': 'boolean', 'caption': 'Is Active' }
+        ];
+
+        loadDxDataGrid( componentId, controllerName, actionName, columns, actions);
+    });
+</script>
+
+
