@@ -32,10 +32,19 @@ namespace InferenceYolo.Services.Inferences
         // Kotak yang sebagian besar luasnya (Yolo:NmsContainmentThreshold) berada di dalam kotak sekelas yang lebih besar
         // dianggap potongan objek yang sama (IoU-nya kecil karena ukurannya beda jauh)
         private readonly float nmsContainmentThreshold;
-        // Anak lebih kecil dari induk dan minimal sekian bagian luas induk terdekat (Yolo:LambMinimumAreaRatio);
-        // anak yang overlap dengan anak lain dan lebih kecil dari sekian bagian luasnya = potongan anak itu (Yolo:LambPartAreaRatio)
+
+        // Luas anak terhadap luas induk acuan: di bawah Yolo:LambMinimumAreaRatio = potongan (kepala), mulai
+        // Yolo:LambMaximumAreaRatio = induk. Anak yang overlap dengan anak lain dan lebih kecil dari
+        // Yolo:LambPartAreaRatio x luasnya = potongan anak itu.
         private readonly float lambMinimumAreaRatio;
+        private readonly float lambMaximumAreaRatio;
         private readonly float lambPartAreaRatio;
+
+        // Luas induk utuh rata-rata bergerak (bobot Yolo:BaselineWeight), acuan ukuran saat induk tidak terdeteksi
+        // utuh di frame; detector scoped per kamera sehingga acuan ini milik satu kamera
+        private readonly float baselineWeight;
+        private readonly int eweClassId;
+        private float? eweArea;
 
         // Buffer input dan tensor-nya dibuat sekali; setiap frame cukup mengisi ulang buffer
         private readonly float[] input;
@@ -78,10 +87,13 @@ namespace InferenceYolo.Services.Inferences
             nmsIouThreshold = float.Parse(setting.YoloNmsIouThreshold, CultureInfo.InvariantCulture);
             nmsContainmentThreshold = float.Parse(setting.YoloNmsContainmentThreshold, CultureInfo.InvariantCulture);
             lambMinimumAreaRatio = float.Parse(setting.YoloLambMinimumAreaRatio, CultureInfo.InvariantCulture);
+            lambMaximumAreaRatio = float.Parse(setting.YoloLambMaximumAreaRatio, CultureInfo.InvariantCulture);
             lambPartAreaRatio = float.Parse(setting.YoloLambPartAreaRatio, CultureInfo.InvariantCulture);
+            baselineWeight = float.Parse(setting.YoloBaselineWeight, CultureInfo.InvariantCulture);
 
             Labels = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(option.Labels))!
                 .ToDictionary(kv => int.Parse(kv.Key, CultureInfo.InvariantCulture), kv => kv.Value);
+            eweClassId = Labels.First(kv => kv.Value == EweLabel).Key;
         }
 
         public List<Detection> Detect(Mat frame)
@@ -183,48 +195,48 @@ namespace InferenceYolo.Services.Inferences
             return kept;
         }
 
-        // Aturan bbox anak terhadap induk dan anak lain (setelah NMS):
-        // - Anak dan induk dengan IoU > Yolo:NmsIouThreshold = satu hewan terdeteksi dua kelas; confidence tertinggi
-        //   dipertahankan. Anak yang terhalang induk (kotaknya di dalam/menempel kotak induk) IoU-nya kecil sehingga
-        //   tetap dipertahankan dan tetap diproses aturan menyusu.
+        // Aturan bbox anak terhadap induk dan anak lain (setelah NMS). Induk tidak pernah dibuang di sini.
+        // - Anak dan induk dengan IoU > Yolo:NmsIouThreshold = satu hewan terdeteksi dua kelas; selalu jadi induk.
+        //   Anak yang terhalang induk (kotaknya di dalam/menempel kotak induk) IoU-nya kecil sehingga tetap
+        //   dipertahankan dan tetap diproses aturan menyusu.
+        // - Kotak anak yang luasnya >= Yolo:LambMaximumAreaRatio x luas induk acuan = induk yang salah kelas,
+        //   dijadikan induk. Acuan = induk utuh terdekat (tidak terpotong tepi frame), atau rata-rata luas induk
+        //   utuh frame sebelumnya bila di frame ini tidak ada; tanpa acuan aturan ukuran dilewati.
         // - Anak yang overlap dengan anak lain dan luasnya < Yolo:LambPartAreaRatio x luas anak itu = potongan
         //   (biasanya kepala) dari anak yang sama, dibuang.
-        // - Anak harus lebih kecil dari induk terdekat dan luasnya minimal Yolo:LambMinimumAreaRatio x luas induk itu,
-        //   sehingga kotak kecil yang hanya berisi kepala anak dibuang. Induk yang terpotong tepi frame tidak dipakai
-        //   sebagai acuan karena luasnya tidak utuh; tanpa induk acuan aturan ukuran dilewati.
+        // - Anak yang luasnya < Yolo:LambMinimumAreaRatio x luas induk acuan = kotak yang hanya berisi kepala, dibuang.
         private List<Detection> FilterLambs(List<Detection> detections, Size frameSize)
         {
-            var lambs = detections.Where(d => d.Label == LambLabel).ToList();
             var ewes = detections.Where(d => d.Label == EweLabel).ToList();
+            var lambs = detections.Where(d => d.Label == LambLabel && !ewes.Any(e => Iou(d.Box, e.Box) > nmsIouThreshold)).ToList();
 
-            foreach (var lamb in lambs.ToList())
+            var fullEwes = ewes.Where(e => !IsCutByFrame(e.Box, frameSize)).ToList();
+            float? ReferenceArea(Detection lamb) => fullEwes.Count > 0
+                ? Area(fullEwes.MinBy(e => CentroidTrackerService.Distance(CentroidTrackerService.GetCentroid(e.Box),
+                    CentroidTrackerService.GetCentroid(lamb.Box)))!.Box)
+                : eweArea;
+
+            foreach (var lamb in lambs.Where(l => Area(l.Box) >= lambMaximumAreaRatio * ReferenceArea(l)).ToList())
             {
-                var duplicate = ewes.FirstOrDefault(e => Iou(lamb.Box, e.Box) > nmsIouThreshold);
-                if (duplicate == null)
-                {
-                    continue;
-                }
-
-                if (lamb.Confidence >= duplicate.Confidence)
-                {
-                    ewes.Remove(duplicate);
-                }
-                else
-                {
-                    lambs.Remove(lamb);
-                }
+                lambs.Remove(lamb);
+                lamb.ClassId = eweClassId;
+                lamb.Label = EweLabel;
+                ewes.Add(lamb);
             }
+
+            // Induk hasil koreksi kelas bisa menumpuk dengan induk yang sudah ada
+            ewes = Nms(ewes);
 
             lambs = Suppress(lambs.OrderByDescending(d => Area(d.Box)).ToList(),
                 (keep, other) => HasOverlap(keep.Box, other.Box) && Area(other.Box) < lambPartAreaRatio * Area(keep.Box));
+            lambs.RemoveAll(l => Area(l.Box) < lambMinimumAreaRatio * ReferenceArea(l));
 
-            var fullEwes = ewes.Where(e => !IsCutByFrame(e.Box, frameSize)).ToList();
-            lambs.RemoveAll(lamb =>
+            fullEwes = ewes.Where(e => !IsCutByFrame(e.Box, frameSize)).ToList();
+            if (fullEwes.Count > 0)
             {
-                var ewe = fullEwes.MinBy(e => CentroidTrackerService.Distance(CentroidTrackerService.GetCentroid(e.Box),
-                    CentroidTrackerService.GetCentroid(lamb.Box)));
-                return ewe != null && (Area(lamb.Box) >= Area(ewe.Box) || Area(lamb.Box) < lambMinimumAreaRatio * Area(ewe.Box));
-            });
+                float area = fullEwes.Average(e => Area(e.Box));
+                eweArea = eweArea.HasValue ? eweArea.Value + baselineWeight * (area - eweArea.Value) : area;
+            }
 
             return ewes.Concat(lambs).ToList();
         }

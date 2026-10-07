@@ -62,6 +62,7 @@
         public string YoloNmsIouThreshold { get; set; }
         public string YoloNmsContainmentThreshold { get; set; }
         public string YoloLambMinimumAreaRatio { get; set; }
+        public string YoloLambMaximumAreaRatio { get; set; }
         public string YoloLambPartAreaRatio { get; set; }
         public string YoloApiUrl { get; set; }
         public string YoloClientId { get; set; }

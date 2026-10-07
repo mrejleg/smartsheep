@@ -64,6 +64,7 @@ namespace InferenceYolo.Dis
                 YoloNmsIouThreshold = configuration["Yolo:NmsIouThreshold"],
                 YoloNmsContainmentThreshold = configuration["Yolo:NmsContainmentThreshold"],
                 YoloLambMinimumAreaRatio = configuration["Yolo:LambMinimumAreaRatio"],
+                YoloLambMaximumAreaRatio = configuration["Yolo:LambMaximumAreaRatio"],
                 YoloLambPartAreaRatio = configuration["Yolo:LambPartAreaRatio"],
                 YoloApiUrl = configuration["Yolo:ApiUrl"],
                 YoloClientId = configuration["Yolo:ClientId"],
