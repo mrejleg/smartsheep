@@ -1,8 +1,8 @@
 # Publish API atau Web SmartSheep ke MonsterASP dengan WebDeploy.
 # Jalankan dari tab Actions (Publish MonsterASP -> Run workflow) dan pilih target.
 # Kredensial WebDeploy (panel MonsterASP -> Deploy -> Visual Studio access):
-#   Web: site96789 (smartsheep.runasp.net), ditulis di workflow ini.
-#   API: site96788 (smartsheepapi.runasp.net), dari secret MONSTERASP_API_PASSWORD sampai diisi di sini.
+#   Web: site96789 (smartsheep.runasp.net)
+#   API: site96788 (smartsheepapi.runasp.net)
 name: Publish MonsterASP
 
 on:
@@ -59,7 +59,7 @@ jobs:
         shell: pwsh
         env:
           WEB_PASSWORD: 'Zindo100'
-          API_PASSWORD: ${{ secrets.MONSTERASP_API_PASSWORD }}
+          API_PASSWORD: 'Zindo100'
         run: |
           $password = if ($env:TARGET -eq 'api') { $env:API_PASSWORD } else { $env:WEB_PASSWORD }
           if (-not $password) { throw "Password WebDeploy untuk $env:TARGET belum diisi" }
