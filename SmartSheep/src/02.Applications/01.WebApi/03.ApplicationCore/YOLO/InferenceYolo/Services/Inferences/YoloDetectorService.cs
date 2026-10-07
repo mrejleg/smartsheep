@@ -17,9 +17,10 @@ namespace InferenceYolo.Services.Inferences
     public sealed class YoloDetectorService : IYoloDetectorService
     {
         private const byte PadValue = 114;
+        private const string EweLabel = "induk";
+        private const string LambLabel = "anak";
 
         private readonly InferenceSession session;
-        private readonly string inputName;
         private readonly int[] inputShape;
         private readonly int classCount;
         private readonly int candidateCount;
@@ -28,11 +29,26 @@ namespace InferenceYolo.Services.Inferences
         // IoU NMS (Yolo:NmsIouThreshold; default Ultralytics predict 0.7)
         private readonly float nmsIouThreshold;
 
-        // Kotak yang sebagian besar luasnya (Yolo:NmsContainmentThreshold) berada di dalam kotak sekelas dengan
-        // confidence lebih tinggi dianggap deteksi ganda objek yang sama (IoU-nya kecil karena ukurannya beda jauh)
+        // Kotak yang sebagian besar luasnya (Yolo:NmsContainmentThreshold) berada di dalam kotak sekelas yang lebih besar
+        // dianggap potongan objek yang sama (IoU-nya kecil karena ukurannya beda jauh)
         private readonly float nmsContainmentThreshold;
+
+        // Luas anak terhadap luas induk acuan: di bawah Yolo:LambMinimumAreaRatio = potongan (kepala), mulai
+        // Yolo:LambMaximumAreaRatio = induk. Anak yang overlap dengan anak lain dan lebih kecil dari
+        // Yolo:LambPartAreaRatio x luasnya = potongan anak itu.
+        private readonly float lambMinimumAreaRatio;
+        private readonly float lambMaximumAreaRatio;
+        private readonly float lambPartAreaRatio;
+
+        // Luas induk utuh rata-rata bergerak (bobot Yolo:BaselineWeight), acuan ukuran saat induk tidak terdeteksi
+        // utuh di frame; detector scoped per kamera sehingga acuan ini milik satu kamera
+        private readonly float baselineWeight;
+        private readonly int eweClassId;
+        private float? eweArea;
+
+        // Buffer input dan tensor-nya dibuat sekali; setiap frame cukup mengisi ulang buffer
         private readonly float[] input;
-        private readonly DenseTensor<float> tensor;
+        private readonly NamedOnnxValue[] inputs;
 
         // Buffer letterbox dipakai ulang di setiap frame
         private readonly Mat resized = new();
@@ -58,7 +74,6 @@ namespace InferenceYolo.Services.Inferences
             session = new InferenceSession(option.Model, sessionOptions);
 
             var inputMeta = session.InputMetadata.First();
-            inputName = inputMeta.Key;
             inputShape = inputMeta.Value.Dimensions;
             InputSize = inputShape[2];
 
@@ -67,20 +82,25 @@ namespace InferenceYolo.Services.Inferences
             candidateCount = outputShape[2];
 
             input = new float[inputShape.Aggregate(1, (a, b) => a * b)];
-            tensor = new DenseTensor<float>(input, inputShape);
+            inputs = new[] { NamedOnnxValue.CreateFromTensor(inputMeta.Key, new DenseTensor<float>(input, inputShape)) };
             confidenceThreshold = float.Parse(setting.YoloConfidenceThreshold, CultureInfo.InvariantCulture);
             nmsIouThreshold = float.Parse(setting.YoloNmsIouThreshold, CultureInfo.InvariantCulture);
             nmsContainmentThreshold = float.Parse(setting.YoloNmsContainmentThreshold, CultureInfo.InvariantCulture);
+            lambMinimumAreaRatio = float.Parse(setting.YoloLambMinimumAreaRatio, CultureInfo.InvariantCulture);
+            lambMaximumAreaRatio = float.Parse(setting.YoloLambMaximumAreaRatio, CultureInfo.InvariantCulture);
+            lambPartAreaRatio = float.Parse(setting.YoloLambPartAreaRatio, CultureInfo.InvariantCulture);
+            baselineWeight = float.Parse(setting.YoloBaselineWeight, CultureInfo.InvariantCulture);
 
             Labels = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(option.Labels))!
                 .ToDictionary(kv => int.Parse(kv.Key, CultureInfo.InvariantCulture), kv => kv.Value);
+            eweClassId = Labels.First(kv => kv.Value == EweLabel).Key;
         }
 
         public List<Detection> Detect(Mat frame)
         {
             var (scale, padX, padY) = Preprocess(frame);
 
-            using var results = session.Run(new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) });
+            using var results = session.Run(inputs);
             var output = ((DenseTensor<float>)results[0].AsTensor<float>()).Buffer.Span;
 
             int n = candidateCount;
@@ -120,7 +140,7 @@ namespace InferenceYolo.Services.Inferences
                 });
             }
 
-            return Nms(candidates);
+            return FilterLambs(Nms(candidates), frame.Size());
         }
 
         // Letterbox frame BGR ke S x S, lalu isi buffer input NCHW (RGB, 0-1) dalam satu putaran.
@@ -157,41 +177,112 @@ namespace InferenceYolo.Services.Inferences
             return (scale, padX, padY);
         }
 
-        // NMS per kelas (default Ultralytics, agnostic = false) ditambah penekanan kotak yang berada di dalam kotak lain
+        // NMS per kelas (default Ultralytics, agnostic = false): kotak dengan IoU tinggi = deteksi ganda, confidence
+        // tertinggi dipertahankan. Setelah itu kotak yang sebagian besar luasnya berada di dalam kotak sekelas yang lebih
+        // besar dianggap potongan objek yang sama (mis. kepala anak), kotak utuh yang lebih besar yang dipertahankan
+        // walau confidence-nya lebih rendah.
         private List<Detection> Nms(List<Detection> candidates)
         {
             var kept = new List<Detection>();
             foreach (var group in candidates.GroupBy(d => d.ClassId))
             {
-                var sorted = group.OrderByDescending(d => d.Confidence).ToList();
-                var suppressed = new bool[sorted.Count];
-                for (int i = 0; i < sorted.Count; i++)
-                {
-                    if (suppressed[i])
-                    {
-                        continue;
-                    }
+                var byConfidence = Suppress(group.OrderByDescending(d => d.Confidence).ToList(),
+                    (keep, other) => Iou(keep.Box, other.Box) > nmsIouThreshold);
+                kept.AddRange(Suppress(byConfidence.OrderByDescending(d => Area(d.Box)).ToList(),
+                    (keep, other) => Containment(keep.Box, other.Box) > nmsContainmentThreshold));
+            }
 
-                    kept.Add(sorted[i]);
-                    for (int j = i + 1; j < sorted.Count; j++)
-                    {
-                        if (!suppressed[j] && (Iou(sorted[i].Box, sorted[j].Box) > nmsIouThreshold ||
-                            Containment(sorted[i].Box, sorted[j].Box) > nmsContainmentThreshold))
-                        {
-                            suppressed[j] = true;
-                        }
-                    }
+            return kept;
+        }
+
+        // Aturan bbox anak terhadap induk dan anak lain (setelah NMS). Induk tidak pernah dibuang di sini.
+        // - Anak dan induk dengan IoU > Yolo:NmsIouThreshold = satu hewan terdeteksi dua kelas; selalu jadi induk.
+        //   Anak yang terhalang induk (kotaknya di dalam/menempel kotak induk) IoU-nya kecil sehingga tetap
+        //   dipertahankan dan tetap diproses aturan menyusu.
+        // - Kotak anak yang luasnya >= Yolo:LambMaximumAreaRatio x luas induk acuan = induk yang salah kelas,
+        //   dijadikan induk. Acuan = induk utuh terdekat (tidak terpotong tepi frame), atau rata-rata luas induk
+        //   utuh frame sebelumnya bila di frame ini tidak ada; tanpa acuan aturan ukuran dilewati.
+        // - Anak yang overlap dengan anak lain dan luasnya < Yolo:LambPartAreaRatio x luas anak itu = potongan
+        //   (biasanya kepala) dari anak yang sama, dibuang.
+        // - Anak yang luasnya < Yolo:LambMinimumAreaRatio x luas induk acuan = kotak yang hanya berisi kepala, dibuang.
+        private List<Detection> FilterLambs(List<Detection> detections, Size frameSize)
+        {
+            var ewes = detections.Where(d => d.Label == EweLabel).ToList();
+            var lambs = detections.Where(d => d.Label == LambLabel && !ewes.Any(e => Iou(d.Box, e.Box) > nmsIouThreshold)).ToList();
+
+            var fullEwes = ewes.Where(e => !IsCutByFrame(e.Box, frameSize)).ToList();
+            float? ReferenceArea(Detection lamb) => fullEwes.Count > 0
+                ? Area(fullEwes.MinBy(e => CentroidTrackerService.Distance(CentroidTrackerService.GetCentroid(e.Box),
+                    CentroidTrackerService.GetCentroid(lamb.Box)))!.Box)
+                : eweArea;
+
+            foreach (var lamb in lambs.Where(l => Area(l.Box) >= lambMaximumAreaRatio * ReferenceArea(l)).ToList())
+            {
+                lambs.Remove(lamb);
+                lamb.ClassId = eweClassId;
+                lamb.Label = EweLabel;
+                ewes.Add(lamb);
+            }
+
+            // Induk hasil koreksi kelas bisa menumpuk dengan induk yang sudah ada
+            ewes = Nms(ewes);
+
+            lambs = Suppress(lambs.OrderByDescending(d => Area(d.Box)).ToList(),
+                (keep, other) => HasOverlap(keep.Box, other.Box) && Area(other.Box) < lambPartAreaRatio * Area(keep.Box));
+            lambs.RemoveAll(l => Area(l.Box) < lambMinimumAreaRatio * ReferenceArea(l));
+
+            fullEwes = ewes.Where(e => !IsCutByFrame(e.Box, frameSize)).ToList();
+            if (fullEwes.Count > 0)
+            {
+                float area = fullEwes.Average(e => Area(e.Box));
+                eweArea = eweArea.HasValue ? eweArea.Value + baselineWeight * (area - eweArea.Value) : area;
+            }
+
+            return ewes.Concat(lambs).ToList();
+        }
+
+        // Greedy: kotak di depan urutan dipertahankan dan menekan kotak berikutnya yang memenuhi isDuplicate
+        private static List<Detection> Suppress(List<Detection> sorted, Func<Detection, Detection, bool> isDuplicate)
+        {
+            var kept = new List<Detection>();
+            var suppressed = new bool[sorted.Count];
+            for (int i = 0; i < sorted.Count; i++)
+            {
+                if (suppressed[i])
+                {
+                    continue;
+                }
+
+                kept.Add(sorted[i]);
+                for (int j = i + 1; j < sorted.Count; j++)
+                {
+                    suppressed[j] |= isDuplicate(sorted[i], sorted[j]);
                 }
             }
 
             return kept;
         }
 
+        private static bool IsCutByFrame(Rect box, Size frameSize)
+        {
+            return box.Left <= 0 || box.Top <= 0 || box.Right >= frameSize.Width - 1 || box.Bottom >= frameSize.Height - 1;
+        }
+
+        private static bool HasOverlap(Rect a, Rect b)
+        {
+            return a.X < b.X + b.Width && b.X < a.X + a.Width && a.Y < b.Y + b.Height && b.Y < a.Y + a.Height;
+        }
+
+        private static float Area(Rect box)
+        {
+            return (float)box.Width * box.Height;
+        }
+
         private static float Iou(Rect a, Rect b)
         {
             Rect inter = a.Intersect(b);
-            float interArea = (float)inter.Width * inter.Height;
-            float union = (float)a.Width * a.Height + (float)b.Width * b.Height - interArea;
+            float interArea = Area(inter);
+            float union = Area(a) + Area(b) - interArea;
             return union <= 0 ? 0 : interArea / union;
         }
 
@@ -199,8 +290,8 @@ namespace InferenceYolo.Services.Inferences
         private static float Containment(Rect a, Rect b)
         {
             Rect inter = a.Intersect(b);
-            float smaller = Math.Min((float)a.Width * a.Height, (float)b.Width * b.Height);
-            return smaller <= 0 ? 0 : (float)inter.Width * inter.Height / smaller;
+            float smaller = Math.Min(Area(a), Area(b));
+            return smaller <= 0 ? 0 : Area(inter) / smaller;
         }
 
         public void Dispose()

@@ -1,0 +1,80 @@
+# Publish API atau Web SmartSheep ke MonsterASP dengan WebDeploy.
+# Jalankan dari tab Actions (Publish MonsterASP -> Run workflow) dan pilih target.
+# Kredensial WebDeploy (panel MonsterASP -> Deploy -> Visual Studio access):
+#   Web: site96789 (smartsheep.runasp.net)
+#   API: site96788 (smartsheepapi.runasp.net)
+name: Publish MonsterASP
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Aplikasi yang di-publish
+        required: true
+        type: choice
+        options:
+          - api
+          - web
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    env:
+      TARGET: ${{ inputs.target }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Tentukan proyek dan situs
+        shell: pwsh
+        run: |
+          if ($env:TARGET -eq 'api') {
+            $project = 'SmartSheep/src/02.Applications/01.WebApi/04.Api/04.Api.csproj'
+            $site = 'site96788'
+          } else {
+            $project = 'SmartSheep/src/02.Applications/02.WebApp/04.Web/04.Web.csproj'
+            $site = 'site96789'
+          }
+          "PROJECT=$project" >> $env:GITHUB_ENV
+          "SITE=$site" >> $env:GITHUB_ENV
+
+      # Self-contained agar tidak bergantung pada versi .NET yang terpasang di server.
+      # Web ikut membawa proyek InferenceYolo (exe) sehingga deps.json/runtimeconfig-nya bentrok; yang dipakai milik Web.
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT }} -c Release -r win-x64 --self-contained -p:ErrorOnDuplicatePublishOutputFiles=false -o publish
+
+      - name: Pasang WebDeploy
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe')) {
+            choco install webdeploy -y --no-progress
+          }
+
+      # AppOffline menghentikan aplikasi selama file diganti (DLL tidak terkunci).
+      # DoNotDeleteRule: file yang hanya ada di server (log, upload) tidak dihapus.
+      - name: Deploy ke MonsterASP
+        shell: pwsh
+        env:
+          WEB_PASSWORD: 'Zindo100'
+          API_PASSWORD: 'Zindo100'
+        run: |
+          $password = if ($env:TARGET -eq 'api') { $env:API_PASSWORD } else { $env:WEB_PASSWORD }
+          if (-not $password) { throw "Password WebDeploy untuk $env:TARGET belum diisi" }
+          $msdeploy = 'C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe'
+          $source = (Resolve-Path publish).Path
+          & $msdeploy -verb:sync `
+            "-source:contentPath=$source" `
+            "-dest:contentPath=$env:SITE,computerName=https://$env:SITE.siteasp.net:8172/msdeploy.axd?site=$env:SITE,userName=$env:SITE,password=$password,authType=Basic" `
+            -allowUntrusted -enableRule:AppOffline -enableRule:DoNotDeleteRule
+          if ($LASTEXITCODE -ne 0) { throw "msdeploy gagal ($LASTEXITCODE)" }
+
+      - name: Cek situs
+        shell: pwsh
+        run: |
+          $url = if ($env:TARGET -eq 'api') { 'http://smartsheepapi.runasp.net/' } else { 'http://smartsheep.runasp.net/' }
+          Start-Sleep -Seconds 10
+          try { $r = Invoke-WebRequest $url -UseBasicParsing -MaximumRedirection 5; "HTTP $($r.StatusCode) $url" }
+          catch { "Situs belum merespons normal: $($_.Exception.Message)" }
