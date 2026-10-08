@@ -1,108 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="770" height="515" viewBox="0 0 770 515" font-family="Inter, sans-serif">
-  <defs>
-    <linearGradient id="titleG" x1="0" x2="1">
-      <stop offset="0" stop-color="#0f766e"/><stop offset="1" stop-color="#2563eb"/>
-    </linearGradient>
-    <radialGradient id="zoneG" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0.45" stop-color="#dbeafe"/><stop offset="1" stop-color="#bfdbfe"/>
-    </radialGradient>
-    <radialGradient id="indukG" cx="0.4" cy="0.35" r="0.7">
-      <stop offset="0" stop-color="#ffffff"/><stop offset="0.6" stop-color="#e5e7eb"/><stop offset="1" stop-color="#9ca3af"/>
-    </radialGradient>
-    <linearGradient id="anakG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#15803d"/>
-    </linearGradient>
-    <linearGradient id="anakOutG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#d1d5db"/><stop offset="1" stop-color="#9ca3af"/>
-    </linearGradient>
-    <linearGradient id="bgG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f1f5f9"/>
-    </linearGradient>
-    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="#0f172a" flood-opacity="0.22"/>
-    </filter>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="4" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <marker id="arrG" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/>
-    </marker>
-    <marker id="arrO" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/>
-    </marker>
-    <clipPath id="card"><rect x="5" y="16" width="760" height="482" rx="18"/></clipPath>
-  </defs>
-
-  <rect width="770" height="515" fill="#ffffff"/>
-  <!-- card -->
-  <rect x="5" y="16" width="760" height="482" rx="18" fill="url(#bgG)"/>
-  <g clip-path="url(#card)">
-    <rect x="5" y="16" width="760" height="48" fill="url(#titleG)"/>
-  </g>
-  <text x="385" y="48" text-anchor="middle" font-size="23" font-weight="800" fill="#ffffff" letter-spacing="0.3">Zona Kedekatan Anak dan Induk Domba</text>
-  <line x1="5" y1="64" x2="765" y2="64" stroke="#1e293b" stroke-width="2" stroke-dasharray="8 6"/>
-  <rect x="5" y="16" width="760" height="482" rx="18" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-dasharray="8 6"/>
-
-  <!-- area label -->
-  <g filter="url(#sh)">
-    <rect x="20" y="78" width="182" height="28" rx="14" fill="#1e293b"/>
-  </g>
-  <g transform="translate(34,85)" fill="#fbbf24">
-    <rect x="0" y="2" width="15" height="11" rx="2.5"/>
-    <path d="M15,5.5 L21,2.5 L21,12.5 L15,9.5 z"/>
-  </g>
-  <text x="62" y="97" font-size="13" font-weight="700" fill="#ffffff">Area Kandang CCTV</text>
-
-  <!-- proximity zone -->
-    <circle cx="389" cy="241" r="178" fill="url(#zoneG)" stroke="#2563eb" stroke-width="3" filter="url(#sh)"/>
-  <circle cx="389" cy="241" r="140" fill="none" stroke="#60a5fa" stroke-width="1.2" stroke-dasharray="4 5" opacity="0.7"/>
-
-  <!-- udder zone (orange) -->
-  <path d="M 287 290 A 104 104 0 0 0 473 290" fill="none" stroke="#fde68a" stroke-width="22" stroke-linecap="round" opacity="0.75"/>
-  <path d="M 287 290 A 104 104 0 0 0 473 290" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" filter="url(#glow)"/>
-  <line x1="291" y1="222" x2="291" y2="300" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" filter="url(#glow)"/>
-  <line x1="469" y1="222" x2="469" y2="300" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" filter="url(#glow)"/>
-
-  <!-- induk -->
-  <circle cx="380" cy="238" r="84" fill="url(#indukG)" stroke="#334155" stroke-width="3" filter="url(#sh)"/>
-  <text x="380" y="236" text-anchor="middle" font-size="25" font-weight="800" fill="#1e293b">Induk</text>
-  <rect x="331" y="248" width="98" height="22" rx="11" fill="#334155"/>
-  <text x="380" y="263" text-anchor="middle" font-size="11.5" font-weight="600" fill="#f8fafc">titik acuan</text>
-
-  <!-- approach arrow -->
-  <line x1="135" y1="234" x2="282" y2="240" stroke="#16a34a" stroke-width="3" stroke-dasharray="7 4" marker-end="url(#arrG)"/>
-
-  <!-- anak left -->
-  <g filter="url(#sh)"><ellipse cx="96" cy="234" rx="37" ry="25" fill="url(#anakG)" stroke="#ffffff" stroke-width="2.5"/></g>
-  <text x="96" y="239" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">Anak</text>
-  <rect x="46" y="270" width="112" height="40" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
-  <text x="102" y="286" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">Frekuensi</text>
-  <text x="102" y="302" text-anchor="middle" font-size="12" font-weight="700" fill="#166534">pendekatan</text>
-
-  <!-- anak bottom (suckling) -->
-  <line x1="352" y1="303" x2="352" y2="288" stroke="#f59e0b" stroke-width="3.5" marker-end="url(#arrO)"/>
-  <g filter="url(#sh)"><ellipse cx="352" cy="330" rx="36" ry="24" fill="url(#anakG)" stroke="#ffffff" stroke-width="2.5"/></g>
-  <text x="352" y="335" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">Anak</text>
-  <rect x="404" y="364" width="138" height="40" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
-  <text x="473" y="380" text-anchor="middle" font-size="11.5" font-weight="700" fill="#92400e">Durasi keberadaan</text>
-  <text x="473" y="396" text-anchor="middle" font-size="11.5" font-weight="700" fill="#92400e">di area ambing</text>
-
-  <!-- anak outside -->
-  <g filter="url(#sh)"><ellipse cx="563" cy="110" rx="36" ry="24" fill="url(#anakOutG)" stroke="#ffffff" stroke-width="2.5"/></g>
-  <text x="563" y="115" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">Anak</text>
-  <g filter="url(#sh)"><circle cx="553" cy="186" r="20" fill="#ef4444" stroke="#ffffff" stroke-width="2.5"/></g>
-  <path d="M545,178 L561,194 M561,178 L545,194" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
-  <rect x="587" y="168" width="156" height="40" rx="10" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="665" y="184" text-anchor="middle" font-size="11.5" font-weight="700" fill="#991b1b">Tidak muncul aktivitas</text>
-  <text x="665" y="200" text-anchor="middle" font-size="11.5" font-weight="700" fill="#991b1b">menyusu</text>
-
-  <!-- legend -->
-  <rect x="24" y="428" width="722" height="56" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
-  <rect x="42" y="442" width="30" height="28" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5"/>
-  <text x="84" y="453" font-size="13" fill="#1e293b">Zona kedekatan anak terhadap</text>
-  <text x="84" y="470" font-size="13" fill="#1e293b">induk</text>
-  <rect x="378" y="442" width="30" height="28" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.5"/>
-  <text x="420" y="453" font-size="13" fill="#1e293b">Zona sekitar ambing sebagai tanda adanya</text>
-  <text x="420" y="470" font-size="13" fill="#1e293b">aktivitas menyusu</text>
+<defs><clipPath id="card"><rect x="5" y="16" width="760" height="482" rx="18"/></clipPath><marker id="aG" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker><marker id="aO" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker></defs>
+<rect width="770" height="515" fill="#ffffff"/>
+<rect x="5" y="16" width="760" height="482" rx="18" fill="#fffdf6"/>
+<g clip-path="url(#card)"><path d="M5,410 Q200,385 385,405 T765,395 L765,500 L5,500 Z" fill="#ecfccb"/><rect x="5" y="16" width="760" height="48" fill="#0f766e"/></g>
+<text x="385" y="48" text-anchor="middle" font-size="23" font-weight="800" fill="#ffffff">Zona Kedekatan Anak dan Induk Domba</text>
+<line x1="5" y1="64" x2="765" y2="64" stroke="#1e293b" stroke-width="2" stroke-dasharray="8 6"/>
+<path d="M76,112 L140,215 L190,168 Z" fill="#fde68a" opacity="0.5"/>
+<g transform="translate(22,80)"><rect x="0" y="0" width="7" height="34" rx="2" fill="#64748b"/><rect x="5" y="12" width="14" height="6" fill="#64748b"/><g transform="rotate(25 30 18)"><rect x="14" y="6" width="38" height="22" rx="5" fill="#e2e8f0" stroke="#334155" stroke-width="2.5"/><rect x="50" y="10" width="9" height="14" rx="2" fill="#334155"/><circle cx="23" cy="17" r="3" fill="#ef4444"/></g></g>
+<text x="90" y="96" font-size="13.5" font-weight="800" fill="#1e293b">Area Kandang CCTV</text>
+<circle cx="389" cy="241" r="178" fill="#dbeafe" stroke="#3b82f6" stroke-width="3"/>
+<circle cx="389" cy="241" r="146" fill="none" stroke="#93c5fd" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round"/>
+<circle cx="382" cy="222" r="86" fill="#f8fafc" stroke="#475569" stroke-width="2.5"/>
+<ellipse cx="380" cy="262" rx="44" ry="24" fill="#fde68a" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="6 4"/>
+<g transform="translate(304,162) scale(1.3)"><rect x="34" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="50" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="76" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="90" y="62" width="8" height="26" rx="4" fill="#334155"/><ellipse cx="58" cy="77" rx="10" ry="7" fill="#f9a8d4" stroke="#334155" stroke-width="2"/><rect x="53" y="81" width="3" height="5" rx="1.5" fill="#ec4899"/><rect x="60" y="81" width="3" height="5" rx="1.5" fill="#ec4899"/><circle cx="30" cy="40" r="20.5" fill="#334155"/><circle cx="50" cy="29" r="22.5" fill="#334155"/><circle cx="72" cy="29" r="22.5" fill="#334155"/><circle cx="90" cy="40" r="19.5" fill="#334155"/><circle cx="40" cy="55" r="20.5" fill="#334155"/><circle cx="62" cy="58" r="21.5" fill="#334155"/><circle cx="84" cy="54" r="19.5" fill="#334155"/><circle cx="14" cy="42" r="10.5" fill="#334155"/><circle cx="30" cy="40" r="18" fill="#ffffff"/><circle cx="50" cy="29" r="20" fill="#ffffff"/><circle cx="72" cy="29" r="20" fill="#ffffff"/><circle cx="90" cy="40" r="17" fill="#ffffff"/><circle cx="40" cy="55" r="18" fill="#ffffff"/><circle cx="62" cy="58" r="19" fill="#ffffff"/><circle cx="84" cy="54" r="17" fill="#ffffff"/><circle cx="14" cy="42" r="8" fill="#ffffff"/><ellipse cx="100" cy="27" rx="10" ry="4.5" fill="#475569" transform="rotate(-25 100 27)"/><ellipse cx="108" cy="40" rx="13" ry="16" fill="#334155" transform="rotate(-15 108 40)"/><circle cx="103" cy="24" r="7" fill="#334155"/><circle cx="103" cy="24" r="5.5" fill="#ffffff"/><circle cx="113" cy="35" r="3.2" fill="#fff"/><circle cx="114" cy="35" r="1.6" fill="#334155"/><ellipse cx="111" cy="48" rx="3" ry="2" fill="#f9a8d4"/></g>
+<rect x="307.0" y="125" width="150" height="24" rx="12" fill="#334155"/><text x="382" y="141.5" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Induk (titik acuan)</text>
+<line x1="366" y1="326" x2="366" y2="296" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" marker-end="url(#aO)"/>
+<g transform="translate(300,318) scale(0.6)"><rect x="34" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="50" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="76" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="90" y="62" width="8" height="26" rx="4" fill="#334155"/><circle cx="30" cy="40" r="20.5" fill="#334155"/><circle cx="50" cy="29" r="22.5" fill="#334155"/><circle cx="72" cy="29" r="22.5" fill="#334155"/><circle cx="90" cy="40" r="19.5" fill="#334155"/><circle cx="40" cy="55" r="20.5" fill="#334155"/><circle cx="62" cy="58" r="21.5" fill="#334155"/><circle cx="84" cy="54" r="19.5" fill="#334155"/><circle cx="14" cy="42" r="10.5" fill="#334155"/><circle cx="30" cy="40" r="18" fill="#fff7ed"/><circle cx="50" cy="29" r="20" fill="#fff7ed"/><circle cx="72" cy="29" r="20" fill="#fff7ed"/><circle cx="90" cy="40" r="17" fill="#fff7ed"/><circle cx="40" cy="55" r="18" fill="#fff7ed"/><circle cx="62" cy="58" r="19" fill="#fff7ed"/><circle cx="84" cy="54" r="17" fill="#fff7ed"/><circle cx="14" cy="42" r="8" fill="#fff7ed"/><ellipse cx="100" cy="27" rx="10" ry="4.5" fill="#475569" transform="rotate(-25 100 27)"/><ellipse cx="108" cy="40" rx="13" ry="16" fill="#334155" transform="rotate(-15 108 40)"/><circle cx="103" cy="24" r="7" fill="#334155"/><circle cx="103" cy="24" r="5.5" fill="#fff7ed"/><circle cx="113" cy="35" r="3.2" fill="#fff"/><circle cx="114" cy="35" r="1.6" fill="#334155"/><ellipse cx="111" cy="48" rx="3" ry="2" fill="#f9a8d4"/></g>
+<rect x="302.0" y="372" width="60" height="24" rx="12" fill="#16a34a"/><text x="332" y="388.5" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Anak</text>
+<rect x="408" y="352" width="158" height="44" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/><circle cx="428" cy="374" r="10" fill="#fff" stroke="#b45309" stroke-width="2"/><path d="M428,368 L428,374 L432,377" stroke="#b45309" stroke-width="2" fill="none" stroke-linecap="round"/><text x="444" y="370" font-size="11.5" font-weight="700" fill="#92400e">Durasi keberadaan</text><text x="444" y="386" font-size="11.5" font-weight="700" fill="#92400e">di area ambing</text>
+<line x1="22" y1="214" x2="40" y2="214" stroke="#86efac" stroke-width="3" stroke-linecap="round"/>
+<line x1="25" y1="226" x2="40" y2="226" stroke="#86efac" stroke-width="3" stroke-linecap="round"/>
+<line x1="28" y1="238" x2="40" y2="238" stroke="#86efac" stroke-width="3" stroke-linecap="round"/>
+<g transform="translate(48,198) scale(0.6)"><rect x="34" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="50" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="76" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="90" y="62" width="8" height="26" rx="4" fill="#334155"/><circle cx="30" cy="40" r="20.5" fill="#334155"/><circle cx="50" cy="29" r="22.5" fill="#334155"/><circle cx="72" cy="29" r="22.5" fill="#334155"/><circle cx="90" cy="40" r="19.5" fill="#334155"/><circle cx="40" cy="55" r="20.5" fill="#334155"/><circle cx="62" cy="58" r="21.5" fill="#334155"/><circle cx="84" cy="54" r="19.5" fill="#334155"/><circle cx="14" cy="42" r="10.5" fill="#334155"/><circle cx="30" cy="40" r="18" fill="#fff7ed"/><circle cx="50" cy="29" r="20" fill="#fff7ed"/><circle cx="72" cy="29" r="20" fill="#fff7ed"/><circle cx="90" cy="40" r="17" fill="#fff7ed"/><circle cx="40" cy="55" r="18" fill="#fff7ed"/><circle cx="62" cy="58" r="19" fill="#fff7ed"/><circle cx="84" cy="54" r="17" fill="#fff7ed"/><circle cx="14" cy="42" r="8" fill="#fff7ed"/><ellipse cx="100" cy="27" rx="10" ry="4.5" fill="#475569" transform="rotate(-25 100 27)"/><ellipse cx="108" cy="40" rx="13" ry="16" fill="#334155" transform="rotate(-15 108 40)"/><circle cx="103" cy="24" r="7" fill="#334155"/><circle cx="103" cy="24" r="5.5" fill="#fff7ed"/><circle cx="113" cy="35" r="3.2" fill="#fff"/><circle cx="114" cy="35" r="1.6" fill="#334155"/><ellipse cx="111" cy="48" rx="3" ry="2" fill="#f9a8d4"/></g>
+<rect x="54.0" y="254" width="60" height="24" rx="12" fill="#16a34a"/><text x="84" y="270.5" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Anak</text>
+<path d="M132,222 Q215,196 290,222" fill="none" stroke="#16a34a" stroke-width="3" stroke-dasharray="7 5" stroke-linecap="round" marker-end="url(#aG)"/>
+<rect x="34" y="288" width="128" height="44" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/><g transform="translate(54,310)" fill="none" stroke="#15803d" stroke-width="2.2" stroke-linecap="round"><path d="M-8,0 A8,8 0 1 1 0,8"/><path d="M-3,8 L0,8 L0,5"/></g><text x="70" y="306" font-size="12" font-weight="700" fill="#166534">Frekuensi</text><text x="70" y="322" font-size="12" font-weight="700" fill="#166534">pendekatan</text>
+<g transform="translate(568,76) scale(0.6)"><rect x="34" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="50" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="76" y="62" width="8" height="26" rx="4" fill="#334155"/><rect x="90" y="62" width="8" height="26" rx="4" fill="#334155"/><circle cx="30" cy="40" r="20.5" fill="#334155"/><circle cx="50" cy="29" r="22.5" fill="#334155"/><circle cx="72" cy="29" r="22.5" fill="#334155"/><circle cx="90" cy="40" r="19.5" fill="#334155"/><circle cx="40" cy="55" r="20.5" fill="#334155"/><circle cx="62" cy="58" r="21.5" fill="#334155"/><circle cx="84" cy="54" r="19.5" fill="#334155"/><circle cx="14" cy="42" r="10.5" fill="#334155"/><circle cx="30" cy="40" r="18" fill="#f1f5f9"/><circle cx="50" cy="29" r="20" fill="#f1f5f9"/><circle cx="72" cy="29" r="20" fill="#f1f5f9"/><circle cx="90" cy="40" r="17" fill="#f1f5f9"/><circle cx="40" cy="55" r="18" fill="#f1f5f9"/><circle cx="62" cy="58" r="19" fill="#f1f5f9"/><circle cx="84" cy="54" r="17" fill="#f1f5f9"/><circle cx="14" cy="42" r="8" fill="#f1f5f9"/><ellipse cx="100" cy="27" rx="10" ry="4.5" fill="#475569" transform="rotate(-25 100 27)"/><ellipse cx="108" cy="40" rx="13" ry="16" fill="#334155" transform="rotate(-15 108 40)"/><circle cx="103" cy="24" r="7" fill="#334155"/><circle cx="103" cy="24" r="5.5" fill="#f1f5f9"/><circle cx="113" cy="35" r="3.2" fill="#fff"/><circle cx="114" cy="35" r="1.6" fill="#334155"/><ellipse cx="111" cy="48" rx="3" ry="2" fill="#f9a8d4"/></g>
+<rect x="574.0" y="134" width="60" height="24" rx="12" fill="#94a3b8"/><text x="604" y="150.5" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Anak</text>
+<circle cx="552" cy="188" r="17" fill="#ef4444"/><path d="M545,181 L559,195 M559,181 L545,195" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+<rect x="584" y="168" width="160" height="42" rx="12" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/><text x="664" y="185" text-anchor="middle" font-size="11.5" font-weight="700" fill="#991b1b">Tidak muncul aktivitas</text><text x="664" y="201" text-anchor="middle" font-size="11.5" font-weight="700" fill="#991b1b">menyusu</text>
+<g transform="translate(30,410)"><path d="M0,0 Q-4,-14 -9,-18 Q0,-12 3,-2 Q4,-20 10,-26 Q8,-10 9,0 Q12,-12 19,-16 Q14,-6 14,0 Z" fill="#22c55e"/><path d="M3,0 Q4,-12 8,-18 Q8,-8 9,0Z" fill="#86efac"/></g>
+<g transform="translate(205,418)"><path d="M0,0 Q-4,-14 -9,-18 Q0,-12 3,-2 Q4,-20 10,-26 Q8,-10 9,0 Q12,-12 19,-16 Q14,-6 14,0 Z" fill="#22c55e"/><path d="M3,0 Q4,-12 8,-18 Q8,-8 9,0Z" fill="#86efac"/></g>
+<g transform="translate(600,330)"><path d="M0,0 Q-4,-14 -9,-18 Q0,-12 3,-2 Q4,-20 10,-26 Q8,-10 9,0 Q12,-12 19,-16 Q14,-6 14,0 Z" fill="#22c55e"/><path d="M3,0 Q4,-12 8,-18 Q8,-8 9,0Z" fill="#86efac"/></g>
+<g transform="translate(708,300)"><path d="M0,0 Q-4,-14 -9,-18 Q0,-12 3,-2 Q4,-20 10,-26 Q8,-10 9,0 Q12,-12 19,-16 Q14,-6 14,0 Z" fill="#22c55e"/><path d="M3,0 Q4,-12 8,-18 Q8,-8 9,0Z" fill="#86efac"/></g>
+<g transform="translate(660,412)"><path d="M0,0 Q-4,-14 -9,-18 Q0,-12 3,-2 Q4,-20 10,-26 Q8,-10 9,0 Q12,-12 19,-16 Q14,-6 14,0 Z" fill="#22c55e"/><path d="M3,0 Q4,-12 8,-18 Q8,-8 9,0Z" fill="#86efac"/></g>
+<g transform="translate(735,250)"><path d="M0,0 Q-4,-14 -9,-18 Q0,-12 3,-2 Q4,-20 10,-26 Q8,-10 9,0 Q12,-12 19,-16 Q14,-6 14,0 Z" fill="#22c55e"/><path d="M3,0 Q4,-12 8,-18 Q8,-8 9,0Z" fill="#86efac"/></g>
+<g transform="translate(60,400)"><circle cx="0" cy="-4" r="3.2" fill="#f472b6"/><circle cx="4" cy="0" r="3.2" fill="#f472b6"/><circle cx="0" cy="4" r="3.2" fill="#f472b6"/><circle cx="-4" cy="0" r="3.2" fill="#f472b6"/><circle r="2.4" fill="#fbbf24"/></g>
+<g transform="translate(625,322)"><circle cx="0" cy="-4" r="3.2" fill="#a78bfa"/><circle cx="4" cy="0" r="3.2" fill="#a78bfa"/><circle cx="0" cy="4" r="3.2" fill="#a78bfa"/><circle cx="-4" cy="0" r="3.2" fill="#a78bfa"/><circle r="2.4" fill="#fbbf24"/></g>
+<g transform="translate(722,290)"><circle cx="0" cy="-4" r="3.2" fill="#f472b6"/><circle cx="4" cy="0" r="3.2" fill="#f472b6"/><circle cx="0" cy="4" r="3.2" fill="#f472b6"/><circle cx="-4" cy="0" r="3.2" fill="#f472b6"/><circle r="2.4" fill="#fbbf24"/></g>
+<g transform="translate(190,408)"><circle cx="0" cy="-4" r="3.2" fill="#a78bfa"/><circle cx="4" cy="0" r="3.2" fill="#a78bfa"/><circle cx="0" cy="4" r="3.2" fill="#a78bfa"/><circle cx="-4" cy="0" r="3.2" fill="#a78bfa"/><circle r="2.4" fill="#fbbf24"/></g>
+<rect x="24" y="428" width="722" height="56" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/><circle cx="57" cy="456" r="14" fill="#dbeafe" stroke="#3b82f6" stroke-width="3"/><text x="84" y="453" font-size="13" fill="#1e293b">Zona kedekatan anak terhadap</text><text x="84" y="470" font-size="13" fill="#1e293b">induk</text><ellipse cx="393" cy="456" rx="17" ry="11" fill="#fde68a" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5 3"/><text x="420" y="453" font-size="13" fill="#1e293b">Zona sekitar ambing sebagai tanda adanya</text><text x="420" y="470" font-size="13" fill="#1e293b">aktivitas menyusu</text>
+<rect x="5" y="16" width="760" height="482" rx="18" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-dasharray="8 6"/>
 </svg>
