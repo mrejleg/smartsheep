@@ -10,10 +10,9 @@
 <text x="500.0" y="570" text-anchor="middle" font-size="13" font-weight="700" fill="#262626">Identifikasi menyusu</text>
 <rect x="145" y="224" width="230" height="174" fill="#e3e3e3"/>
 <text x="260.0" y="386" text-anchor="middle" font-size="13" font-weight="700" fill="#262626">Statistik dan notifikasi</text>
-<text x="500" y="280" text-anchor="middle" font-size="17" font-weight="800" fill="#111111">Pemantauan</text>
-<text x="500" y="302" text-anchor="middle" font-size="17" font-weight="800" fill="#111111">Menyusu</text>
-<text x="500" y="324" text-anchor="middle" font-size="17" font-weight="800" fill="#111111">Anak Domba</text>
-<text x="500" y="346" text-anchor="middle" font-size="17" font-weight="800" fill="#111111">Berbasis CCTV</text>
+<text x="500" y="291" text-anchor="middle" font-size="17" font-weight="800" fill="#111111">Pemantauan</text>
+<text x="500" y="313" text-anchor="middle" font-size="17" font-weight="800" fill="#111111">Aktivitas Menyusu</text>
+<text x="500" y="335" text-anchor="middle" font-size="17" font-weight="800" fill="#111111">Anak Domba</text>
 <rect x="426" y="82" width="176" height="96" rx="6" fill="#fef3c7" stroke="#e5c07b" stroke-width="1.2"/>
 <line x1="432" y1="82" x2="432" y2="96" stroke="#d6a64a" stroke-width="3" stroke-linecap="round"/>
 <line x1="452" y1="82" x2="452" y2="96" stroke="#d6a64a" stroke-width="3" stroke-linecap="round"/>

@@ -18,10 +18,10 @@
 
 Gambar: ringkasan_visual.png (300 dpi)
 
-Judul: Pemantauan Menyusu Anak Domba Berbasis CCTV
+Judul: Pemantauan Aktivitas Menyusu Anak Domba
 
 # GRAPHICAL SUMMARY
 
 Figure: graphical_summary.png (300 dpi)
 
-Title: CCTV-Based Lamb Suckling Monitoring
+Title: Lamb Suckling Activity Monitoring
