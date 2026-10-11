@@ -5,6 +5,8 @@ namespace InferenceYolo.Models.Inferences
         public string Input { get; set; } = "";                  // file video, folder rekaman, atau URL live streaming; kosong = URL dari SourceVideo
         public string SourceVideoCode { get; set; } = "";        // kode SourceVideo; default dari nama file/folder
         public string BarnCode { get; set; } = "";               // kode kandang (FK Barn di SourceVideo), folder pending per kandang
+        public int EweCount { get; set; }                        // jumlah induk kandang (Barn.EweCount), batas bbox induk; 0 = tidak dibatasi
+        public int LambCount { get; set; }                       // jumlah anak kandang (Barn.LambCount), batas bbox anak; 0 = tidak dibatasi
         public string Output { get; set; } = "output";
         public string Model { get; set; } = Path.Combine("..", "smartsheep.onnx");
         public string Labels { get; set; } = Path.Combine("..", "smartsheep.labels.json");
@@ -21,6 +23,8 @@ namespace InferenceYolo.Models.Inferences
             target.Input = Input;
             target.SourceVideoCode = SourceVideoCode;
             target.BarnCode = BarnCode;
+            target.EweCount = EweCount;
+            target.LambCount = LambCount;
             target.Output = Output;
             target.Model = Model;
             target.Labels = Labels;

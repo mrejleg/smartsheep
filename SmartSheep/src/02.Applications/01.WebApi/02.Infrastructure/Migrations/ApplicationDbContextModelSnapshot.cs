@@ -585,6 +585,100 @@ namespace Api.Infrastructure.Migrations
                     b.Property<int>("StatisticsDurationMinutes")
                         .HasColumnType("int");
 
+                    b.Property<double>("YoloBaselineResetSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloBaselineWeight")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloConfidenceThreshold")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloEweDirectionWindowSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloEweHeadMemorySeconds")
+                        .HasColumnType("float");
+
+                    b.Property<int>("YoloEweHoldFrames")
+                        .HasColumnType("int");
+
+                    b.Property<double>("YoloEweMinimumMove")
+                        .HasColumnType("float");
+
+                    b.Property<int>("YoloInferenceThreads")
+                        .HasColumnType("int");
+
+                    b.Property<double>("YoloLambMaximumAreaRatio")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloLambMinimumAreaRatio")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloLambMinimumSpeed")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloLambMovingWindowSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloLambPartAreaRatio")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloLambPartGap")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloMaximumProcessFps")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloMinimumSucklingSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloMissingToleranceSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloNmsContainmentThreshold")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloNmsIouThreshold")
+                        .HasColumnType("float");
+
+                    b.Property<string>("YoloPendingFolder")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("YoloPostureTolerance")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloShrinkThreshold")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloSizeSmoothingSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<string>("YoloSourceCodes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("YoloSourceRefreshSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloSyncIdleSeconds")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloThresholdHysteresis")
+                        .HasColumnType("float");
+
+                    b.Property<int>("YoloTrackConfirmFrames")
+                        .HasColumnType("int");
+
+                    b.Property<double>("YoloUdderZoneHysteresis")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloUdderZoneLength")
+                        .HasColumnType("float");
+
+                    b.Property<double>("YoloUdderZoneMargin")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.ToTable("SystemConfig");
@@ -596,9 +690,6 @@ namespace Api.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -614,6 +705,9 @@ namespace Api.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("EweCount")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("FkFarmId")
                         .HasColumnType("uniqueidentifier");
 
@@ -622,6 +716,9 @@ namespace Api.Infrastructure.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<int>("LambCount")
+                        .HasColumnType("int");
 
                     b.Property<double?>("Length")
                         .HasColumnType("float");

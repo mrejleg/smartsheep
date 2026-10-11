@@ -14,7 +14,8 @@ namespace Api.ApplicationCore.Services.SmartSheep
     public class SucklingActivityService : ISucklingActivityService
     {
         private const string Suckling = "Suckling";
-        private static readonly HashSet<string> EventTypes = new() { Suckling, "FailedAttempt", "Approach" };
+        private const string Approach = "Approach";
+        private static readonly HashSet<string> EventTypes = new() { Suckling, "FailedAttempt", Approach };
 
         private readonly ISmartSheepRepositories _smartSheepRepository;
         private readonly ISucklingStatisticService _statisticService;
@@ -101,6 +102,8 @@ namespace Api.ApplicationCore.Services.SmartSheep
                     Id = x.Id,
                     Code = x.Code,
                     BarnCode = x.Barn!.Code,
+                    EweCount = x.Barn!.EweCount,
+                    LambCount = x.Barn!.LambCount,
                     SourceVideoUrl = x.SourceVideoUrl,
                     Username = x.Username,
                     Password = x.Password,
@@ -110,6 +113,10 @@ namespace Api.ApplicationCore.Services.SmartSheep
 
         // Sync kejadian dari InferenceYolo (tanpa filter farm, lihat GetSyncSourceAsync).
         // - Kejadian dengan Id yang sudah tersimpan dilewati (sync ulang tidak menggandakan data).
+        // - Rekaman yang diproses ulang setelah worker dijalankan ulang menghasilkan Id baru: kejadian SourceVideo yang sama
+        //   dengan anak, waktu mulai, dan jenis (pendekatan, atau menyusu/pendekatan gagal) yang sama tidak ditambah lagi;
+        //   bila lebih panjang (sebelumnya terpotong saat worker dihentikan) baris yang ada diperbarui, beserta total
+        //   sesinya; pendekatan gagal yang ternyata menyusu masuk ke sesi sync ini.
         // - Kejadian menyusu dalam satu sync = satu sesi SucklingActivity; pendekatan dan pendekatan gagal
         //   disimpan tanpa sesi.
         // - Statistik periode dalam rentang ProcessedFrom-ProcessedUntil (dan periode kejadian yang terkirim)
@@ -127,26 +134,73 @@ namespace Api.ApplicationCore.Services.SmartSheep
                 .Where(x => ids.Contains(x.Id))
                 .Select(x => x.Id)
                 .ToListAsync();
+            var starts = param.Events.Select(x => (DateTime?)x.StartAt).ToList();
+            var replayedEvents = await db.SucklingEvent.IgnoreQueryFilters().AsTracking()
+                .Where(x => x.FkSourceVideoId == source.Id && starts.Contains(x.EventStart))
+                .ToListAsync();
+            SucklingEvent FindReplayed(SucklingSyncEventParam x) => replayedEvents.FirstOrDefault(e => e.LambTrackId == x.LambTrackId &&
+                e.EventStart == x.StartAt && (e.EventType == Approach) == (x.EventType == Approach));
+            var upgraded = new List<SucklingEvent>();
+            var extendedActivityIds = new List<Guid>();
+            foreach (var x in param.Events.Where(x => EventTypes.Contains(x.EventType) && !existingIds.Contains(x.Id)))
+            {
+                var replayed = FindReplayed(x);
+                if (replayed != null && x.EndAt > replayed.EventEnd)
+                {
+                    if (replayed.FkSucklingActivityId.HasValue)
+                    {
+                        extendedActivityIds.Add(replayed.FkSucklingActivityId.Value);
+                    }
+                    else if (x.EventType == Suckling)
+                    {
+                        upgraded.Add(replayed);
+                    }
+
+                    replayed.EventType = x.EventType;
+                    replayed.EventEnd = x.EndAt;
+                    replayed.DurationSeconds = Math.Round(x.DurationSeconds, 3);
+                    replayed.FrameCount = x.FrameCount;
+                }
+            }
+
             var newEvents = param.Events
-                .Where(x => EventTypes.Contains(x.EventType) && !existingIds.Contains(x.Id))
+                .Where(x => EventTypes.Contains(x.EventType) && !existingIds.Contains(x.Id) && FindReplayed(x) == null)
                 .DistinctBy(x => x.Id)
+                .DistinctBy(x => (x.EventType == Approach, x.LambTrackId, x.StartAt))
                 .ToList();
 
             var sucklings = newEvents.Where(x => x.EventType == Suckling).ToList();
             SucklingActivity activity = null;
-            if (sucklings.Count > 0)
+            if (sucklings.Count > 0 || upgraded.Count > 0)
             {
                 activity = new SucklingActivity
                 {
                     Id = Guid.NewGuid(),
                     FkBarnId = source.FkBarnId,
-                    ActivityStart = sucklings.Min(x => x.StartAt),
-                    ActivityEnd = sucklings.Max(x => x.EndAt),
-                    TotalFrequency = sucklings.Count,
-                    TotalDurationSeconds = (int)Math.Round(sucklings.Sum(x => x.DurationSeconds)),
+                    ActivityStart = sucklings.Select(x => (DateTime?)x.StartAt).Concat(upgraded.Select(x => x.EventStart)).Min(),
+                    ActivityEnd = sucklings.Select(x => (DateTime?)x.EndAt).Concat(upgraded.Select(x => x.EventEnd)).Max(),
+                    TotalFrequency = sucklings.Count + upgraded.Count,
+                    TotalDurationSeconds = (int)Math.Round(sucklings.Sum(x => x.DurationSeconds) + upgraded.Sum(x => x.DurationSeconds)),
                     IsActive = true
                 };
                 db.SucklingActivity.Add(activity);
+                upgraded.ForEach(x => x.FkSucklingActivityId = activity.Id);
+            }
+
+            if (extendedActivityIds.Count > 0)
+            {
+                var linkedEvents = await db.SucklingEvent.IgnoreQueryFilters().AsTracking()
+                    .Where(x => x.FkSucklingActivityId.HasValue && extendedActivityIds.Contains(x.FkSucklingActivityId.Value))
+                    .ToListAsync();
+                foreach (var linked in await db.SucklingActivity.IgnoreQueryFilters().AsTracking()
+                    .Where(x => extendedActivityIds.Contains(x.Id)).ToListAsync())
+                {
+                    var events = linkedEvents.Where(x => x.FkSucklingActivityId == linked.Id).ToList();
+                    linked.ActivityStart = events.Min(x => x.EventStart);
+                    linked.ActivityEnd = events.Max(x => x.EventEnd);
+                    linked.TotalFrequency = events.Count;
+                    linked.TotalDurationSeconds = (int)Math.Round(events.Sum(x => x.DurationSeconds));
+                }
             }
 
             db.SucklingEvent.AddRange(newEvents.Select(x => new SucklingEvent

@@ -1,6 +1,7 @@
 namespace InferenceYolo.Models
 {
-    // Dibaca dari 04.Api/appsettings.json (section "Yolo"), nama property sama dengan Api.Domain.Models.AppSetting.
+    // YoloApiUrl, YoloClientId, YoloClientSecret dibaca dari 04.Api/appsettings.json (section "Yolo"); property lainnya dari
+    // SystemConfig di API dengan nama kolom yang sama. Penyebutan Yolo:X di komentar = SystemConfig.YoloX.
     public class AppSetting
     {
         public string YoloConfidenceThreshold { get; set; }
@@ -23,6 +24,7 @@ namespace InferenceYolo.Models
         public string YoloLambMinimumSpeed { get; set; }
         public string YoloBaselineWeight { get; set; }
         public string YoloBaselineResetSeconds { get; set; }
+        public string YoloSizeSmoothingSeconds { get; set; }
         public string YoloUdderZoneHysteresis { get; set; }
         public string YoloThresholdHysteresis { get; set; }
         public string YoloTrackConfirmFrames { get; set; }
@@ -31,6 +33,8 @@ namespace InferenceYolo.Models
         public string YoloLambMinimumAreaRatio { get; set; }
         public string YoloLambMaximumAreaRatio { get; set; }
         public string YoloLambPartAreaRatio { get; set; }
+        public string YoloLambPartGap { get; set; }
+        public string YoloEweHoldFrames { get; set; }
         public string YoloApiUrl { get; set; }
         public string YoloClientId { get; set; }
         public string YoloClientSecret { get; set; }

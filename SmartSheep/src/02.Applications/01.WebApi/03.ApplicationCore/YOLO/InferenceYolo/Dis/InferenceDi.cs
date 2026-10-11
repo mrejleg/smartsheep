@@ -28,7 +28,8 @@ namespace InferenceYolo.Dis
             return services;
         }
 
-        // Section Yolo dari 04.Api/appsettings.json (dipakai worker dan preview inferensi di WebApp)
+        // Koneksi API (Yolo:ApiUrl, Yolo:ClientId, Yolo:ClientSecret) dari 04.Api/appsettings.json, setting Yolo lainnya dari
+        // SystemConfig di API (dipakai worker dan preview inferensi di WebApp)
         public static AppSetting ReadAppSetting(string path)
         {
             string fullPath = Path.GetFullPath(path);
@@ -40,47 +41,28 @@ namespace InferenceYolo.Dis
             var configuration = new ConfigurationBuilder().AddJsonFile(fullPath, optional: false).Build();
             var setting = new AppSetting
             {
-                YoloConfidenceThreshold = configuration["Yolo:ConfidenceThreshold"],
-                YoloMinimumSucklingSeconds = configuration["Yolo:MinimumSucklingSeconds"],
-                YoloSyncIdleSeconds = configuration["Yolo:SyncIdleSeconds"],
-                YoloPendingFolder = configuration["Yolo:PendingFolder"],
-                YoloMaximumProcessFps = configuration["Yolo:MaximumProcessFps"],
-                YoloInferenceThreads = configuration["Yolo:InferenceThreads"],
-                YoloSourceRefreshSeconds = configuration["Yolo:SourceRefreshSeconds"],
-                YoloSourceCodes = configuration["Yolo:SourceCodes"],
-                YoloPostureTolerance = configuration["Yolo:PostureTolerance"],
-                YoloShrinkThreshold = configuration["Yolo:ShrinkThreshold"],
-                YoloMissingToleranceSeconds = configuration["Yolo:MissingToleranceSeconds"],
-                YoloUdderZoneMargin = configuration["Yolo:UdderZoneMargin"],
-                YoloEweDirectionWindowSeconds = configuration["Yolo:EweDirectionWindowSeconds"],
-                YoloEweMinimumMove = configuration["Yolo:EweMinimumMove"],
-                YoloEweHeadMemorySeconds = configuration["Yolo:EweHeadMemorySeconds"],
-                YoloUdderZoneLength = configuration["Yolo:UdderZoneLength"],
-                YoloLambMovingWindowSeconds = configuration["Yolo:LambMovingWindowSeconds"],
-                YoloLambMinimumSpeed = configuration["Yolo:LambMinimumSpeed"],
-                YoloBaselineWeight = configuration["Yolo:BaselineWeight"],
-                YoloBaselineResetSeconds = configuration["Yolo:BaselineResetSeconds"],
-                YoloUdderZoneHysteresis = configuration["Yolo:UdderZoneHysteresis"],
-                YoloThresholdHysteresis = configuration["Yolo:ThresholdHysteresis"],
-                YoloTrackConfirmFrames = configuration["Yolo:TrackConfirmFrames"],
-                YoloNmsIouThreshold = configuration["Yolo:NmsIouThreshold"],
-                YoloNmsContainmentThreshold = configuration["Yolo:NmsContainmentThreshold"],
-                YoloLambMinimumAreaRatio = configuration["Yolo:LambMinimumAreaRatio"],
-                YoloLambMaximumAreaRatio = configuration["Yolo:LambMaximumAreaRatio"],
-                YoloLambPartAreaRatio = configuration["Yolo:LambPartAreaRatio"],
                 YoloApiUrl = configuration["Yolo:ApiUrl"],
                 YoloClientId = configuration["Yolo:ClientId"],
                 YoloClientSecret = configuration["Yolo:ClientSecret"]
             };
+            if (string.IsNullOrWhiteSpace(setting.YoloApiUrl) || string.IsNullOrWhiteSpace(setting.YoloClientId) || string.IsNullOrWhiteSpace(setting.YoloClientSecret))
+            {
+                throw new InvalidDataException($"Yolo:ApiUrl, Yolo:ClientId, dan Yolo:ClientSecret di {fullPath} wajib diisi");
+            }
 
-            // Yolo:SourceCodes boleh kosong (semua sumber video online diproses)
+            using (var syncService = new SucklingSyncService(new InferenceOption(), setting))
+            {
+                syncService.ReadSystemConfig(setting);
+            }
+
+            // YoloSourceCodes boleh kosong (semua sumber video online diproses)
             var missing = typeof(AppSetting).GetProperties()
                 .Where(p => p.Name != nameof(AppSetting.YoloSourceCodes) && string.IsNullOrWhiteSpace((string)p.GetValue(setting)))
                 .Select(p => p.Name)
                 .ToList();
             if (missing.Count > 0)
             {
-                throw new InvalidDataException($"Section Yolo di {fullPath} belum lengkap: {string.Join(", ", missing)}");
+                throw new InvalidDataException($"SystemConfig belum lengkap: {string.Join(", ", missing)}");
             }
 
             return setting;

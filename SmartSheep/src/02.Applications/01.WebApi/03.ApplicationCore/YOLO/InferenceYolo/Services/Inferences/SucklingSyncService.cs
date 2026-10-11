@@ -9,7 +9,7 @@ using InferenceYolo.Models.Inferences;
 
 namespace InferenceYolo.Services.Inferences
 {
-    // Klien API SmartSheep untuk sync kejadian dan mengambil sumber video.
+    // Klien API SmartSheep untuk sync kejadian, mengambil sumber video, dan membaca setting Yolo dari SystemConfig.
     //
     // - Token diminta ke Auth/Token dengan Yolo:ClientId dan Yolo:ClientSecret, disimpan sampai kedaluwarsa,
     //   dan diminta ulang bila API menjawab 401.
@@ -20,6 +20,7 @@ namespace InferenceYolo.Services.Inferences
     {
         private const string CsvHeader = "id,event_type,source_video_code,lamb_track_id,ewe_track_id,start_at,end_at,duration_seconds,frame_count";
         private const string WorkerUsername = "InferenceYolo";
+        private static readonly HashSet<string> ApiSettings = new() { nameof(AppSetting.YoloApiUrl), nameof(AppSetting.YoloClientId), nameof(AppSetting.YoloClientSecret) };
 
         private readonly bool isOffline;
         private readonly string csvPath;
@@ -68,6 +69,39 @@ namespace InferenceYolo.Services.Inferences
             return ToSyncSource(ReadData(response));
         }
 
+        // Setting Yolo (property AppSetting berawalan Yolo, selain koneksi API) dari SystemConfig aktif terbaru, sama dengan
+        // aturan pembacaan SystemConfig di API. Mengembalikan true bila ada nilai yang berubah.
+        public bool ReadSystemConfig(AppSetting setting)
+        {
+            using var response = Send(() => new HttpRequestMessage(HttpMethod.Get, "SystemConfig/All"));
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException($"SystemConfig tidak bisa diambil dari API ({(int)response.StatusCode})");
+            }
+
+            var config = ReadData(response).EnumerateArray()
+                .Where(x => x.GetProperty("IsActive").GetBoolean())
+                .OrderByDescending(x => (x.GetProperty("DateModified").ValueKind == JsonValueKind.Null ? x.GetProperty("DateCreated") : x.GetProperty("DateModified")).GetDateTime())
+                .Select(x => (JsonElement?)x)
+                .FirstOrDefault() ?? throw new InvalidOperationException("Belum ada SystemConfig aktif di API");
+
+            bool isChanged = false;
+            foreach (var property in typeof(AppSetting).GetProperties().Where(p => !ApiSettings.Contains(p.Name)))
+            {
+                var value = config.GetProperty(property.Name);
+                string text = value.ValueKind switch
+                {
+                    JsonValueKind.Number => value.GetRawText(),
+                    JsonValueKind.String => value.GetString(),
+                    _ => ""
+                };
+                isChanged |= (string)property.GetValue(setting) != text;
+                property.SetValue(setting, text);
+            }
+
+            return isChanged;
+        }
+
         // Username/password kamera disisipkan ke URL bila URL belum memuatnya
         private static SyncSource ToSyncSource(JsonElement data)
         {
@@ -87,6 +121,8 @@ namespace InferenceYolo.Services.Inferences
             {
                 Code = data.GetProperty("Code").GetString() ?? "",
                 BarnCode = data.GetProperty("BarnCode").GetString() ?? "",
+                EweCount = data.GetProperty("EweCount").GetInt32(),
+                LambCount = data.GetProperty("LambCount").GetInt32(),
                 SourceVideoUrl = sourceVideoUrl
             };
         }

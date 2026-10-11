@@ -1068,29 +1068,6 @@
                 </header>
                 <div class="aims-card-body"><div id="barnChart" class="chart-box"></div></div>
             </section>
-
-            <section class="aims-card bottom-card span-12">
-                <header class="aims-card-header">
-                    <div class="aims-card-title"><i data-feather="video-off"></i><h4>Inactive Source Videos</h4></div>
-                    <span class="card-badge">@Model.InactiveSourceVideos.Count.ToString("N0", CultureInfo.GetCultureInfo("en-US")) Sources</span>
-                </header>
-                <div class="aims-card-body">
-                    <div class="device-list">
-                        @if (!Model.InactiveSourceVideos.Any())
-                        {
-                            <p class="empty-state">All source videos are online.</p>
-                        }
-                        @foreach (var item in Model.InactiveSourceVideos)
-                        {
-                            <div class="device-row">
-                                <span class="device-icon"><i data-feather="video-off"></i></span>
-                                <span class="device-copy"><strong>@item.Code</strong><small>@item.BarnName · @item.LastStatus</small></span>
-                                <span class="card-badge">@(item.LastCheckedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never Checked")</span>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </section>
         </div>
     </div>
 </div>

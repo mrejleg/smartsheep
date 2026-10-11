@@ -8,10 +8,9 @@ namespace InferenceYolo.Services.Inferences
 {
     // Identifikasi indikasi aktivitas menyusu dari trajectory (proposal 3.3.1, Gambar 14).
     //
-    // Zona ambing : sumbu badan induk dibaca dari bbox bila jelas: bbox terpotong tepi frame di satu sumbu saja
-    //               (badan berlanjut ke luar frame), atau sisi panjang bbox minimal TurnAspectRatio x sisi pendek.
-    //               Bila bbox tidak jelas (hampir persegi, mis. induk diagonal), sumbu = arah gerak terakhir, atau
-    //               sisi panjang bbox bila induk belum pernah bergerak. Gerak yang tegak lurus sumbu bbox yang jelas
+    // Zona ambing : bbox induk selalu dibagi dua dari sisi terpanjangnya (sumbu badan = sisi terpanjang bbox).
+    //               Sumbu bbox yang jelas (terpotong tepi frame di satu sumbu, atau sisi panjang minimal
+    //               TurnAspectRatio x sisi pendek) dipakai untuk membaca arah gerak. Gerak yang tegak lurus sumbu bbox yang jelas
     //               (induk bergeser ke samping, bbox berubah karena tertutup anak) tidak dipakai sebagai arah gerak;
     //               induk yang diam dengan sumbu bbox tegak lurus arah gerak lama dianggap sudah berputar di tempat.
     //               Kepala : induk bisa berjalan maju maupun mundur, tetapi mundur hanya langkah pendek. Arah gerak
@@ -25,15 +24,17 @@ namespace InferenceYolo.Services.Inferences
     //               badan karena anak menyusu berdiri di samping induk, tidak diperpanjang ke depan/belakang badan,
     //               dan dibatasi frame. Induk yang tidak terlihat lebih dari Yolo:BaselineResetSeconds kehilangan
     //               sumbu dan arah kepalanya karena bisa sudah berbalik.
-    // Pasangan    : anak dipasangkan dengan induk yang bbox-nya overlap dan zona ambingnya memuat centroid anak
-    //               (terdekat bila lebih dari satu); bila tidak ada, induk terdekat.
+    // Pasangan    : setiap anak dipasangkan dengan induk terdekat (detector menetapkan bbox terbesar sebagai induk).
     // Baseline    : rasio (sisi panjang / sisi pendek) dan luas bbox anak saat anak berjalan dan
     //               belum overlap dengan induk (berjalan = berdiri tegak). Bila track anak tidak terlihat lebih
     //               dari Yolo:BaselineResetSeconds, baseline dihapus karena track yang muncul lagi bisa saja objek
     //               lain (mis. bagian tubuh induk); anak harus berjalan bebas lagi sebelum dinilai menyusu.
     // Stay point  : bersamaan -> bbox anak overlap dengan induk, centroid anak di zona ambing,
     //               postur berdiri (rasio mirip baseline; lebih membulat/lebar = tiduran), dan
-    //               luas bbox anak menyusut dibanding baseline (kepala tertutup tubuh induk).
+    //               luas bbox anak menyusut dibanding baseline (kepala tertutup tubuh induk). Bbox anak yang
+    //               terpotong tepi frame tidak dipakai sebagai baseline dan tidak dinilai menyusut. Postur dan
+    //               menyusut dinilai dari rata-rata rasio dan luas bbox selama Yolo:SizeSmoothingSeconds terakhir agar
+    //               getaran bbox antar frame tidak memutus kejadian.
     // Menyusu     : stay point berlangsung > Yolo:MinimumSucklingSeconds; bila lebih pendek
     //               dicatat sebagai pendekatan gagal. Kejadian berakhir di frame pertama aturan
     //               tidak terpenuhi atau saat anak/induk hilang (tidak terdeteksi lebih dari
@@ -75,6 +76,7 @@ namespace InferenceYolo.Services.Inferences
         // Bobot rata-rata bergerak baseline (makin besar makin cepat mengikuti sampel terbaru)
         private readonly float baselineWeight;
         private readonly double baselineResetSeconds;
+        private readonly double sizeSmoothingSeconds;
 
         // Histeresis: syarat yang sudah terpenuhi baru dianggap gagal bila melewati batas yang lebih
         // longgar, agar bbox yang bergetar di sekitar batas tidak memutus kejadian. Ambang masuk tetap.
@@ -101,6 +103,7 @@ namespace InferenceYolo.Services.Inferences
             lambMinimumSpeed = float.Parse(setting.YoloLambMinimumSpeed, CultureInfo.InvariantCulture);
             baselineWeight = float.Parse(setting.YoloBaselineWeight, CultureInfo.InvariantCulture);
             baselineResetSeconds = double.Parse(setting.YoloBaselineResetSeconds, CultureInfo.InvariantCulture);
+            sizeSmoothingSeconds = double.Parse(setting.YoloSizeSmoothingSeconds, CultureInfo.InvariantCulture);
             udderZoneHysteresis = float.Parse(setting.YoloUdderZoneHysteresis, CultureInfo.InvariantCulture);
             thresholdHysteresis = float.Parse(setting.YoloThresholdHysteresis, CultureInfo.InvariantCulture);
         }
@@ -146,7 +149,7 @@ namespace InferenceYolo.Services.Inferences
                 if (lamb.IsVisible && eweTracks.Count > 0)
                 {
                     state.LastSeenSeconds = timeSeconds;
-                    Evaluate(lamb, state, status, eweTracks, analysis.UdderZones, timeSeconds);
+                    Evaluate(lamb, state, status, eweTracks, analysis.UdderZones, timeSeconds, frameSize);
                     UpdateApproach(lamb, state, status, timeSeconds, frameAt, analysis);
                     UpdateStayPoint(lamb, state, status, timeSeconds, frameAt, analysis);
                 }
@@ -197,9 +200,13 @@ namespace InferenceYolo.Services.Inferences
         }
 
         private void Evaluate(TrackedObject lamb, LambState state, LambStatus status, List<TrackedObject> eweTracks,
-            Dictionary<int, Rect> udderZones, double timeSeconds)
+            Dictionary<int, Rect> udderZones, double timeSeconds, Size frameSize)
         {
             var box = lamb.Box;
+
+            // Bbox anak yang terpotong tepi frame mengecil karena frame, bukan karena tertutup induk: tidak dipakai
+            // sebagai baseline dan tidak dinilai menyusut
+            bool isCut = box.Left <= 0 || box.Top <= 0 || box.Right >= frameSize.Width - 1 || box.Bottom >= frameSize.Height - 1;
             float shortSide = Math.Max(1, Math.Min(box.Width, box.Height));
             status.Ratio = Math.Max(box.Width, box.Height) / shortSide;
             status.Area = (float)box.Width * box.Height;
@@ -207,16 +214,14 @@ namespace InferenceYolo.Services.Inferences
             UpdateHistory(state.History, timeSeconds, lamb.Centroid, lambMovingWindowSeconds);
             status.IsMoving = IsMoving(state.History, shortSide);
 
-            // Pasangkan dengan induk yang zona ambingnya memuat anak, selain itu induk terdekat
-            bool IsInUdderZone(TrackedObject ewe) => HasOverlap(box, ewe.Box) &&
-                Contains(GetHysteresisZone(udderZones[ewe.TrackId], ewe.Box, ewes[ewe.TrackId].IsHorizontal, state.WasInUdderZone), lamb.Centroid);
-            float DistanceTo(TrackedObject ewe) => CentroidTrackerService.Distance(ewe.Centroid, lamb.Centroid);
-            var paired = eweTracks.Where(IsInUdderZone).MinBy(DistanceTo) ?? eweTracks.MinBy(DistanceTo)!;
+            // Pasangkan dengan induk terdekat
+            var paired = eweTracks.MinBy(e => CentroidTrackerService.Distance(e.Centroid, lamb.Centroid))!;
             status.EweTrackId = paired.TrackId;
             status.IsOverlap = HasOverlap(box, paired.Box);
-            status.IsInUdderZone = IsInUdderZone(paired);
+            status.IsInUdderZone = status.IsOverlap &&
+                Contains(GetHysteresisZone(udderZones[paired.TrackId], paired.Box, ewes[paired.TrackId].IsHorizontal, state.WasInUdderZone), lamb.Centroid);
 
-            if (status.IsMoving && !status.IsOverlap)
+            if (status.IsMoving && !status.IsOverlap && !isCut)
             {
                 state.BaselineRatio = Blend(state.BaselineRatio, status.Ratio);
                 state.BaselineArea = Blend(state.BaselineArea, status.Area);
@@ -226,8 +231,14 @@ namespace InferenceYolo.Services.Inferences
             status.BaselineArea = state.BaselineArea;
             float posture = postureTolerance * (state.WasStanding ? 1 + thresholdHysteresis : 1);
             float shrink = shrinkThreshold * (state.WasShrunk ? 1 - thresholdHysteresis : 1);
-            status.IsStanding = state.BaselineRatio.HasValue && status.Ratio >= state.BaselineRatio.Value * (1 - posture);
-            status.IsShrunk = state.BaselineArea.HasValue && status.Area <= state.BaselineArea.Value * (1 - shrink);
+            state.Sizes.Enqueue((timeSeconds, status.Ratio, status.Area));
+            while (timeSeconds - state.Sizes.Peek().Time > sizeSmoothingSeconds)
+            {
+                state.Sizes.Dequeue();
+            }
+            float ratio = state.Sizes.Average(x => x.Ratio), area = state.Sizes.Average(x => x.Area);
+            status.IsStanding = state.BaselineRatio.HasValue && ratio >= state.BaselineRatio.Value * (1 - posture);
+            status.IsShrunk = !isCut && state.BaselineArea.HasValue && area <= state.BaselineArea.Value * (1 - shrink);
 
             state.WasInUdderZone = status.IsInUdderZone;
             state.WasStanding = status.IsStanding;
@@ -319,8 +330,7 @@ namespace InferenceYolo.Services.Inferences
         // badan dan dibatasi frame
         private Rect GetUdderZone(Rect box, EweState state, Size frameSize)
         {
-            state.IsHorizontal = GetBodyAxis(box, frameSize)
-                ?? (state.Direction is Point2f d ? Math.Abs(d.X) >= Math.Abs(d.Y) : box.Width >= box.Height);
+            state.IsHorizontal = box.Width >= box.Height;
             int rear = GetRearSide(state);
 
             Rect udder;
@@ -365,7 +375,7 @@ namespace InferenceYolo.Services.Inferences
             return udder;
         }
 
-        // Sumbu badan dari bbox: true = mendatar, false = tegak, null = tidak jelas dari bbox saja
+        // Sumbu bbox untuk membaca arah gerak: true = mendatar, false = tegak, null = tidak jelas dari bbox saja
         private static bool? GetBodyAxis(Rect box, Size frameSize)
         {
             bool cutX = box.Left <= 0 || box.Right >= frameSize.Width - 1;
@@ -381,13 +391,14 @@ namespace InferenceYolo.Services.Inferences
         private static void ResetBaseline(LambState state)
         {
             state.History.Clear();
+            state.Sizes.Clear();
             state.BaselineRatio = null;
             state.BaselineArea = null;
             state.WasStanding = false;
             state.WasShrunk = false;
         }
 
-        // Sumbu = arah gerak terakhir. Arah kepala = rata-rata arah gerak dengan bobot waktu (memori
+        // Arah gerak terakhir dan arah kepala = rata-rata arah gerak dengan bobot waktu (memori
         // Yolo:EweHeadMemorySeconds), sehingga langkah mundur yang pendek tidak membalik kepala.
         private void UpdateDirection(EweState state, Rect box, double elapsed, Size frameSize)
         {
@@ -504,6 +515,8 @@ namespace InferenceYolo.Services.Inferences
             public float? BaselineArea { get; set; }
             public double LastSeenSeconds { get; set; }
             public double LastVisibleSeconds { get; set; }
+            // Rasio dan luas bbox dalam jendela Yolo:SizeSmoothingSeconds
+            public Queue<(double Time, float Ratio, float Area)> Sizes { get; } = new();
             public bool WasInUdderZone { get; set; }
             public bool WasStanding { get; set; }
             public bool WasShrunk { get; set; }

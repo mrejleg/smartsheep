@@ -1,3 +1,4 @@
+using InferenceYolo.Models;
 using InferenceYolo.Models.Inferences;
 
 namespace InferenceYolo.Interfaces.Inferences
@@ -7,5 +8,6 @@ namespace InferenceYolo.Interfaces.Inferences
         bool Sync(string sourceVideoCode, DateTime processedFrom, DateTime processedUntil, List<SucklingEvent> sucklingEvents);
         List<SyncSource> GetSources();
         SyncSource GetSource(string sourceVideoCode);
+        bool ReadSystemConfig(AppSetting setting);
     }
 }

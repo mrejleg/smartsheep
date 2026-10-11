@@ -190,11 +190,12 @@ InferenceYolo --service [opsi]
   --offline             tidak sync ke API; kejadian ditulis ke <output>/synced_events.csv
   --max-frames N        proses maksimal N frame (untuk uji coba)
   --service             worker background: semua SourceVideo online (aktif, punya kandang) diproses
-                        terus-menerus, daftar diperbarui tiap Yolo:SourceRefreshSeconds; dipasang sebagai
+                        terus-menerus, daftar diperbarui tiap SystemConfig.YoloSourceRefreshSeconds; dipasang sebagai
                         Windows Service / systemd / launchd (path relatif dihitung dari working directory)
 
-Kejadian ditulis ke Yolo:PendingFolder/<kode kandang>/ lalu di-sync ke API (Yolo:ApiUrl) bila tidak ada indikasi menyusu selama
-Yolo:SyncIdleSeconds.
+Setting Yolo dibaca dari SystemConfig di API (koneksi API: Yolo:ApiUrl, Yolo:ClientId, Yolo:ClientSecret di --appsettings).
+Kejadian ditulis ke SystemConfig.YoloPendingFolder/<kode kandang>/ lalu di-sync ke API bila tidak ada indikasi menyusu selama
+SystemConfig.YoloSyncIdleSeconds.
 Live streaming yang putus disambung ulang otomatis (jeda 2 detik, naik bertahap sampai 30 detik).
 Ctrl+C / SIGTERM menghentikan proses dengan rapi (kejadian yang berjalan ditutup dan di-sync).
 

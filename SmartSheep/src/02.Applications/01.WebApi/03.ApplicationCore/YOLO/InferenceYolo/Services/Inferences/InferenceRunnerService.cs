@@ -54,7 +54,8 @@ namespace InferenceYolo.Services.Inferences
 
             Log($"Input  : {(source.IsStream ? option.SourceVideoCode : option.Input)} ({source.FrameSize.Width}x{source.FrameSize.Height}, " +
                 $"{(source.IsStream ? "live streaming" : source.VideoCount > 1 ? $"{source.VideoCount} klip bersambung" : $"{source.Fps:0.##} fps, {source.FrameCount} frame")}, " +
-                $"kandang {(string.IsNullOrWhiteSpace(option.BarnCode) ? "-" : option.BarnCode)}, mulai {source.StartedAt:yyyy-MM-dd HH:mm:ss})");
+                $"kandang {(string.IsNullOrWhiteSpace(option.BarnCode) ? "-" : option.BarnCode)} (induk {option.EweCount}, anak {option.LambCount}), " +
+                $"mulai {source.StartedAt:yyyy-MM-dd HH:mm:ss})");
             Log($"Model  : {option.Model} (input {detector.InputSize}, {(option.UseCoreMl ? "CoreML" : "CPU")}, " +
                 $"confidence >= {setting.YoloConfidenceThreshold}, menyusu > {setting.YoloMinimumSucklingSeconds} detik, maks {setting.YoloMaximumProcessFps} fps)");
             Log($"Sync   : {(option.IsOffline ? $"offline ({option.Output}/synced_events.csv)" : setting.YoloApiUrl)}");
@@ -120,16 +121,19 @@ namespace InferenceYolo.Services.Inferences
             return statistic.Calculate(option.SourceVideoCode, events, source.StartedAt, lastFrameAt.AddSeconds(source.Fps > 0 ? 1 / source.Fps : 0));
         }
 
-        // Kandang (dan URL bila input kosong) diambil dari SourceVideo di API; offline memakai input apa adanya
+        // Kandang beserta jumlah induk/anaknya (dan URL bila input kosong) selalu diambil dari SourceVideo di API (DB);
+        // worker sudah mengisinya dari API, offline memakai input apa adanya tanpa batas jumlah
         private void ResolveSource()
         {
-            if (option.IsOffline || (!string.IsNullOrWhiteSpace(option.BarnCode) && !string.IsNullOrWhiteSpace(option.Input)))
+            if (option.IsOffline || option.IsService)
             {
                 return;
             }
 
             var source = provider.GetRequiredService<ISucklingSyncService>().GetSource(option.SourceVideoCode);
             option.BarnCode = source.BarnCode;
+            option.EweCount = source.EweCount;
+            option.LambCount = source.LambCount;
             if (string.IsNullOrWhiteSpace(option.Input))
             {
                 option.Input = source.SourceVideoUrl;

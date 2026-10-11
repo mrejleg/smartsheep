@@ -11,7 +11,9 @@ namespace Web.Domain.Models.MasterDatas
         [Required, StringLength(150, MinimumLength = 1)]
         public string Name { get; set; } = string.Empty;
 
-        public int Capacity { get; set; }
+        public int EweCount { get; set; }
+
+        public int LambCount { get; set; }
 
         public double? Length { get; set; }
 

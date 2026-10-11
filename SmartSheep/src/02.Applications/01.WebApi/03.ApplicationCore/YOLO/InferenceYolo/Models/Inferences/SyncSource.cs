@@ -5,6 +5,8 @@ namespace InferenceYolo.Models.Inferences
     {
         public string Code { get; set; } = "";
         public string BarnCode { get; set; } = "";
+        public int EweCount { get; set; }
+        public int LambCount { get; set; }
         public string SourceVideoUrl { get; set; } = "";
     }
 }

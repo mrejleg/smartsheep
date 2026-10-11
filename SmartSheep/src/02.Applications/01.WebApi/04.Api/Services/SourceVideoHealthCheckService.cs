@@ -118,6 +118,7 @@ public sealed class SourceVideoHealthCheckService : BackgroundService
 
     private async Task<string> GetStatusAsync(string sourceVideoUrl, CancellationToken cancellationToken)
     {
+        if (Directory.Exists(sourceVideoUrl) || File.Exists(sourceVideoUrl)) return "Online";
         if (!Uri.TryCreate(sourceVideoUrl, UriKind.Absolute, out var uri)) return "Inaccessible";
 
         try

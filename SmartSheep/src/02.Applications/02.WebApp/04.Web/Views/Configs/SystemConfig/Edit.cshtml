@@ -53,6 +53,192 @@
                             </div>
                             <div class="col-12">
                                 <div class="mb-1">
+                                    <label class="form-label">YOLO Confidence Threshold <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloConfidenceThreshold" placeholder="YOLO Confidence Threshold" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Minimum Suckling (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloMinimumSucklingSeconds" placeholder="YOLO Minimum Suckling (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Sync Idle (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloSyncIdleSeconds" placeholder="YOLO Sync Idle (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Pending Folder <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" asp-for="Data.YoloPendingFolder" placeholder="YOLO Pending Folder" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Maximum Process FPS <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloMaximumProcessFps" placeholder="YOLO Maximum Process FPS" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Inference Threads <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" asp-for="Data.YoloInferenceThreads" placeholder="YOLO Inference Threads" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Source Refresh (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloSourceRefreshSeconds" placeholder="YOLO Source Refresh (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Source Codes</label>
+                                    <input type="text" class="form-control" asp-for="Data.YoloSourceCodes" placeholder="YOLO Source Codes" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Posture Tolerance <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloPostureTolerance" placeholder="YOLO Posture Tolerance" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Shrink Threshold <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloShrinkThreshold" placeholder="YOLO Shrink Threshold" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Missing Tolerance (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloMissingToleranceSeconds" placeholder="YOLO Missing Tolerance (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Udder Zone Margin <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloUdderZoneMargin" placeholder="YOLO Udder Zone Margin" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Ewe Direction Window (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloEweDirectionWindowSeconds" placeholder="YOLO Ewe Direction Window (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Ewe Minimum Move <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloEweMinimumMove" placeholder="YOLO Ewe Minimum Move" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Ewe Head Memory (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloEweHeadMemorySeconds" placeholder="YOLO Ewe Head Memory (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Udder Zone Length <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloUdderZoneLength" placeholder="YOLO Udder Zone Length" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Lamb Moving Window (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloLambMovingWindowSeconds" placeholder="YOLO Lamb Moving Window (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Lamb Minimum Speed <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloLambMinimumSpeed" placeholder="YOLO Lamb Minimum Speed" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Baseline Weight <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloBaselineWeight" placeholder="YOLO Baseline Weight" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Baseline Reset (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloBaselineResetSeconds" placeholder="YOLO Baseline Reset (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Size Smoothing (Seconds) <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloSizeSmoothingSeconds" placeholder="YOLO Size Smoothing (Seconds)" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Udder Zone Hysteresis <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloUdderZoneHysteresis" placeholder="YOLO Udder Zone Hysteresis" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Threshold Hysteresis <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloThresholdHysteresis" placeholder="YOLO Threshold Hysteresis" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Track Confirm Frames <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" asp-for="Data.YoloTrackConfirmFrames" placeholder="YOLO Track Confirm Frames" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO NMS IoU Threshold <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloNmsIouThreshold" placeholder="YOLO NMS IoU Threshold" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO NMS Containment Threshold <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloNmsContainmentThreshold" placeholder="YOLO NMS Containment Threshold" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Lamb Minimum Area Ratio <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloLambMinimumAreaRatio" placeholder="YOLO Lamb Minimum Area Ratio" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Lamb Maximum Area Ratio <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloLambMaximumAreaRatio" placeholder="YOLO Lamb Maximum Area Ratio" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Lamb Part Area Ratio <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloLambPartAreaRatio" placeholder="YOLO Lamb Part Area Ratio" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Lamb Part Gap <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" min="0" class="form-control" asp-for="Data.YoloLambPartGap" placeholder="YOLO Lamb Part Gap" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <label class="form-label">YOLO Ewe Hold Frames <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" asp-for="Data.YoloEweHoldFrames" placeholder="YOLO Ewe Hold Frames" required="required" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
                                     <label class="form-label">Is Active</label>
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" asp-for="Data.IsActive" id="isActiveCheckbox">

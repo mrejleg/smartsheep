@@ -14,8 +14,9 @@ namespace Web.ApplicationCore.Services.MasterDatas
 {
     // Preview inferensi YOLO di halaman streaming SourceVideo.
     //
-    // - Deteksi, centroid tracking, dan aturan menyusu memakai service InferenceYolo dengan section Yolo
-    //   appsettings API yang sama dengan worker, sehingga tampilan konsisten dengan hitungan worker.
+    // - Deteksi, centroid tracking, dan aturan menyusu memakai service InferenceYolo dengan setting Yolo dari
+    //   SystemConfig yang sama dengan worker (dibaca ulang setiap preview dimulai), sehingga tampilan konsisten
+    //   dengan hitungan worker.
     // - Hanya tampilan: tidak ada file pending, sync, maupun penyimpanan ke database (data resmi dari worker).
     // - Frame beranotasi (bbox, centroid, track ID, status menyusu) dikirim sebagai MJPEG;
     //   status preview disimpan per previewId (satu tab = satu preview) dan dihapus saat tab ditutup.
@@ -161,11 +162,15 @@ namespace Web.ApplicationCore.Services.MasterDatas
             using var scope = provider.Value.CreateScope();
             var option = scope.ServiceProvider.GetRequiredService<InferenceOption>();
             option.SourceVideoCode = sourceVideo.Code;
+            option.EweCount = sourceVideo.Barn?.EweCount ?? 0;
+            option.LambCount = sourceVideo.Barn?.LambCount ?? 0;
             option.Model = Path.GetFullPath(appSetting.YoloModel);
             option.Labels = Path.GetFullPath(appSetting.YoloLabels);
             option.UseCoreMl = bool.TryParse(appSetting.YoloUseCoreMl, out bool useCoreMl) && useCoreMl;
             option.IsOffline = true;
             option.SaveVideo = false;
+            scope.ServiceProvider.GetRequiredService<ISucklingSyncService>()
+                .ReadSystemConfig(scope.ServiceProvider.GetRequiredService<InferenceYolo.Models.AppSetting>());
 
             var source = scope.ServiceProvider.GetRequiredService<IVideoSourceService>();
             source.Open(streamService.GetInput(sourceVideo));

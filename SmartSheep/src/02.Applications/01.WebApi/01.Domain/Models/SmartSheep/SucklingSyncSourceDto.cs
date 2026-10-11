@@ -6,6 +6,8 @@ namespace Api.Domain.Models.SmartSheep
         public Guid Id { get; set; }
         public string Code { get; set; } = string.Empty;
         public string BarnCode { get; set; } = string.Empty;
+        public int EweCount { get; set; }
+        public int LambCount { get; set; }
         public string SourceVideoUrl { get; set; } = string.Empty;
         public string? Username { get; set; }
         public string? Password { get; set; }

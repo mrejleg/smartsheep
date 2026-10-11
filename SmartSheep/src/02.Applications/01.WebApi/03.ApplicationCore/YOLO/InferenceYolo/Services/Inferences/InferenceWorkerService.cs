@@ -11,9 +11,11 @@ namespace InferenceYolo.Services.Inferences
     // Worker background (--service): dijalankan service manager OS (Windows Service / systemd / launchd).
     //
     // - Daftar SourceVideo online diambil dari API (SourceVideo aktif dengan FK Barn) setiap
-    //   Yolo:SourceRefreshSeconds; Yolo:SourceCodes (dipisah koma) membatasi kamera yang diproses.
+    //   SystemConfig.YoloSourceRefreshSeconds; SystemConfig.YoloSourceCodes (dipisah koma) membatasi kamera yang diproses.
+    //   SystemConfig ikut dibaca ulang; bila berubah, semua runner dijalankan ulang dengan setting baru.
     // - Satu runner per SourceVideo di thread prioritas rendah (scope DI sendiri) agar komputer tetap ringan.
-    //   Kamera baru otomatis dijalankan, kamera yang tidak lagi online/aktif dihentikan dengan rapi.
+    //   Kamera baru otomatis dijalankan, kamera yang tidak lagi online/aktif dihentikan dengan rapi. Jumlah induk/anak
+    //   kandang ikut daftar itu (tidak dibaca per frame); bila berubah, runner kamera dijalankan ulang dengan jumlah baru.
     // - Runner yang berhenti (stream tidak bisa dibuka atau error) dijalankan ulang setelah RestartDelay.
     // - File pending sisa proses sebelumnya (semua kandang) di-sync sekali saat worker mulai.
     public sealed class InferenceWorkerService : BackgroundService
@@ -23,7 +25,7 @@ namespace InferenceYolo.Services.Inferences
         private readonly IServiceProvider provider;
         private readonly InferenceOption template;
         private readonly AppSetting setting;
-        private readonly Dictionary<string, (Thread Thread, CancellationTokenSource Cancellation)> runners = new();
+        private readonly Dictionary<string, (Thread Thread, CancellationTokenSource Cancellation, SyncSource Source)> runners = new();
 
         public InferenceWorkerService(IServiceProvider provider, InferenceOption template, AppSetting setting)
         {
@@ -34,11 +36,6 @@ namespace InferenceYolo.Services.Inferences
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var refresh = TimeSpan.FromSeconds(double.Parse(setting.YoloSourceRefreshSeconds, CultureInfo.InvariantCulture));
-            var allowedCodes = (setting.YoloSourceCodes ?? "")
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
             await Task.Yield();
             RecoverPending();
 
@@ -46,7 +43,7 @@ namespace InferenceYolo.Services.Inferences
             {
                 try
                 {
-                    Refresh(allowedCodes);
+                    Refresh();
                 }
                 catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException or TaskCanceledException)
                 {
@@ -55,7 +52,7 @@ namespace InferenceYolo.Services.Inferences
 
                 try
                 {
-                    await Task.Delay(refresh, stoppingToken);
+                    await Task.Delay(TimeSpan.FromSeconds(double.Parse(setting.YoloSourceRefreshSeconds, CultureInfo.InvariantCulture)), stoppingToken);
                 }
                 catch (OperationCanceledException)
                 {
@@ -69,20 +66,44 @@ namespace InferenceYolo.Services.Inferences
             }
         }
 
-        private void Refresh(HashSet<string> allowedCodes)
+        // SystemConfig dibaca ulang setiap refresh; bila berubah semua runner dijalankan ulang dengan setting baru
+        private void Refresh()
         {
             List<SyncSource> sources;
+            bool isConfigChanged;
             using (var scope = CreateScope(template.SourceVideoCode, template.BarnCode))
             {
-                sources = scope.ServiceProvider.GetRequiredService<ISucklingSyncService>().GetSources()
+                var syncService = scope.ServiceProvider.GetRequiredService<ISucklingSyncService>();
+                isConfigChanged = syncService.ReadSystemConfig(setting);
+                var allowedCodes = (setting.YoloSourceCodes ?? "")
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                sources = syncService.GetSources()
                     .Where(s => allowedCodes.Count == 0 || allowedCodes.Contains(s.Code))
                     .ToList();
+            }
+
+            if (isConfigChanged && runners.Count > 0)
+            {
+                Console.WriteLine("SystemConfig berubah, semua sumber video dijalankan ulang");
+                foreach (string code in runners.Keys.ToList())
+                {
+                    Stop(code);
+                }
             }
 
             var codes = sources.Select(s => s.Code).ToHashSet();
             foreach (string code in runners.Keys.Where(c => !codes.Contains(c)).ToList())
             {
                 Stop(code);
+            }
+
+            foreach (var source in sources.Where(s => runners.TryGetValue(s.Code, out var runner) &&
+                (runner.Source.EweCount != s.EweCount || runner.Source.LambCount != s.LambCount ||
+                runner.Source.BarnCode != s.BarnCode || runner.Source.SourceVideoUrl != s.SourceVideoUrl)))
+            {
+                Console.WriteLine($"[{source.Code}] kandang/jumlah induk-anak/URL berubah ({source.BarnCode}, {source.EweCount}/{source.LambCount}), dijalankan ulang");
+                Stop(source.Code);
             }
 
             foreach (var source in sources.Where(s => !runners.ContainsKey(s.Code)))
@@ -101,7 +122,7 @@ namespace InferenceYolo.Services.Inferences
                 Name = $"Inference-{source.Code}"
             };
 
-            runners[source.Code] = (thread, cancellation);
+            runners[source.Code] = (thread, cancellation, source);
             thread.Start();
             Console.WriteLine($"[{source.Code}] dijalankan (kandang {source.BarnCode})");
         }
@@ -129,6 +150,8 @@ namespace InferenceYolo.Services.Inferences
                     using var scope = CreateScope(source.Code, source.BarnCode);
                     var option = scope.ServiceProvider.GetRequiredService<InferenceOption>();
                     option.Input = source.SourceVideoUrl;
+                    option.EweCount = source.EweCount;
+                    option.LambCount = source.LambCount;
 
                     var result = scope.ServiceProvider.GetRequiredService<IInferenceRunnerService>().Run(cancellationToken);
                     Console.WriteLine($"[{source.Code}] stream berhenti: menyusu {result.TotalFrequency} ({result.TotalDurationSeconds:0.0} detik), " +

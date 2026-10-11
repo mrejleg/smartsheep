@@ -16,7 +16,9 @@ namespace Api.Domain.Entities.MasterDatas
         [StringLength(150, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 1)]
         public string Name { get; set; } = string.Empty;
 
-        public int Capacity { get; set; }
+        public int EweCount { get; set; }
+
+        public int LambCount { get; set; }
 
         public double? Length { get; set; }
 
