@@ -14,7 +14,7 @@ namespace Web.Controllers.MasterData
     public class SourceVideoController : BaseWebController
     {
         // Sama dengan default periode statistik di API bila SystemConfig belum diisi
-        private const int DefaultStatisticsDurationMinutes = 120;
+        private const int DefaultStatisticReminderMinutes = 120;
 
         private readonly IMasterDataRepositories _masterDataRepositories;
         private readonly IConfigRepositories _configRepositories;
@@ -108,20 +108,8 @@ namespace Web.Controllers.MasterData
             var result = await _masterDataRepositories.SourceVideos.GetAsync(id);
             ViewBag.EmbedUrl = result.Data == null ? null : _sourceVideoStreamService.GetEmbedUrl(result.Data.SourceVideoUrl);
             ViewBag.PreviewId = Guid.NewGuid();
-            ViewBag.EpisodeMinutes = await GetStatisticsDurationMinutesAsync();
+            ViewBag.EpisodeMinutes = result.Data?.Barn?.StatisticReminderMinutes > 0 ? result.Data.Barn.StatisticReminderMinutes : DefaultStatisticReminderMinutes;
             return View(viewPath + "Stream.cshtml", result);
-        }
-
-        // Episode menyusu = periode statistik SystemConfig aktif terbaru (menit sejak 00.00), seperti di API
-        private async Task<int> GetStatisticsDurationMinutesAsync()
-        {
-            var configs = await _configRepositories.SystemConfigs.GetAllAsync();
-            int minutes = configs.Data?
-                .Where(x => x.IsActive == true)
-                .OrderByDescending(x => x.DateModified ?? x.DateCreated)
-                .Select(x => x.StatisticsDurationMinutes)
-                .FirstOrDefault() ?? 0;
-            return minutes > 0 ? minutes : DefaultStatisticsDurationMinutes;
         }
 
         // MJPEG beranotasi hasil preview inferensi YOLO untuk <img>; berhenti otomatis saat halaman ditutup

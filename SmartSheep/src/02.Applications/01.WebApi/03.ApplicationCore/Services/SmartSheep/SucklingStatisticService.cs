@@ -13,7 +13,7 @@ namespace Api.ApplicationCore.Services.SmartSheep
 {
     public class SucklingStatisticService : ISucklingStatisticService
     {
-        private const int DefaultStatisticsDurationMinutes = 120;
+        private const int DefaultStatisticReminderMinutes = 120;
         private const string Suckling = "Suckling";
         private const string FailedAttempt = "FailedAttempt";
         private const string Approach = "Approach";
@@ -82,7 +82,7 @@ namespace Api.ApplicationCore.Services.SmartSheep
         }
 
         // Statistik pemantauan per periode (proposal Tabel 6 dan 3.3.3) dari SucklingEvent hasil sync InferenceYolo.
-        // Periode = SystemConfig.StatisticsDurationMinutes sejak tengah malam. RequiresReminder hanya dinilai untuk
+        // Periode = Barn.StatisticReminderMinutes kandang itu sejak tengah malam. RequiresReminder hanya dinilai untuk
         // periode yang sudah selesai (berakhir sebelum processedUntil): jumlah atau durasi menyusu turun dibanding
         // periode sebelumnya pada kandang dan kategori waktu yang sama. Dipanggil dari sync worker (bukan user),
         // sehingga data dibaca tanpa filter farm.
@@ -92,12 +92,7 @@ namespace Api.ApplicationCore.Services.SmartSheep
             var barn = await db.Barn.IgnoreQueryFilters().AsNoTracking().FirstOrDefaultAsync(x => x.Id == fkBarnId);
             if (barn == null) return;
 
-            var durationMinutes = await db.SystemConfig
-                .Where(x => x.IsActive)
-                .OrderByDescending(x => x.DateModified ?? x.DateCreated)
-                .Select(x => x.StatisticsDurationMinutes)
-                .FirstOrDefaultAsync();
-            if (durationMinutes <= 0) durationMinutes = DefaultStatisticsDurationMinutes;
+            var durationMinutes = barn.StatisticReminderMinutes > 0 ? barn.StatisticReminderMinutes : DefaultStatisticReminderMinutes;
 
             var start = from.Date.AddMinutes(Math.Floor(from.TimeOfDay.TotalMinutes / durationMinutes) * durationMinutes);
             for (; start < processedUntil; start = start.AddMinutes(durationMinutes))

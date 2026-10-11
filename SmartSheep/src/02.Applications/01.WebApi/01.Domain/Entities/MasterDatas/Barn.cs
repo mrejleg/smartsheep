@@ -20,6 +20,8 @@ namespace Api.Domain.Entities.MasterDatas
 
         public int LambCount { get; set; }
 
+        public int StatisticReminderMinutes { get; set; } = 120;
+
         public double? Length { get; set; }
 
         public double? Width { get; set; }
