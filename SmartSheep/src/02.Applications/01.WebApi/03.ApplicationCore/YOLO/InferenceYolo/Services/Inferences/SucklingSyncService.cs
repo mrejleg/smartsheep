@@ -12,7 +12,8 @@ namespace InferenceYolo.Services.Inferences
     // Klien API SmartSheep untuk sync kejadian, mengambil sumber video, dan membaca setting Yolo dari SystemConfig.
     //
     // - Token diminta ke Auth/Token dengan Yolo:ClientId dan Yolo:ClientSecret, disimpan sampai kedaluwarsa,
-    //   dan diminta ulang bila API menjawab 401.
+    //   dan diminta ulang bila API menjawab 401. Token dipakai bersama semua instance per API + client (refresh
+    //   worker, runner per kamera, preview Web) sehingga login cukup sekali sampai kedaluwarsa.
     // - Sync dikirim per SourceVideo ke SucklingActivity/Sync bersama rentang waktu video yang diproses sejak
     //   sync sebelumnya (ProcessedFrom-ProcessedUntil) agar API bisa menutup periode statistik yang sudah selesai.
     // - --offline: kejadian ditulis ke <output>/synced_events.csv (uji/kalibrasi tanpa API).
@@ -27,8 +28,10 @@ namespace InferenceYolo.Services.Inferences
         private readonly string clientId;
         private readonly string clientSecret;
         private readonly HttpClient http;
-        private string token;
-        private DateTime tokenValidTo;
+        private readonly string tokenKey;
+
+        private static readonly object TokenLock = new();
+        private static readonly Dictionary<string, (string Token, DateTime ValidTo)> Tokens = new();
 
         public SucklingSyncService(InferenceOption option, AppSetting setting)
         {
@@ -39,6 +42,7 @@ namespace InferenceYolo.Services.Inferences
 
             string apiUrl = setting.YoloApiUrl.EndsWith('/') ? setting.YoloApiUrl : setting.YoloApiUrl + "/";
             http = new HttpClient { BaseAddress = new Uri(apiUrl), Timeout = TimeSpan.FromSeconds(30) };
+            tokenKey = apiUrl + "|" + clientId;
         }
 
         public bool Sync(string sourceVideoCode, DateTime processedFrom, DateTime processedUntil, List<SucklingEvent> sucklingEvents)
@@ -171,7 +175,8 @@ namespace InferenceYolo.Services.Inferences
             for (int attempt = 0; ; attempt++)
             {
                 using var request = createRequest();
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetToken());
+                string token = GetToken();
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var response = http.Send(request);
                 if (response.StatusCode != HttpStatusCode.Unauthorized || attempt > 0)
                 {
@@ -179,27 +184,38 @@ namespace InferenceYolo.Services.Inferences
                 }
 
                 response.Dispose();
-                token = null;
+                lock (TokenLock)
+                {
+                    // Hanya dibuang bila belum diganti instance lain
+                    if (Tokens.TryGetValue(tokenKey, out var cached) && cached.Token == token)
+                    {
+                        Tokens.Remove(tokenKey);
+                    }
+                }
             }
         }
 
+        // Login dalam lock agar beberapa kamera yang mulai bersamaan tidak meminta token masing-masing
         private string GetToken()
         {
-            if (token != null && DateTime.Now < tokenValidTo.AddMinutes(-5))
+            lock (TokenLock)
             {
+                if (Tokens.TryGetValue(tokenKey, out var cached) && DateTime.Now < cached.ValidTo.AddMinutes(-5))
+                {
+                    return cached.Token;
+                }
+
+                using var response = http.PostAsJsonAsync("Auth/Token", new { ClientId = clientId, ClientSecret = clientSecret, Username = WorkerUsername }).Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new InvalidOperationException($"Token API ditolak ({(int)response.StatusCode}); periksa Yolo:ClientId dan Yolo:ClientSecret");
+                }
+
+                var data = ReadData(response);
+                string token = data.GetProperty("Token").GetString();
+                Tokens[tokenKey] = (token, data.GetProperty("ValidTo").GetDateTime());
                 return token;
             }
-
-            using var response = http.PostAsJsonAsync("Auth/Token", new { ClientId = clientId, ClientSecret = clientSecret, Username = WorkerUsername }).Result;
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new InvalidOperationException($"Token API ditolak ({(int)response.StatusCode}); periksa Yolo:ClientId dan Yolo:ClientSecret");
-            }
-
-            var data = ReadData(response);
-            token = data.GetProperty("Token").GetString();
-            tokenValidTo = data.GetProperty("ValidTo").GetDateTime();
-            return token;
         }
 
         private static JsonElement ReadData(HttpResponseMessage response)
