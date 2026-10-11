@@ -49,11 +49,12 @@ public sealed class ReminderSchedulerService : BackgroundService
         await using var scope = _scopeFactory.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        var configuredInterval = await db.SystemConfig
-            .Where(x => x.IsActive)
-            .OrderByDescending(x => x.DateModified ?? x.DateCreated)
-            .Select(x => x.StatisticsDurationMinutes)
-            .FirstOrDefaultAsync(cancellationToken);
+        // Barn.StatisticReminderMinutes terkecil dari kandang aktif agar setiap kandang dicek minimal sesuai periodenya;
+        // dibaca tanpa filter farm karena berjalan di background (bukan user)
+        var configuredInterval = await db.Barn.IgnoreQueryFilters()
+            .Where(x => x.IsActive && x.StatisticReminderMinutes > 0)
+            .Select(x => (int?)x.StatisticReminderMinutes)
+            .MinAsync(cancellationToken) ?? 0;
         var intervalMinutes = configuredInterval > 0 ? configuredInterval : DefaultIntervalMinutes;
 
         var reminderIds = await db.ReminderLog

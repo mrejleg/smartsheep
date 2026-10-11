@@ -582,9 +582,6 @@ namespace Api.Infrastructure.Migrations
                     b.Property<int>("SourceVideoHealthCheckIntervalMinutes")
                         .HasColumnType("int");
 
-                    b.Property<int>("StatisticsDurationMinutes")
-                        .HasColumnType("int");
-
                     b.Property<double>("YoloBaselineResetSeconds")
                         .HasColumnType("float");
 
@@ -730,6 +727,9 @@ namespace Api.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("VARCHAR(150)");
+
+                    b.Property<int>("StatisticReminderMinutes")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()

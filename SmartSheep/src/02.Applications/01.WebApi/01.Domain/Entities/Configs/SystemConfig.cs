@@ -4,8 +4,6 @@ namespace Api.Domain.Entities.Configs
 {
     public class SystemConfig : BaseEntity<Guid>
     {
-        public int StatisticsDurationMinutes { get; set; } = 120;
-
         public int SourceVideoHealthCheckIntervalMinutes { get; set; } = 5;
 
         public double YoloConfidenceThreshold { get; set; } = 0.35;
