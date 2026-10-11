@@ -67,20 +67,17 @@ public sealed class ReminderSchedulerService : BackgroundService
 
         foreach (var reminderId in reminderIds)
         {
-            var claimed = await db.ReminderLog
-                .Where(x => x.Id == reminderId && x.Status == "Pending")
-                .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(x => x.Status, "Processing")
-                    .SetProperty(x => x.DateModified, DateTime.Now)
-                    .SetProperty(x => x.ModifiedBy, "reminder-scheduler"), cancellationToken);
-
-            if (claimed == 0) continue;
-
+            // Status tetap Pending selama dikirim dan baru diubah setelah ada hasil kirim, sehingga reminder tidak
+            // tersangkut bila API berhenti di tengah pengiriman; dicek ulang agar yang sudah diproses dilewati
             var reminder = await db.ReminderLog
                 .AsTracking()
                 .Include(x => x.ReminderTemplate)
                 .Include(x => x.SucklingStatistic).ThenInclude(x => x!.Barn)
-                .FirstAsync(x => x.Id == reminderId, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == reminderId && x.Status == "Pending", cancellationToken);
+            if (reminder == null) continue;
+
+            reminder.ModifiedBy = "reminder-scheduler";
+            reminder.DateModified = DateTime.Now;
 
             if (string.IsNullOrWhiteSpace(reminder.Username))
             {
