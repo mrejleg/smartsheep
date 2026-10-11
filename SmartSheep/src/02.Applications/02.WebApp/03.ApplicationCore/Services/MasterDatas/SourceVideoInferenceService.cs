@@ -159,6 +159,8 @@ namespace Web.ApplicationCore.Services.MasterDatas
 
         private async Task RunAsync(SourceVideo sourceVideo, Guid previewId, Stream output, CancellationToken cancellationToken)
         {
+            // Pembuatan provider sudah membaca SystemConfig (InferenceDi.ReadAppSetting); preview berikutnya membaca ulang
+            bool isNewProvider = !provider.IsValueCreated;
             using var scope = provider.Value.CreateScope();
             var option = scope.ServiceProvider.GetRequiredService<InferenceOption>();
             option.SourceVideoCode = sourceVideo.Code;
@@ -169,8 +171,11 @@ namespace Web.ApplicationCore.Services.MasterDatas
             option.UseCoreMl = bool.TryParse(appSetting.YoloUseCoreMl, out bool useCoreMl) && useCoreMl;
             option.IsOffline = true;
             option.SaveVideo = false;
-            scope.ServiceProvider.GetRequiredService<ISucklingSyncService>()
-                .ReadSystemConfig(scope.ServiceProvider.GetRequiredService<InferenceYolo.Models.AppSetting>());
+            if (!isNewProvider)
+            {
+                scope.ServiceProvider.GetRequiredService<ISucklingSyncService>()
+                    .ReadSystemConfig(scope.ServiceProvider.GetRequiredService<InferenceYolo.Models.AppSetting>());
+            }
 
             var source = scope.ServiceProvider.GetRequiredService<IVideoSourceService>();
             source.Open(streamService.GetInput(sourceVideo));

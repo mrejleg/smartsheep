@@ -39,16 +39,19 @@ namespace InferenceYolo.Services.Inferences
             await Task.Yield();
             RecoverPending();
 
+            // SystemConfig sudah dibaca saat start (InferenceDi.ReadAppSetting); putaran pertama cukup mengambil daftar sumber
+            bool readSystemConfig = false;
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    Refresh();
+                    Refresh(readSystemConfig);
                 }
                 catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException or TaskCanceledException)
                 {
                     Console.Error.WriteLine($"Daftar SourceVideo: {ex.Message}");
                 }
+                readSystemConfig = true;
 
                 try
                 {
@@ -67,14 +70,14 @@ namespace InferenceYolo.Services.Inferences
         }
 
         // SystemConfig dibaca ulang setiap refresh; bila berubah semua runner dijalankan ulang dengan setting baru
-        private void Refresh()
+        private void Refresh(bool readSystemConfig)
         {
             List<SyncSource> sources;
             bool isConfigChanged;
             using (var scope = CreateScope(template.SourceVideoCode, template.BarnCode))
             {
                 var syncService = scope.ServiceProvider.GetRequiredService<ISucklingSyncService>();
-                isConfigChanged = syncService.ReadSystemConfig(setting);
+                isConfigChanged = readSystemConfig && syncService.ReadSystemConfig(setting);
                 var allowedCodes = (setting.YoloSourceCodes ?? "")
                     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
