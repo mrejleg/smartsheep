@@ -24,12 +24,14 @@ namespace InferenceYolo.Services.Inferences
     //               badan karena anak menyusu berdiri di samping induk, tidak diperpanjang ke depan/belakang badan,
     //               dan dibatasi frame. Induk yang tidak terlihat lebih dari Yolo:BaselineResetSeconds kehilangan
     //               sumbu dan arah kepalanya karena bisa sudah berbalik.
-    // Pasangan    : setiap anak dipasangkan dengan induk terdekat (detector menetapkan bbox terbesar sebagai induk).
-    // Baseline    : rasio (sisi panjang / sisi pendek) dan luas bbox anak saat anak berjalan dan
-    //               belum overlap dengan induk (berjalan = berdiri tegak). Bila track anak tidak terlihat lebih
-    //               dari Yolo:BaselineResetSeconds, baseline dihapus karena track yang muncul lagi bisa saja objek
-    //               lain (mis. bagian tubuh induk); anak harus berjalan bebas lagi sebelum dinilai menyusu.
-    // Stay point  : bersamaan -> bbox anak overlap dengan induk, centroid anak di zona ambing,
+    // Pasangan    : setiap anak dipasangkan dengan induk terdekat.
+    // Baseline    : luas bbox anak sebelum overlap dengan induk (berjalan maupun diam), dan rasio (sisi panjang /
+    //               sisi pendek) bbox anak saat anak berjalan dan belum overlap (berjalan = berdiri tegak). Bila
+    //               track anak tidak terlihat lebih dari Yolo:BaselineResetSeconds, baseline dihapus karena track yang
+    //               muncul lagi bisa saja objek lain (mis. bagian tubuh induk); anak harus berjalan bebas lagi sebelum
+    //               dinilai menyusu.
+    // Stay point  : bersamaan -> bbox anak overlap dengan induk, centroid anak di zona ambing, anak menetap
+    //               (kecepatan centroid di bawah Yolo:LambMinimumSpeed, tanpa pergeseran signifikan),
     //               postur berdiri (rasio mirip baseline; lebih membulat/lebar = tiduran), dan
     //               luas bbox anak menyusut dibanding baseline (kepala tertutup tubuh induk). Bbox anak yang
     //               terpotong tepi frame tidak dipakai sebagai baseline dan tidak dinilai menyusut. Postur dan
@@ -221,11 +223,19 @@ namespace InferenceYolo.Services.Inferences
             status.IsInUdderZone = status.IsOverlap &&
                 Contains(GetHysteresisZone(udderZones[paired.TrackId], paired.Box, ewes[paired.TrackId].IsHorizontal, state.WasInUdderZone), lamb.Centroid);
 
-            if (status.IsMoving && !status.IsOverlap && !isCut)
+            // Luas acuan = luas sebelum overlap (berjalan maupun diam); rasio acuan hanya saat berjalan (berdiri tegak)
+            if (!status.IsOverlap && !isCut)
             {
-                state.BaselineRatio = Blend(state.BaselineRatio, status.Ratio);
+                if (status.IsMoving)
+                {
+                    state.BaselineRatio = Blend(state.BaselineRatio, status.Ratio);
+                }
                 state.BaselineArea = Blend(state.BaselineArea, status.Area);
             }
+
+            // Menetap: tidak berpindah signifikan; setelah menetap batas kecepatan dilonggarkan (histeresis) agar dorongan
+            // kecil anak saat menyusu tidak memutus kejadian
+            bool isStill = !IsMoving(state.History, shortSide * (state.WasStill ? 1 + thresholdHysteresis : 1));
 
             status.BaselineRatio = state.BaselineRatio;
             status.BaselineArea = state.BaselineArea;
@@ -243,7 +253,8 @@ namespace InferenceYolo.Services.Inferences
             state.WasInUdderZone = status.IsInUdderZone;
             state.WasStanding = status.IsStanding;
             state.WasShrunk = status.IsShrunk;
-            status.IsStayPoint = status.IsOverlap && status.IsInUdderZone && status.IsStanding && status.IsShrunk;
+            state.WasStill = isStill;
+            status.IsStayPoint = status.IsOverlap && status.IsInUdderZone && isStill && status.IsStanding && status.IsShrunk;
         }
 
         private void UpdateApproach(TrackedObject lamb, LambState state, LambStatus status, double timeSeconds, DateTime frameAt,
@@ -396,6 +407,7 @@ namespace InferenceYolo.Services.Inferences
             state.BaselineArea = null;
             state.WasStanding = false;
             state.WasShrunk = false;
+            state.WasStill = false;
         }
 
         // Arah gerak terakhir dan arah kepala = rata-rata arah gerak dengan bobot waktu (memori
@@ -520,6 +532,7 @@ namespace InferenceYolo.Services.Inferences
             public bool WasInUdderZone { get; set; }
             public bool WasStanding { get; set; }
             public bool WasShrunk { get; set; }
+            public bool WasStill { get; set; }
 
             public SucklingEvent Approach { get; set; }
             public double ApproachStartSeconds { get; set; }
