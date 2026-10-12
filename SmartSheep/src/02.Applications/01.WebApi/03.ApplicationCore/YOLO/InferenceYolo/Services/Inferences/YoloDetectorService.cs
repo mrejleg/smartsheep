@@ -57,10 +57,12 @@ namespace InferenceYolo.Services.Inferences
         private readonly int eweCount;
         private readonly int lambCount;
 
-        // Induk yang sesaat tidak terdeteksi: kotak induk terakhir dipakai paling lama Yolo:EweHoldFrames frame
+        // Kotak induk dan anak terpilih di frame sebelumnya: bila deteksi lebih banyak dari jumlah kandang, yang
+        // dipertahankan yang terdekat dengan kotak ini. Induk yang sesaat tidak terdeteksi memakai kotak terakhirnya
+        // paling lama Yolo:EweHoldFrames frame (MissingFrames = jumlah frame ditahan).
         private readonly int eweHoldFrames;
-        private Detection lastEwe;
-        private int eweMissingFrames;
+        private List<(Detection Ewe, int MissingFrames)> lastEwes = new();
+        private List<Detection> lastLambs = new();
 
         // Buffer input dan tensor-nya dibuat sekali; setiap frame cukup mengisi ulang buffer
         private readonly float[] input;
@@ -223,9 +225,11 @@ namespace InferenceYolo.Services.Inferences
         // - Kotak induk gabungan: induk yang overlap dengan induk lain dan membungkus (>= Yolo:NmsContainmentThreshold
         //   luasnya) anak yang tidak overlap dengan induk lain itu = satu kotak yang menggabungkan induk dan anak di
         //   sebelahnya, dibuang. Induk asli dan anaknya tetap.
-        // - Bbox induk terbesar ditetapkan sebagai induk (proposal 3.3.1), sebanyak jumlah induk kandang: induk lain yang
-        //   sebagian besar (>= Yolo:NmsContainmentThreshold) berada di dalam induk terpilih = potongan induk itu, dibuang;
-        //   selebihnya = anak bila ukurannya ukuran anak (< Yolo:LambMaximumAreaRatio x induk terbesar), selain itu dibuang.
+        // - Induk lebih banyak dari jumlah induk kandang: yang dipertahankan induk terdekat dengan induk frame sebelumnya,
+        //   sisanya diisi confidence tertinggi (ukuran tidak dipakai: induk bisa kecil karena terpotong, anak bisa besar).
+        //   Induk lain yang sebagian besar (>= Yolo:NmsContainmentThreshold) berada di dalam induk terpilih = potongan
+        //   induk itu, dibuang; selebihnya = anak bila asalnya anak, terdekat dengan anak frame sebelumnya, atau ukurannya
+        //   ukuran anak (< Yolo:LambMaximumAreaRatio x induk terpilih terbesar), selain itu dibuang.
         // - Kotak anak yang luasnya >= Yolo:LambMaximumAreaRatio x luas induk acuan = induk yang salah kelas,
         //   dijadikan induk. Acuan = induk utuh terdekat (tidak terpotong tepi frame), atau rata-rata luas induk
         //   utuh frame sebelumnya bila di frame ini tidak ada, atau luas induk terpotong terbesar yang pernah
@@ -233,9 +237,11 @@ namespace InferenceYolo.Services.Inferences
         // - Anak yang overlap/menempel dengan anak lain dan luasnya < Yolo:LambPartAreaRatio x luas anak itu =
         //   potongan (biasanya kepala) dari anak yang sama, digabung ke bbox anak itu agar kepalanya ikut terbungkus.
         // - Anak yang luasnya < Yolo:LambMinimumAreaRatio x luas induk acuan = kotak yang hanya berisi kepala, dibuang.
-        // - Induk yang sesaat tidak terdeteksi memakai kotak induk terakhir (paling lama Yolo:EweHoldFrames frame).
-        // - Anak lebih banyak dari jumlah anak kandang: kelebihannya dibuang, anak yang overlap dengan induk dulu
-        //   (bagian tubuh induk, biasanya kepala), lalu confidence terendah.
+        // - Induk yang sesaat tidak terdeteksi memakai kotak terakhirnya (paling lama Yolo:EweHoldFrames frame), per induk
+        //   selama jumlah induk kandang belum penuh.
+        // - Anak lebih banyak dari jumlah anak kandang: yang terdekat dengan anak frame sebelumnya dipertahankan, lalu
+        //   confidence tertinggi; anak baru yang hampir seluruhnya di dalam kotak induk (biasanya kepala induk) dibuang dulu.
+        //   Anak yang overlap induk tetapi sudah ada sebelumnya (sedang menyusu) tidak dibuang.
         private List<Detection> FilterLambs(List<Detection> detections, Size frameSize)
         {
             var ewes = detections.Where(d => d.Label == EweLabel).ToList();
@@ -247,7 +253,8 @@ namespace InferenceYolo.Services.Inferences
                     CentroidTrackerService.GetCentroid(lamb.Box)))!.Box)
                 : eweArea ?? cutEweArea;
 
-            foreach (var lamb in lambs.Where(l => Area(l.Box) >= lambMaximumAreaRatio * ReferenceArea(l)).ToList())
+            var fromLambs = lambs.Where(l => Area(l.Box) >= lambMaximumAreaRatio * ReferenceArea(l)).ToList();
+            foreach (var lamb in fromLambs)
             {
                 lambs.Remove(lamb);
                 lamb.ClassId = eweClassId;
@@ -260,16 +267,24 @@ namespace InferenceYolo.Services.Inferences
             ewes = ewes.Where(merged => !ewes.Any(ewe => ewe != merged && HasOverlap(ewe.Box, merged.Box) &&
                 lambs.Any(l => Containment(merged.Box, l.Box) >= nmsContainmentThreshold && !HasOverlap(l.Box, ewe.Box)))).ToList();
 
-            var byArea = ewes.OrderByDescending(e => Area(e.Box)).ToList();
-            ewes = eweCount > 0 ? byArea.Take(eweCount).ToList() : byArea;
-            foreach (var ewe in byArea.Skip(ewes.Count))
+            if (eweCount > 0 && ewes.Count > eweCount)
             {
-                if (!ewes.Any(s => Containment(s.Box, ewe.Box) >= nmsContainmentThreshold) && Area(ewe.Box) < lambMaximumAreaRatio * Area(ewes[0].Box))
+                var selected = Nearest(lastEwes.Select(x => x.Ewe).ToList(), ewes).Select(x => x.Current).Take(eweCount).ToList();
+                selected.AddRange(ewes.Except(selected).OrderByDescending(e => e.Confidence).Take(eweCount - selected.Count));
+                float largest = selected.Max(e => Area(e.Box));
+                var extras = ewes.Except(selected).ToList();
+                var nearLambs = Nearest(lastLambs, extras).Select(x => x.Current).ToList();
+                foreach (var ewe in extras)
                 {
-                    ewe.ClassId = lambClassId;
-                    ewe.Label = LambLabel;
-                    lambs.Add(ewe);
+                    if (!selected.Any(s => Containment(s.Box, ewe.Box) >= nmsContainmentThreshold) &&
+                        (fromLambs.Contains(ewe) || nearLambs.Contains(ewe) || Area(ewe.Box) < lambMaximumAreaRatio * largest))
+                    {
+                        ewe.ClassId = lambClassId;
+                        ewe.Label = LambLabel;
+                        lambs.Add(ewe);
+                    }
                 }
+                ewes = selected;
             }
 
             // Acuan luas anak berikutnya = induk terpilih saja (termasuk hasil koreksi kelas), bukan induk sebelum seleksi
@@ -302,24 +317,33 @@ namespace InferenceYolo.Services.Inferences
                 eweArea = eweArea.HasValue ? eweArea.Value + baselineWeight * (area - eweArea.Value) : area;
             }
 
-            if (ewes.Count > 0)
+            // Induk sebelumnya yang tidak punya pasangan di frame ini ditahan, selama jumlah induk belum penuh
+            // (tanpa jumlah kandang: hanya bila tidak ada induk sama sekali)
+            var matchedEwes = Nearest(lastEwes.Select(x => x.Ewe).ToList(), ewes).Select(x => x.Previous).ToList();
+            var held = new List<(Detection Ewe, int MissingFrames)>();
+            foreach (var (ewe, missingFrames) in lastEwes.Where(x => !matchedEwes.Contains(x.Ewe)))
             {
-                lastEwe = ewes[0];
-                eweMissingFrames = 0;
-            }
-            else if (lastEwe != null && ++eweMissingFrames <= eweHoldFrames)
-            {
-                ewes.Add(lastEwe);
-            }
-
-            if (lambCount > 0 && lambs.Count > lambCount)
-            {
-                foreach (var extra in lambs.OrderByDescending(l => ewes.Any(e => HasOverlap(l.Box, e.Box))).ThenBy(l => l.Confidence)
-                    .Take(lambs.Count - lambCount).ToList())
+                if (missingFrames < eweHoldFrames && (eweCount > 0 ? ewes.Count + held.Count < eweCount : ewes.Count == 0))
                 {
-                    lambs.Remove(extra);
+                    held.Add((ewe, missingFrames + 1));
                 }
             }
+            lastEwes = ewes.Select(e => (e, 0)).Concat(held).ToList();
+            ewes.AddRange(held.Select(x => x.Ewe));
+
+            // Anak lebih banyak dari jumlah kandang: yang terdekat dengan anak frame sebelumnya dipertahankan (termasuk
+            // yang sedang menyusu di dekat induk), sisanya diisi confidence tertinggi; anak baru yang hampir seluruhnya
+            // di dalam kotak induk (biasanya kepala induk) paling akhir
+            if (lambCount > 0 && lambs.Count > lambCount)
+            {
+                var kept = Nearest(lastLambs, lambs).Select(x => x.Current).Take(lambCount).ToList();
+                kept.AddRange(lambs.Except(kept)
+                    .OrderBy(l => ewes.Any(e => Containment(e.Box, l.Box) >= nmsContainmentThreshold))
+                    .ThenByDescending(l => l.Confidence)
+                    .Take(lambCount - kept.Count));
+                lambs = kept;
+            }
+            lastLambs = lambs;
 
             return ewes.Concat(lambs).ToList();
         }
@@ -344,6 +368,29 @@ namespace InferenceYolo.Services.Inferences
             }
 
             return kept;
+        }
+
+        // Pasangan kotak frame sebelumnya dengan deteksi frame ini, jarak centroid terkecil lebih dulu dan satu kotak
+        // hanya untuk satu deteksi (sama dengan centroid tracking); jarak lebih dari sisi terpanjang kedua kotak (kotak bisa
+        // membesar saat badan yang tadinya terpotong terlihat utuh) dianggap objek lain
+        private static List<(Detection Previous, Detection Current)> Nearest(List<Detection> previous, List<Detection> current)
+        {
+            var pairs = previous.SelectMany(p => current.Select(c => (Previous: p, Current: c,
+                    Distance: CentroidTrackerService.Distance(CentroidTrackerService.GetCentroid(p.Box), CentroidTrackerService.GetCentroid(c.Box)))))
+                .Where(x => x.Distance <= Math.Max(Math.Max(x.Previous.Box.Width, x.Previous.Box.Height), Math.Max(x.Current.Box.Width, x.Current.Box.Height)))
+                .OrderBy(x => x.Distance)
+                .ToList();
+
+            var matched = new List<(Detection Previous, Detection Current)>();
+            foreach (var pair in pairs)
+            {
+                if (!matched.Any(m => m.Previous == pair.Previous || m.Current == pair.Current))
+                {
+                    matched.Add((pair.Previous, pair.Current));
+                }
+            }
+
+            return matched;
         }
 
         private static bool IsCutByFrame(Rect box, Size frameSize)
