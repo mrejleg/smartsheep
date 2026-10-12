@@ -38,8 +38,31 @@ namespace InferenceYolo.Services.Inferences
                 Log($"Sync {recovered} kejadian sisa proses sebelumnya");
             }
 
+            // Status stream dilaporkan ke API (pengecekan kedua selain SourceVideoHealthCheckService di API);
+            // preview Web dan --offline tidak melapor
             var source = provider.GetRequiredService<IVideoSourceService>();
-            source.Open(option.Input);
+            var syncService = provider.GetRequiredService<ISucklingSyncService>();
+            bool isReportingStatus = !option.IsOffline;
+            if (isReportingStatus)
+            {
+                // Dipasang sebelum Open agar putus tepat setelah stream dibuka tetap terlapor (hanya live streaming)
+                source.ConnectionChanged += isOnline => syncService.ReportStatus(option.SourceVideoCode, isOnline);
+            }
+
+            try
+            {
+                source.Open(option.Input);
+            }
+            catch (InvalidOperationException) when (isReportingStatus && source.IsStream)
+            {
+                syncService.ReportStatus(option.SourceVideoCode, false);
+                throw;
+            }
+
+            if (isReportingStatus && source.IsStream)
+            {
+                syncService.ReportStatus(option.SourceVideoCode, true);
+            }
             using var stop = cancellationToken.Register(source.Stop);
 
             var detector = provider.GetRequiredService<IYoloDetectorService>();

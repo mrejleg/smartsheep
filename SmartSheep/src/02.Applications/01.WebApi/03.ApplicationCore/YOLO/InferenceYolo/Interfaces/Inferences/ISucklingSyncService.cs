@@ -9,5 +9,6 @@ namespace InferenceYolo.Interfaces.Inferences
         List<SyncSource> GetSources();
         SyncSource GetSource(string sourceVideoCode);
         bool ReadSystemConfig(AppSetting setting);
+        bool ReportStatus(string sourceVideoCode, bool isOnline);
     }
 }

@@ -579,6 +579,9 @@ namespace Api.Infrastructure.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ReminderIntervalMinutes")
+                        .HasColumnType("int");
+
                     b.Property<int>("SourceVideoHealthCheckIntervalMinutes")
                         .HasColumnType("int");
 

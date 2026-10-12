@@ -23,7 +23,8 @@ namespace Api.Domain.Entities.SmartSheep
         [Required]
         [Column(TypeName = "VARCHAR(20)")]
         [StringLength(20, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 1)]
-        // Pending: waiting to be sent; Sent: successfully sent; Failed: delivery failed.
+        // Pending: waiting to be sent (retried); Sent: successfully sent; Failed: cannot be delivered;
+        // Expired: not delivered before the barn's next statistic period ended.
         public string Status { get; set; } = "Pending";
 
         public DateTime? ScheduledAt { get; set; }

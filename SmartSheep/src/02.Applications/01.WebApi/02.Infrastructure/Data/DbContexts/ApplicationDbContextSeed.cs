@@ -602,7 +602,7 @@ namespace Api.Infrastructure.Data.DbContexts
             var systemConfig = await db.SystemConfig.FirstOrDefaultAsync();
             if (systemConfig == null)
             {
-                db.SystemConfig.Add(new SystemConfig { Id = Guid.NewGuid(), SourceVideoHealthCheckIntervalMinutes = 5, CreatedBy = "system", ModifiedBy = "system", DateCreated = DateTime.Now, DateModified = DateTime.Now, IsActive = true });
+                db.SystemConfig.Add(new SystemConfig { Id = Guid.NewGuid(), SourceVideoHealthCheckIntervalMinutes = 5, ReminderIntervalMinutes = 10, CreatedBy = "system", ModifiedBy = "system", DateCreated = DateTime.Now, DateModified = DateTime.Now, IsActive = true });
             }
             await db.SaveChangesAsync();
 

@@ -54,6 +54,7 @@ namespace InferenceYolo.Services.Inferences
 
         public bool IsStream { get; private set; }
         public int ReconnectCount { get; private set; }
+        public event Action<bool> ConnectionChanged;
         public int VideoCount { get; private set; }
         public double Fps { get; private set; }
         public int FrameCount { get; private set; }
@@ -216,6 +217,7 @@ namespace InferenceYolo.Services.Inferences
         {
             capture.Dispose();
             capture = null;
+            ConnectionChanged?.Invoke(false);
 
             var delay = MinReconnectDelay;
             while (true)
@@ -243,6 +245,7 @@ namespace InferenceYolo.Services.Inferences
                         ReconnectCount++;
                     }
                     Console.WriteLine("Stream tersambung kembali");
+                    ConnectionChanged?.Invoke(true);
                     return;
                 }
 

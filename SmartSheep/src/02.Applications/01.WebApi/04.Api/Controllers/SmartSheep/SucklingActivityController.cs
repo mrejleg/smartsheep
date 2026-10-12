@@ -2,6 +2,7 @@ using Api.ApplicationCore.Interfaces.SmartSheep;
 using Api.Controllers.FilterAttributes;
 using Api.Domain.Entities.SmartSheep;
 using Api.Domain.Models.SmartSheep;
+using Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Base.Models.DevExpress.DxGrids;
@@ -16,11 +17,16 @@ namespace Api.Controllers.SmartSheep
     {
         private readonly ISucklingActivityService _service;
         private readonly IAppLogger<SucklingActivity> _loger;
+        private readonly ReminderDeliveryService _reminderDeliveryService;
+        private readonly SourceVideoStatusService _sourceVideoStatusService;
 
-        public SucklingActivityController(ISucklingActivityService service, IAppLogger<SucklingActivity> loger)
+        public SucklingActivityController(ISucklingActivityService service, IAppLogger<SucklingActivity> loger,
+            ReminderDeliveryService reminderDeliveryService, SourceVideoStatusService sourceVideoStatusService)
         {
             _service = service;
             _loger = loger;
+            _reminderDeliveryService = reminderDeliveryService;
+            _sourceVideoStatusService = sourceVideoStatusService;
         }
 
         [HttpPost("DxGrid")]
@@ -130,6 +136,7 @@ namespace Api.Controllers.SmartSheep
                 return new BadRequest("Source video code is required", param).ReturnResponse();
             }
 
+            var syncStartedAt = DateTime.Now;
             var count = await _service.SyncAsync(param);
             if (count == null)
             {
@@ -137,7 +144,37 @@ namespace Api.Controllers.SmartSheep
                 return new NotFound("Source video not found : " + param.SourceVideoCode, new { param.SourceVideoCode }).ReturnResponse();
             }
 
+            // Reminder kandang ini yang dibuat sync ini langsung dikirim; yang gagal tetap Pending untuk ReminderSchedulerService
+            try
+            {
+                await _reminderDeliveryService.SendPendingAsync(param.SourceVideoCode, syncStartedAt, HttpContext.RequestAborted);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _loger.LogError("Failed sending reminders after sync " + param.SourceVideoCode + " : " + ex.Message);
+            }
+
             return new OK("Success sync data", new { count }).ReturnResponse();
+        }
+
+        [HttpPost("SyncStatus")]
+        [AuthorizeFilter(Scope = "SucklingActivity.Add")]
+        public async Task<IActionResult> SyncStatusAsync([FromBody] SucklingSyncStatusParam param)
+        {
+            if (param == null || string.IsNullOrWhiteSpace(param.SourceVideoCode))
+            {
+                _loger.LogError("Bad request parameter. Source video code is required");
+                return new BadRequest("Source video code is required", param).ReturnResponse();
+            }
+
+            var isFound = await _sourceVideoStatusService.ReportAsync(param.SourceVideoCode, param.IsOnline, HttpContext.RequestAborted);
+            if (!isFound)
+            {
+                _loger.LogError("Source video not found : " + param.SourceVideoCode);
+                return new NotFound("Source video not found : " + param.SourceVideoCode, new { param.SourceVideoCode }).ReturnResponse();
+            }
+
+            return new OK("Success sync status", new { param.SourceVideoCode, param.IsOnline }).ReturnResponse();
         }
 
         [HttpPut]

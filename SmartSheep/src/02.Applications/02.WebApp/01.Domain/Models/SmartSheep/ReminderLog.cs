@@ -16,7 +16,8 @@ namespace Web.Domain.Models.SmartSheep
         public string Username { get; set; } = string.Empty;
 
         [Required, StringLength(20, MinimumLength = 1)]
-        // Pending: waiting to be sent; Sent: successfully sent; Failed: delivery failed.
+        // Pending: waiting to be sent (retried); Sent: successfully sent; Failed: cannot be delivered;
+        // Expired: not delivered before the barn's next statistic period ended.
         public string Status { get; set; } = "Pending";
 
         public DateTime? ScheduledAt { get; set; }

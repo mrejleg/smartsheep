@@ -7,6 +7,10 @@ namespace InferenceYolo.Interfaces.Inferences
         bool IsStream { get; }
         int VideoCount { get; }
         int ReconnectCount { get; }
+
+        // Live streaming: false saat stream putus (mulai disambung ulang), true saat tersambung kembali.
+        // Dipanggil dari thread pembaca stream.
+        event Action<bool> ConnectionChanged;
         double Fps { get; }
         int FrameCount { get; }
         Size FrameSize { get; }
