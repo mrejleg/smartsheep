@@ -143,6 +143,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<FirebasePushService>();
+builder.Services.AddSingleton<ReminderDeliveryService>();
+builder.Services.AddSingleton<SourceVideoStatusService>();
 builder.Services.AddHostedService<ReminderSchedulerService>();
 builder.Services.AddHostedService<SourceVideoHealthCheckService>();
 builder.Services.AddMemoryCache();

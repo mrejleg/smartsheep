@@ -82,7 +82,8 @@ namespace Api.ApplicationCore.Services.SmartSheep
         }
 
         // Statistik pemantauan per periode (proposal Tabel 6 dan 3.3.3) dari SucklingEvent hasil sync InferenceYolo.
-        // Periode = Barn.StatisticReminderMinutes kandang itu sejak tengah malam. RequiresReminder hanya dinilai untuk
+        // Periode = Barn.StatisticReminderMinutes kandang itu sejak 00.00 dan dipotong di 24.00 (mis. 100 menit: periode
+        // terakhir 23.20-24.00), sama dengan batas berlaku reminder. RequiresReminder hanya dinilai untuk
         // periode yang sudah selesai (berakhir sebelum processedUntil): jumlah atau durasi menyusu turun dibanding
         // periode sebelumnya pada kandang dan kategori waktu yang sama. Dipanggil dari sync worker (bukan user),
         // sehingga data dibaca tanpa filter farm.
@@ -95,9 +96,10 @@ namespace Api.ApplicationCore.Services.SmartSheep
             var durationMinutes = barn.StatisticReminderMinutes > 0 ? barn.StatisticReminderMinutes : DefaultStatisticReminderMinutes;
 
             var start = from.Date.AddMinutes(Math.Floor(from.TimeOfDay.TotalMinutes / durationMinutes) * durationMinutes);
-            for (; start < processedUntil; start = start.AddMinutes(durationMinutes))
+            while (start < processedUntil)
             {
                 var end = start.AddMinutes(durationMinutes);
+                if (end > start.Date.AddDays(1)) end = start.Date.AddDays(1);
                 var observedUntil = end < processedUntil ? end : processedUntil;
                 var events = await db.SucklingEvent.IgnoreQueryFilters().AsNoTracking()
                     .Where(x => x.IsActive && x.FkBarnId == fkBarnId && x.EventStart >= start && x.EventStart < end)
@@ -131,6 +133,8 @@ namespace Api.ApplicationCore.Services.SmartSheep
                 {
                     await AddReminderLogsAsync(statistic, barn.FkFarmId);
                 }
+
+                start = end;
             }
         }
 
@@ -180,6 +184,18 @@ namespace Api.ApplicationCore.Services.SmartSheep
                 .Select(x => x.UserLogin!.Username)
                 .Distinct()
                 .ToListAsync();
+
+            // Reminder periode sebelumnya di kandang ini yang belum terkirim ke user yang sama sudah usang
+            var replaced = await db.ReminderLog.IgnoreQueryFilters().AsTracking()
+                .Where(x => x.IsActive && x.Status == "Pending" && usernames.Contains(x.Username) &&
+                    x.SucklingStatistic!.FkBarnId == statistic.FkBarnId && x.SucklingStatistic.ActivityFrom < statistic.ActivityFrom)
+                .ToListAsync();
+            foreach (var old in replaced)
+            {
+                old.Status = "Expired";
+                old.ErrorMessage = $"Replaced by the reminder for {statistic.PeriodDescription}.";
+                old.DateModified = DateTime.Now;
+            }
 
             db.ReminderLog.AddRange(usernames.Select(username => new ReminderLog
             {

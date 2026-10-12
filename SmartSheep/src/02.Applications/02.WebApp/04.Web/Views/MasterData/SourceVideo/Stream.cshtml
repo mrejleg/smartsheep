@@ -268,7 +268,7 @@
                 return String(Math.floor(minutes / 60)).padStart(2, '0') + '.' + String(minutes % 60).padStart(2, '0');
             }
 
-            // Episode ke-n sejak 00.00 menurut jam sekarang dengan panjang SystemConfig
+            // Episode ke-n sejak 00.00 menurut jam sekarang dengan panjang Barn.StatisticReminderMinutes
             // (mis. 120 menit: 19.33 = episode 10, 18.00-20.00)
             function episode() {
                 var d = new Date();

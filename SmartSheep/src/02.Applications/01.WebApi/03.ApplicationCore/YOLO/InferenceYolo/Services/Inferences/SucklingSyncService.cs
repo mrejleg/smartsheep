@@ -106,6 +106,36 @@ namespace InferenceYolo.Services.Inferences
             return isChanged;
         }
 
+        // Status stream kamera (putus/tersambung) ke SucklingActivity/SyncStatus; --offline tidak melapor. Tidak melempar
+        // exception apa pun karena dipanggil dari thread pembaca stream (exception di sana menghentikan proses).
+        public bool ReportStatus(string sourceVideoCode, bool isOnline)
+        {
+            if (isOffline)
+            {
+                return true;
+            }
+
+            try
+            {
+                using var response = Send(() => new HttpRequestMessage(HttpMethod.Post, "SucklingActivity/SyncStatus")
+                {
+                    Content = JsonContent.Create(new { SourceVideoCode = sourceVideoCode, IsOnline = isOnline })
+                });
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+
+                Console.Error.WriteLine($"Status {sourceVideoCode}: API menjawab {(int)response.StatusCode}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Status {sourceVideoCode}: {ex.Message}");
+                return false;
+            }
+        }
+
         // Username/password kamera disisipkan ke URL bila URL belum memuatnya
         private static SyncSource ToSyncSource(JsonElement data)
         {

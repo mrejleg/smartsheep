@@ -6,6 +6,8 @@ namespace Web.Domain.Models.Configs
     {
         public int SourceVideoHealthCheckIntervalMinutes { get; set; } = 5;
 
+        public int ReminderIntervalMinutes { get; set; } = 10;
+
         public double YoloConfidenceThreshold { get; set; } = 0.35;
 
         public double YoloMinimumSucklingSeconds { get; set; } = 3;
